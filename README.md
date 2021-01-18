@@ -1,2 +1,13 @@
-# cs2102-project
+# CS2102 Project Assignment
 CS2102 Project for AY20-21 s2
+<br>
+ xxxx Project based on PostgreSQL and xxxx
+
+
+# Setting up
+1. Download PostgreSQL [here](https://www.postgresql.org/download)
+
+
+
+# Techstack
+{TBD}
