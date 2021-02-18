@@ -1,7 +1,7 @@
 # CS2102 Project Assignment
 CS2102 Project for AY20-21 s2
 <br>
- xxxx Project based on PostgreSQL and xxxx
+Project based on PostgreSQL and Flask
 
 
 # Setting up
@@ -10,4 +10,4 @@ CS2102 Project for AY20-21 s2
 
 
 # Techstack
-{TBD}
+Flask
