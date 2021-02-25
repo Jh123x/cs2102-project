@@ -1,4 +1,4 @@
 CREATE TABLE IF NOT EXISTS Redeems(
     date DATE PRIMARY KEY,
     sid INTEGER REFERENCES Sessions
-)
+);

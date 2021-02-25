@@ -1,4 +1,4 @@
 CREATE TABLE IF NOT EXISTS Registers (
     date DATE PRIMARY KEY,
     sid INTEGER REFERENCES Sessions
-)
+);

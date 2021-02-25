@@ -5,4 +5,4 @@ CREATE TABLE IF NOT EXISTS Sessions(
     end_time TIMESTAMP NOT NULL,
     course_id INTEGER REFERENCES Offerings,
     unique(course_id, date)
-)
+);
