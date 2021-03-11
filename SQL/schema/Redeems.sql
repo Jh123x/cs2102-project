@@ -1,6 +1,0 @@
-DROP TABLE IF EXISTS Redeems CASCADE;
-
-CREATE TABLE Redeems(
-    date DATE PRIMARY KEY,
-    sid INTEGER REFERENCES Sessions
-);

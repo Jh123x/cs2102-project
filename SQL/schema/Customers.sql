@@ -15,9 +15,3 @@ CREATE TABLE Credit_cards (
     expiry_date DATE,
     from_date DATE
 );
-
-CREATE TABLE Owns (
-    cust_id INTEGER REFERENCES Customers,
-    number CHAR(16) REFERENCES Credit_cards,
-    PRIMARY KEY(cust_id, number)
-);
