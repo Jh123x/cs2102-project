@@ -1,4 +1,6 @@
-CREATE TABLE IF NOT EXISTS Registers (
+DROP TABLE IF EXISTS Registers CASCADE;
+
+CREATE TABLE Registers (
     date DATE PRIMARY KEY,
     sid INTEGER REFERENCES Sessions
 );

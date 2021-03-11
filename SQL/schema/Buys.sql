@@ -1,6 +1,8 @@
-CREATE TABLE IF NOT EXISTS Buys(
-    date DATE primary key,
-    num_remaining_redemptions INTEGER not null,
+DROP TABLE IF EXISTS Buys CASCADE;
+
+CREATE TABLE Buys (
+    date DATE PRIMARY KEY,
+    num_remaining_redemptions INTEGER NOT NULL,
     sid INTEGER REFERENCES Redeems,
-    check(num_remaining_redemptions >= 0)
+    CHECK(num_remaining_redemptions >= 0)
 );

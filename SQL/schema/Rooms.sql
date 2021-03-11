@@ -1,4 +1,6 @@
-CREATE TABLE IF NOT EXISTS ROOMS (
+DROP TABLE IF EXISTS Rooms CASCADE;
+
+CREATE TABLE Rooms (
     rid Integer Primary key,
     location Text not NULL,
     seating_capacity Integer,
