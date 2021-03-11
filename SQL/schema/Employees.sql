@@ -44,3 +44,13 @@ create table Administrators (
 create table Instructors (
     eid references Employees on update cascade
 );
+
+/*Added this part according to Tutorial 3*/
+
+create table PartTimeInstructors (
+    eid references PartTimeEmployees references Instructors on update cascade on delete cascade
+);
+
+create table FullTimeInstructors (
+    eid references FullTimeEmployees references Instructors on update cascade
+);
