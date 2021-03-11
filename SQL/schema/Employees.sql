@@ -13,19 +13,21 @@ create table Employees (
     /* How else to enforce the covering + non-overlapping constraint of Employee ISA PartTimeEmployee/FullTimeEmployee? */
     /* Need to know the type of contract before generating pay slip */
     /* Not good, will think more about this. Please advise. */
-    contract text check (text in ('part time', 'full time'))
+    contract text check (contract in ('part time', 'full time'))
 );
 
 create table PartTimeEmployees (
-    eid references Employees on update cascade,
-    hourly_rate numeric
+    eid integer primary key,
+    hourly_rate numeric,
+    foreign key (eid) references Employees on update cascade
 );
 
 create table FullTimeEmployees (
-    eid references Employees on update cascade,
+    eid integer primary key,
     /* How else to enforce the covering + non-overlapping constraint on the full-time ISA relationship */
     -- job text check (job in ('manager', 'administrator', 'instructor')),
-    monthly_salary numeric
+    monthly_salary numeric,
+    foreign key (eid) references Employees on update cascade
 );
 
 /* Consideration: Whether to have the following tables with just one column */
@@ -34,23 +36,26 @@ create table FullTimeEmployees (
 /* Any thoughts? */
 
 create table Managers (
-    eid references FullTimeEmployees on update cascade
-)
+    eid integer primary key,
+    foreign key (eid) references FullTimeEmployees on update cascade
+);
 
 create table Administrators (
-    eid references FullTimeEmployees on update cascade
-)
+    eid integer primary key,
+    foreign key (eid) references FullTimeEmployees on update cascade
+);
 
 create table Instructors (
-    eid references Employees on update cascade
+    eid integer primary key,
+    foreign key (eid) references Employees on update cascade
 );
 
 /*Added this part according to Tutorial 3*/
 
 create table PartTimeInstructors (
-    eid references PartTimeEmployees references Instructors on update cascade on delete cascade
+    eid integer references PartTimeEmployees references Instructors on update cascade on delete cascade
 );
 
 create table FullTimeInstructors (
-    eid references FullTimeEmployees references Instructors on update cascade
+    eid integer references FullTimeEmployees references Instructors on update cascade
 );
