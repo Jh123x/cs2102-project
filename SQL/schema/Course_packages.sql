@@ -1,5 +1,4 @@
 DROP TABLE IF EXISTS Course_packages CASCADE;
-
 CREATE TABLE Course_packages (
     package_id INTEGER primary key,
     sale_start_date DATE not null,

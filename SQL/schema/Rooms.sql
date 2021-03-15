@@ -1,5 +1,4 @@
 DROP TABLE IF EXISTS Rooms CASCADE;
-
 CREATE TABLE Rooms (
     rid Integer Primary key,
     location Text not NULL,
