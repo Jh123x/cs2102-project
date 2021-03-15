@@ -4,7 +4,7 @@ CREATE TABLE Sessions (
     date DATE NOT NULL,
     start_time TIMESTAMP NOT NULL,
     end_time TIMESTAMP NOT NULL,
-    course_id INTEGER REFERENCES Offerings,
+    course_id INTEGER REFERENCES Offerings, --Not NULL here?
     unique(course_id, date)
 );
 CREATE TABLE Cancels (

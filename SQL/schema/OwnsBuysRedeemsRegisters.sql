@@ -4,14 +4,14 @@ DROP TABLE IF EXISTS Redeems CASCADE;
 DROP TABLE IF EXISTS Registers CASCADE;
 CREATE TABLE Owns (
     cust_id INTEGER REFERENCES Customers,
-    number CHAR(16) REFERENCES Credit_cards,
+    number CHAR(16) REFERENCES Credit_cards, --Maybe can consider DEC(16,0)
     PRIMARY KEY(cust_id, number)
 );
 CREATE TABLE Buys (
     date TIMESTAMP PRIMARY KEY,
     num_remaining_redemptions INTEGER NOT NULL,
-    package_id INTEGER REFERENCES Course_packages,
-    cust_id INTEGER,
+    package_id INTEGER REFERENCES Course_packages, -- Maybe we should add NOT NULL here?
+    cust_id INTEGER, -- Maybe we should add NOT NULL here?
     number CHAR(16),
     CHECK(num_remaining_redemptions >= 0),
     FOREIGN KEY(cust_id, number) REFERENCES Owns (cust_id, number)

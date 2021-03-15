@@ -3,7 +3,7 @@ drop table if exists CourseOfferings cascade;
 /*Should handle be included here? Creating a sepearate table for Handles might not allow the admin to handle different course offering that falls on the same launch date..*/
 create table CourseOfferings (
     launch_date DATE,
-    fees NUMERIC,
+    fees NUMERIC, -- Maybe can consider changing to DEC(65,2)?
     start_date DATE,
     end_date DATE,
     registration_deadline DATE,

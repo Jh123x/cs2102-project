@@ -15,14 +15,14 @@ create table Employees (
 );
 create table PartTimeEmployees (
     eid integer primary key,
-    hourly_rate numeric,
+    hourly_rate numeric,--Maybe can consider DEC(64,2) and add a constraint that it is >= 0?
     foreign key (eid) references Employees on update cascade
 );
 create table FullTimeEmployees (
     eid integer primary key,
     /* How else to enforce the covering + non-overlapping constraint on the full-time ISA relationship */
     -- job text check (job in ('manager', 'administrator', 'instructor')),
-    monthly_salary numeric,
+    monthly_salary numeric,--Maybe can consider DEC(64,2) and add a constraint that it is >= 0?
     foreign key (eid) references Employees on update cascade
 );
 /* Consideration: Whether to have the following tables with just one column */
