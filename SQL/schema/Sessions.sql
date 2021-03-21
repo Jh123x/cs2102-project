@@ -5,6 +5,8 @@ CREATE TABLE Sessions (
     start_time TIMESTAMP NOT NULL,
     end_time TIMESTAMP NOT NULL,
     course_id INTEGER NOT NULL REFERENCES Offerings,
+    rid INTEGER REFERENCES Rooms,
+    instructor_id INTEGER NOT NULL REFERENCES Instructors,
     unique(course_id, date)
 );
 CREATE TABLE Cancels (
