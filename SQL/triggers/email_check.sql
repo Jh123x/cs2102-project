@@ -1,7 +1,7 @@
 -- Check if the email is valid --
 CREATE OR REPLACE FUNCTION email_check_on_table() RETURNS TRIGGER AS $$
 BEGIN
-    IF (email LIKE %@%) THEN 
+    IF (email LIKE '%@%') THEN 
         RETURN NULL;
     ELSE 
         RETURN NEW;
