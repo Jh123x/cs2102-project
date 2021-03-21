@@ -1,5 +1,5 @@
-drop table if exists Courses cascade;
-create table Courses (
+DROP TABLE IF EXISTS Courses cascade;
+CREATE TABLE Courses (
     course_id TEXT PRIMARY KEY,
     title TEXT UNIQUE,
     course_description TEXT,
