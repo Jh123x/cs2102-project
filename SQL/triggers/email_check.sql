@@ -1,3 +1,8 @@
+-- TODO: Move to check() constraint in customer/employee table
+DROP FUNCTION IF EXISTS email_check_on_table;
+DROP TRIGGER IF EXISTS email_check_on_employees_trigger;
+DROP TRIGGER IF EXISTS email_check_on_customers_trigger;
+
 -- Check if the email is valid --
 CREATE OR REPLACE FUNCTION email_check_on_table() RETURNS TRIGGER AS $$
 BEGIN

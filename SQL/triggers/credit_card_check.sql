@@ -1,3 +1,7 @@
+-- TODO: Move to check() constraint in customer table
+DROP FUNCTION IF EXISTS credit_card_check_on_table;
+DROP TRIGGER IF EXISTS credit_card_check_customers_trigger;
+
 CREATE OR REPLACE FUNCTION credit_card_check_on_table()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -10,6 +14,6 @@ END
 $$ LANGUAGE plpgsql;
 
 
-CREATE TRIGGER credit_card_check_customers
+CREATE TRIGGER credit_card_check_customers_trigger
 BEFORE INSERT OR UPDATE ON Customers
 FOR EACH ROW EXECUTE FUNCTION credit_card_check_on_table();
