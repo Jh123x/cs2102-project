@@ -1,7 +1,7 @@
 CREATE OR REPLACE FUNCTION credit_card_check_on_table()
 RETURNS TRIGGER AS $$
 BEGIN
-    IF (NEW.credit_card LIKE '[0-9]{16}') THEN
+    IF (NEW.number NOT LIKE '[0-9]{16}' OR NEW.cvv NOT LIKE '[0-9]{3}') THEN
         RETURN NULL;
     ELSE
         RETURN NEW;
