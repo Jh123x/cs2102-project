@@ -1,0 +1,1 @@
+-- Make sure no 2 sessions are using the same room at the same time.
