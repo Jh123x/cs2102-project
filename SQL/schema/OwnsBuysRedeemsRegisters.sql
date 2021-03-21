@@ -5,6 +5,7 @@ DROP TABLE IF EXISTS Registers CASCADE;
 CREATE TABLE Owns (
     cust_id INTEGER REFERENCES Customers,
     number CHAR(16) REFERENCES Credit_cards,
+    from_date DATE NOT NULL,
     PRIMARY KEY(cust_id, number)
 );
 CREATE TABLE Buys (
