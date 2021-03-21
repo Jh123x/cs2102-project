@@ -1,50 +1,53 @@
-drop table if exists Employees cascade;
-/* I used check constraints on text instead of enum just due to preference, no particular reason */
-create table Employees (
-    eid integer primary key,
-    name text,
-    address text,
-    phone text,
-    email text,
+DROP TABLE if exists Employees CASCADE;
+/* I used check constraints on TEXT instead of enum just due to preference, no particular reason */
+CREATE TABLE Employees (
+    eid INTEGER PRIMARY KEY,
+    name TEXT,
+    address TEXT,
+    phone TEXT,
+    email TEXT,
     join_date date,
     depart_date date,
     /* How else to enforce the covering + non-overlapping constraint of Employee ISA PartTimeEmployee/FullTimeEmployee? */
     /* Need to know the type of contract before generating pay slip */
     /* Not good, will think more about this. Please advise. */
-    contract text check (contract in ('part time', 'full time'))
+    contract TEXT CHECK (contract IN ('part time', 'full time'))
+    CHECK (depart_date > join_date),
 );
-create table PartTimeEmployees (
-    eid integer primary key,
-    hourly_rate numeric,--Maybe can consider DEC(64,2) and add a constraint that it is >= 0?
-    foreign key (eid) references Employees on update cascade
+CREATE TABLE PartTimeEmployees (
+    eid INTEGER PRIMARY KEY,
+    hourly_rate NUMERIC,
+    CHECK (hourly_rate >= 0),
+    FOREIGN KEY (eid) REFERENCES Employees ON UPDATE CASCADE
 );
-create table FullTimeEmployees (
-    eid integer primary key,
+CREATE TABLE FullTimeEmployees (
+    eid INTEGER PRIMARY KEY,
     /* How else to enforce the covering + non-overlapping constraint on the full-time ISA relationship */
-    -- job text check (job in ('manager', 'administrator', 'instructor')),
-    monthly_salary numeric,--Maybe can consider DEC(64,2) and add a constraint that it is >= 0?
-    foreign key (eid) references Employees on update cascade
+    -- job TEXT check (job in ('manager', 'administrator', 'instructor')),
+    monthly_salary NUMERIC, -- Value in Cents
+    CHECK (monthly_salary >= 0),
+    FOREIGN KEY (eid) REFERENCES Employees ON UPDATE CASCADE
 );
-/* Consideration: Whether to have the following tables with just one column */
-/* Yes because this is needed to enforce the full time requirement on the following jobs, and e.g. the Manages table must reference from the Managers table too */
-/* There is some data-duplicating/redundancy but as of now I can't think of a better way. But it does provide good abstraction for the Manages and Handles tables. */
+/* Consideration: Whether to have the following TABLEs with just one column */
+/* Yes because this is needed to enforce the full time requirement on the following jobs, and e.g. the Manages TABLE must reference from the Managers TABLE too */
+/* There is some data-duplicating/redundancy but as of now I can't think of a better way. But it does provide good abstraction for the Manages and Handles TABLEs. */
 /* Any thoughts? */
-create table Managers (
-    eid integer primary key,
-    foreign key (eid) references FullTimeEmployees on update cascade
+CREATE TABLE Managers (
+    eid INTEGER PRIMARY KEY,
+    FOREIGN KEY (eid) REFERENCES FullTimeEmployees ON UPDATE CASCADE
 );
-create table Administrators (
-    eid integer primary key,
-    foreign key (eid) references FullTimeEmployees on update cascade
+CREATE TABLE Administrators (
+    eid INTEGER PRIMARY KEY,
+    FOREIGN KEY (eid) REFERENCES FullTimeEmployees ON UPDATE CASCADE
 );
-create table Instructors (
-    eid integer primary key,
-    foreign key (eid) references Employees on update cascade
+CREATE TABLE Instructors (
+    eid INTEGER PRIMARY KEY,
+    FOREIGN KEY (eid) REFERENCES Employees ON UPDATE CASCADE
 );
 /*Added this part according to Tutorial 3*/
-create table PartTimeInstructors (
-    eid integer references PartTimeEmployees references Instructors on update cascade on delete cascade
+CREATE TABLE PartTimeInstructors (
+    eid INTEGER REFERENCES PartTimeEmployees REFERENCES Instructors ON UPDATE CASCADE ON DELETE CASCADE
 );
-create table FullTimeInstructors (
-    eid integer references FullTimeEmployees references Instructors on update cascade
+CREATE TABLE FullTimeInstructors (
+    eid INTEGER REFERENCES FullTimeEmployees REFERENCES Instructors ON UPDATE CASCADE
 );
