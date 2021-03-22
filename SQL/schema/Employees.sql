@@ -13,6 +13,7 @@ CREATE TABLE Employees (
     /* Not good, will think more about this. Please advise. */
     contract TEXT CHECK (contract IN ('part time', 'full time'))
     CHECK (depart_date > join_date),
+    CHECK (email LIKE "%@%")
 );
 CREATE TABLE PartTimeEmployees (
     eid INTEGER PRIMARY KEY,
