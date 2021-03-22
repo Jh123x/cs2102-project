@@ -4,7 +4,9 @@ CREATE TABLE Customers (
     phone INTEGER,
     address TEXT,
     name TEXT,
-    email TEXT
+    email TEXT,
+    CHECK(email LIKE '%@%'),
+    CHECK(phone > 0)
 );
 
 DROP TABLE IF EXISTS Credit_cards CASCADE;
