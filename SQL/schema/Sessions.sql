@@ -10,9 +10,8 @@ CREATE TABLE Sessions (
     unique(course_id, date),
     CHECK(end_time > start_time),
     -- Check if the session is conducted between 9am - 12pm to 2pm - 6pm and between
-    CHECK(9 <= EXTRACT(HOUR FROM start_time) <= 12 OR 14 <= EXTRACT(HOUR FROM start_time) <= 18),
-    CHECK(9 <= EXTRACT(HOUR FROM end_time) 12 OR 14 <= EXTRACT(HOUR FROM end_time) <= 18)
-    
+    CHECK((9 <= EXTRACT(HOUR FROM start_time) AND EXTRACT(HOUR FROM start_time) <= 12) OR (14 <= EXTRACT(HOUR FROM start_time) AND EXTRACT(HOUR FROM start_time) <= 18)),
+    CHECK((9 <= EXTRACT(HOUR FROM end_time) AND EXTRACT(HOUR FROM end_time) <= 12) OR (14 <= EXTRACT(HOUR FROM end_time) AND EXTRACT(HOUR FROM end_time) <= 18))    
 );
 CREATE TABLE Cancels (
     date TIMESTAMP PRIMARY KEY,

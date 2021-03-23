@@ -7,5 +7,5 @@ CREATE TABLE Course_packages (
     name TEXT unique not null,
     price DEC(65, 2) not null,
     date DATE not null references BUYS,
-    check(price > 0),
+    check(price > 0)
 );

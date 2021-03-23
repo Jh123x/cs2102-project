@@ -1,6 +1,6 @@
 DROP TABLE IF EXISTS Courses cascade;
 CREATE TABLE Courses (
-    course_id TEXT PRIMARY KEY,
+    course_id INTEGER PRIMARY KEY,
     title TEXT UNIQUE,
     course_description TEXT,
     duration INTEGER,
