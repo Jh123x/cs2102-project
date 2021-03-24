@@ -1,0 +1,1 @@
+-- Registration deadline 10 days before lesson start
