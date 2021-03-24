@@ -21,6 +21,7 @@ CREATE TABLE Cancels (
     date TIMESTAMP PRIMARY KEY,
 	refund_amt NUMERIC,
 	package_credit INTEGER,
+    CHECK(refund_amt >= 0),
 	sid INTEGER NOT NULL REFERENCES Sessions(sid),
     cust_id INTEGER NOT NULL REFERENCES Customers(cust_id)
 );
