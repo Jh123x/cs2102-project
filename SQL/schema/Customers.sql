@@ -14,4 +14,6 @@ CREATE TABLE Credit_cards (
     number CHAR(16) PRIMARY KEY,
     cvv CHAR(3),
     expiry_date DATE
+    CHECK (number LIKE '[0-9]{16}'),
+    CHECK (cvv LIKE '[0-9]{3}')
 );
