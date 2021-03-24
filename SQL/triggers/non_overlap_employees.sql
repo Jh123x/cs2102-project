@@ -1,0 +1,1 @@
+-- Enforce non-overlap between admin, manager and instructors
