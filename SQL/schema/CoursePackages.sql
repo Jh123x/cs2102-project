@@ -1,10 +1,10 @@
 DROP TABLE IF EXISTS CoursePackages CASCADE;
 CREATE TABLE CoursePackages (
-    package_id INTEGER primary key,
-    sale_start_date DATE not null,
-    num_free_registrations INTEGER not null,
-    sale_end_date DATE not null,
-    name TEXT unique not null,
-    price DEC(65, 2) not null,
+    package_id INTEGER PRIMARY KEY,
+    sale_start_date DATE NOT NULL,
+    num_free_registrations INTEGER NOT NULL,
+    sale_end_date DATE NOT NULL,
+    name TEXT unique NOT NULL,
+    price DEC(65, 2) NOT NULL,
     check(price > 0)
 );
