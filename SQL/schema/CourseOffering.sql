@@ -1,17 +1,22 @@
 drop table if exists CourseOfferings cascade;
-/*May consider changing datatype for fees to MONEY*/
 /*Should handle be included here? Creating a sepearate table for Handles might not allow the admin to handle different course offering that falls on the same launch date..*/
 create table CourseOfferings (
     launch_date DATE,
-    fees NUMERIC,
+    fees MONEY,
     start_date DATE,
     end_date DATE,
     registration_deadline DATE,
     target_number_registration INTEGER,
-    seating_capacity INTEGER,
+    seating_capacity INTEGER NOT NULL,
     course_id NOT NULL INTEGER,
     admin_id NOT NULL INTEGER,
     PRIMARY KEY(launch_date, course_id),
+    CHECK(start_date < end_date),
+    CHECK(launch_date < registration_deadline),
+    CHECK(seating_capacity >= target_number_registration),
+    CHECK(target_number_registration >= 0),
+    CHECK(fees >= 0),
+    CHECK(DATEDIFF(day, start_date, end_date)),
     FOREIGN KEY(course_id) REFERENCES Courses on delete cascade,
     FOREIGN KEY(admin_id) REFERENCES Administrators on update cascade
 );
