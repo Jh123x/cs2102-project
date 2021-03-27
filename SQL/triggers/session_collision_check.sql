@@ -22,7 +22,7 @@ CREATE OR REPLACE FUNCTION session_collision_check() RETURNS TRIGGER AS $$
 			OR
 			s.start_time BETWEEN NEW.start_time AND NEW.end_time
 		)
-		AND (NEW.course_id = s.course_id OR NEW.rid = s.rid);
+		AND (NEW.course_id = s.course_id OR NEW.rid = s.rid); /*Check if it is the same course at the same time or if it is in the same room*/
 
 		-- Filter if there are any collisions
 		IF (collisions > 0) THEN
