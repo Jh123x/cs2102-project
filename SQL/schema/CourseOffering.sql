@@ -12,5 +12,6 @@ create table CourseOfferings (
     course_id INTEGER,
     admin_id INTEGER,
     PRIMARY KEY(launch_date, course_id),
-    FOREIGN KEY(course_id) REFERENCES Courses on delete cascade
+    FOREIGN KEY(course_id) REFERENCES Courses on delete cascade,
+    FOREIGN KEY(admin_id) REFERENCES Administrators on update cascade
 );
