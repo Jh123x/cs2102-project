@@ -19,7 +19,7 @@ CREATE TABLE Sessions (
 DROP TABLE IF EXISTS Cancels CASCADE;
 CREATE TABLE Cancels (
     date TIMESTAMP PRIMARY KEY,
-	refund_amt NUMERIC,
+	refund_amt MONEY,
 	package_credit INTEGER,
     CHECK(refund_amt >= 0),
 	sid INTEGER NOT NULL REFERENCES Sessions(sid),
