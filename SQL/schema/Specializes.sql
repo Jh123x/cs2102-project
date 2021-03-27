@@ -4,5 +4,5 @@ create table Specializes (
     cArea_name TEXT,
     PRIMARY KEY(instructor_id, cArea_name),
     FOREIGN KEY(instructor_id) REFERENCES Instructors,
-    FOREIGN KEY(cArea_name) REFERENCES Course_areas
+    FOREIGN KEY(course_area_name) REFERENCES Course_areas
 );
