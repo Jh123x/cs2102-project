@@ -1,0 +1,1 @@
+/*Create a view for cehcking if the status is fully booked*/
