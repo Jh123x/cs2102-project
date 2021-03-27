@@ -1,5 +1,5 @@
-DROP TABLE IF EXISTS Course_packages CASCADE;
-CREATE TABLE Course_packages (
+DROP TABLE IF EXISTS CoursePackages CASCADE;
+CREATE TABLE CoursePackages (
     package_id INTEGER primary key,
     sale_start_date DATE not null,
     num_free_registrations INTEGER not null,

@@ -9,8 +9,8 @@ CREATE TABLE Customers (
     CHECK(phone > 0)
 );
 
-DROP TABLE IF EXISTS Credit_cards CASCADE;
-CREATE TABLE Credit_cards (
+DROP TABLE IF EXISTS CreditCards CASCADE;
+CREATE TABLE CreditCards (
     number CHAR(16) PRIMARY KEY,
     cvv CHAR(3),
     expiry_date DATE

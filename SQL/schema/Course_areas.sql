@@ -1,5 +1,5 @@
-DROP TABLE IF EXISTS Course_areas CASCADE;
-CREATE TABLE Course_areas (
+DROP TABLE IF EXISTS CourseAreas CASCADE;
+CREATE TABLE CourseAreas (
     name TEXT PRIMARY KEY,
     manager_id INTEGER REFERENCES Managers
 );
