@@ -8,6 +8,7 @@ CREATE TABLE Employees (
     email TEXT,
     join_date date,
     depart_date date,
+
     CHECK (depart_date > join_date),
     CHECK (email LIKE '%@%.%')
 );
@@ -15,17 +16,19 @@ CREATE TABLE Employees (
 DROP TABLE IF EXISTS PartTimeEmployees;
 CREATE TABLE PartTimeEmployees (
     eid INTEGER PRIMARY KEY,
-    hourly_rate NUMERIC(64, 2),        -- Value in Cents
+    hourly_rate MONEY,
     CHECK (hourly_rate >= 0),
+
     FOREIGN KEY (eid) REFERENCES Employees ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 DROP TABLE IF EXISTS FullTimeEmployees;
 CREATE TABLE FullTimeEmployees (
     eid INTEGER PRIMARY KEY,
-    monthly_salary NUMERIC(64, 2),     -- Value in Cents
-    CHECK (monthly_salary >= 0),
-    FOREIGN KEY (eid) REFERENCES Employees ON UPDATE CASCADE ON DELETE CASCADE
+    monthly_salary MONEY,
+
+    FOREIGN KEY (eid) REFERENCES Employees ON UPDATE CASCADE ON DELETE CASCADE,
+    CHECK (monthly_salary >= 0)
 );
 
 DROP TABLE IF EXISTS Managers;

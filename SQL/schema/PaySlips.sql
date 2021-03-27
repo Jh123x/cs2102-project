@@ -1,13 +1,16 @@
-drop table if exists PaySlips cascade;
-create table PaySlips (
-    eid integer references Employees ON DELETE CASCADE ON UPDATE CASCADE,
-    payment_date date,
-    amount numeric,
-    num_work_hours integer default null,
-    num_work_days integer default null,
-    primary key (eid, payment_date),
-    CHECK ((num_work_days is null and num_work_hours is not null) or (num_work_days is not null and num_work_hours is null)),
-    CHECK (num_work_hours is null or num_work_hours >= 0),
-    CHECK (num_work_days is null or num_work_days >= 0),
+DROP TABLE IF EXISTS PaySlips cascade;
+CREATE TABLE PaySlips (
+    eid INTEGER,
+    payment_date DATE,
+    amount MONEY,
+    num_work_hours INTEGER DEFAULT NULL,
+    num_work_days INTEGER DEFAULT NULL,
+
+    PRIMARY KEY (eid, payment_date),
+    FOREIGN KEY eid REFERENCES Employees ON DELETE CASCADE ON UPDATE CASCADE,
+
+    CHECK ((num_work_days IS NULL AND num_work_hours IS NOT NULL) OR (num_work_days IS NOT NULL AND num_work_hours IS NULL)),
+    CHECK (num_work_hours IS NULL OR num_work_hours >= 0),
+    CHECK (num_work_days IS NULL OR num_work_days >= 0),
     CHECK (amount >= 0)
 );
