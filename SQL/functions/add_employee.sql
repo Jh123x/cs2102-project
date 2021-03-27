@@ -11,6 +11,7 @@ CREATE OR REPLACE PROCEDURE add_employee (
     ) AS $$
 DECLARE
     eid INTEGER;
+    area_count INTEGER;
 BEGIN
     -- Generate the next eid
     SELECT MAX(e.eid) + 1 INTO eid FROM Employees;
@@ -41,8 +42,12 @@ BEGIN
         -- Add them to the specified course area
         FOR area IN course_area
         LOOP
-            -- INSERT INTO Course_areas VALUES (area, eid);
-            UPDATE Course_areas SET manager_id = eid WHERE name = area;
+            SELECT count(*) INTO area_count FROM Course_areas WHERE name = area;
+            IF area_count = 0 THEN
+                INSERT INTO Course_areas VALUES (area, eid);
+            ELSE
+                UPDATE Course_areas SET manager_id = eid WHERE name = area;
+            END IF;
         END LOOP;
     ELSE IF (category = "Admin") THEN
         INSERT INTO Administrators VALUES (eid);
