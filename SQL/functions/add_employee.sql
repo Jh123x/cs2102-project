@@ -3,15 +3,14 @@ CREATE OR REPLACE PROCEDURE add_employee (
         address TEXT,
         phone TEXT,
         email TEXT,
-        join_date date,
+        join_date DATE,
         category TEXT, -- Manager / Admin / Instructor
         type TEXT, -- Full Time / Part Time
-        salary_amount numeric, -- hourly_rate for part-time and monthly_salary for full-time
+        salary_amount DEC(64, 2), -- hourly_rate for part-time and monthly_salary for full-time
         course_area TEXT[]
     ) AS $$
 DECLARE
     eid INTEGER;
-    area_count INTEGER;
 BEGIN
     -- Generate the next eid
     SELECT MAX(e.eid) + 1 INTO eid FROM Employees;
@@ -42,12 +41,7 @@ BEGIN
         -- Add them to the specified course area
         FOR area IN course_area
         LOOP
-            SELECT count(*) INTO area_count FROM Course_areas WHERE name = area;
-            IF area_count = 0 THEN
-                INSERT INTO Course_areas VALUES (area, eid);
-            ELSE
-                UPDATE Course_areas SET manager_id = eid WHERE name = area;
-            END IF;
+            INSERT INTO Course_areas VALUES (area, eid);
         END LOOP;
     ELSE IF (category = "Admin") THEN
         INSERT INTO Administrators VALUES (eid);
@@ -67,8 +61,5 @@ BEGIN
     ELSE
         RAISE EXCEPTION "Category not found";
     ENDIF;
-
-
-
 END
 $$ LANGUAGE plpgsql;
