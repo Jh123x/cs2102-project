@@ -1,6 +1,6 @@
 DROP TABLE IF EXISTS Sessions CASCADE;
 CREATE TABLE Sessions (
-    sid INTEGER UNIQUE NOT NULL,
+    sid INTEGER UNIQUE NOT NULL, /* Session number is suppose to follow course offering */
     date DATE NOT NULL,
     start_time TIMESTAMP NOT NULL,
     end_time TIMESTAMP NOT NULL,
