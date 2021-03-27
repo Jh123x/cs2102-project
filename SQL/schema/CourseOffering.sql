@@ -9,8 +9,8 @@ create table CourseOfferings (
     registration_deadline DATE,
     target_number_registration DATE,
     seating_capacity DATE,
-    course_id INTEGER,
-    admin_id INTEGER,
+    course_id NOT NULL INTEGER,
+    admin_id NOT NULL INTEGER,
     PRIMARY KEY(launch_date, course_id),
     FOREIGN KEY(course_id) REFERENCES Courses on delete cascade,
     FOREIGN KEY(admin_id) REFERENCES Administrators on update cascade
