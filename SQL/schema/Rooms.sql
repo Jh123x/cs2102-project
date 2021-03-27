@@ -3,5 +3,5 @@ CREATE TABLE Rooms (
     rid Integer Primary key,
     location Text UNIQUE NOT NULL,
     seating_capacity Integer NOT NULL,
-    check(seating_capacity >= 0),
+    check(seating_capacity >= 0)
 );

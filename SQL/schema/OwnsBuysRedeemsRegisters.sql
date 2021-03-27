@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS Owns CASCADE;
 CREATE TABLE Owns (
     cust_id INTEGER REFERENCES Customers,
-    number CHAR(16) REFERENCES Credit_cards,
+    number CHAR(16) REFERENCES CreditCards,
     from_date DATE NOT NULL,
     PRIMARY KEY(cust_id, number)
 );
@@ -9,7 +9,7 @@ DROP TABLE IF EXISTS Buys CASCADE;
 CREATE TABLE Buys (
     date TIMESTAMP PRIMARY KEY,
     num_remaining_redemptions INTEGER NOT NULL,
-    package_id INTEGER NOT NULL REFERENCES Course_packages,
+    package_id INTEGER NOT NULL REFERENCES CoursePackages,
     cust_id INTEGER NOT NULL,
     number CHAR(16),
     CHECK(num_remaining_redemptions >= 0),

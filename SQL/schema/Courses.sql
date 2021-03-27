@@ -4,6 +4,6 @@ CREATE TABLE Courses (
     title TEXT UNIQUE,
     course_description TEXT,
     duration INTEGER,
-    course_area_name TEXT NOT NULL REFERENCES Course_areas,
+    course_area_name TEXT NOT NULL REFERENCES CourseAreas,
     CHECK(duration >= 0)
 );
