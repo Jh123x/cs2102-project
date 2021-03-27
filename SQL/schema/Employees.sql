@@ -16,8 +16,8 @@ CREATE TABLE Employees (
 DROP TABLE IF EXISTS PartTimeEmployees;
 CREATE TABLE PartTimeEmployees (
     eid INTEGER PRIMARY KEY,
-    hourly_rate MONEY,
-    CHECK (hourly_rate >= '0.00'),
+    hourly_rate DEC(64,2),
+    CHECK (hourly_rate >= 0),
 
     FOREIGN KEY (eid) REFERENCES Employees ON UPDATE CASCADE ON DELETE CASCADE
 );
@@ -25,10 +25,10 @@ CREATE TABLE PartTimeEmployees (
 DROP TABLE IF EXISTS FullTimeEmployees;
 CREATE TABLE FullTimeEmployees (
     eid INTEGER PRIMARY KEY,
-    monthly_salary MONEY,
+    monthly_salary DEC(64,2),
 
     FOREIGN KEY (eid) REFERENCES Employees ON UPDATE CASCADE ON DELETE CASCADE,
-    CHECK (monthly_salary >= '0.00')
+    CHECK (monthly_salary >= 0)
 );
 
 DROP TABLE IF EXISTS Managers;
