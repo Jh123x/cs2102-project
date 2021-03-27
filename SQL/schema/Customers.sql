@@ -5,7 +5,7 @@ CREATE TABLE Customers (
     address TEXT,
     name TEXT,
     email TEXT,
-    CHECK(email LIKE '%@%'),
+    CHECK(email LIKE '%@%.%'),
     CHECK(phone > 0)
 );
 
