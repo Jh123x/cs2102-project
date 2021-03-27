@@ -9,7 +9,7 @@ CREATE OR REPLACE PROCEDURE add_employee (
         salary_amount numeric, -- hourly_rate for part-time and monthly_salary for full-time
         course_area TEXT[]
     ) AS $$
-DECLARE 
+DECLARE
     eid INTEGER;
 BEGIN
     -- Generate the next eid
@@ -39,9 +39,10 @@ BEGIN
         INSERT INTO Managers VALUES (eid);
 
         -- Add them to the specified course area
-        FOR area IN course_area 
+        FOR area IN course_area
         LOOP
-            INSERT INTO Course_areas VALUES (area, eid);
+            -- INSERT INTO Course_areas VALUES (area, eid);
+            UPDATE Course_areas SET manager_id = eid WHERE name = area;
         END LOOP;
     ELSE IF (category = "Admin") THEN
         INSERT INTO Administrators VALUES (eid);
@@ -49,7 +50,7 @@ BEGIN
             RAISE EXCEPTION "Admin should not have course area";
     ELSE IF (category = "Instructor") THEN
         INSERT INTO Instructors VALUES (eid);
-        FOR area IN course_area 
+        FOR area IN course_area
         LOOP
             INSERT INTO Specializes VALUES (eid, area);
         END LOOP;
@@ -62,7 +63,7 @@ BEGIN
         RAISE EXCEPTION "Category not found";
     ENDIF;
 
-    
+
 
 END
 $$ LANGUAGE plpgsql;
