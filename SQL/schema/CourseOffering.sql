@@ -16,7 +16,7 @@ create table CourseOfferings (
     CHECK(seating_capacity >= target_number_registration),
     CHECK(target_number_registration >= 0),
     CHECK(fees >= 0),
-    CHECK(DATEDIFF(day, start_date, end_date) >= 10),
+    CHECK(DATEDIFF(day, registration_deadline, start_date) >= 10),
     FOREIGN KEY(course_id) REFERENCES Courses on delete cascade,
     FOREIGN KEY(admin_id) REFERENCES Administrators on update cascade
 );
