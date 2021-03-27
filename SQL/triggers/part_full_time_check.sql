@@ -8,11 +8,14 @@ CREATE OR REPLACE FUNCTION part_full_time_check() RETURNS TRIGGER AS $$
 $$ LANGUAGE plpgsql;
 
 
+DROP TRIGGER IF EXISTS part_time_insert_trigger ON PartTimeEmployees;
+DROP TRIGGER IF EXISTS full_time_insert_trigger ON FullTimeEmployees;
+
 
 CREATE TRIGGER part_time_insert_trigger
 BEFORE INSERT OR UPDATE ON PartTimeEmployees
 FOR EACH ROW EXECUTE FUNCTION part_full_time_check();
 
-CREATE TRIGGER part_time_insert_trigger
+CREATE TRIGGER full_time_insert_trigger
 BEFORE INSERT OR UPDATE ON FullTimeEmployees
 FOR EACH ROW EXECUTE FUNCTION part_full_time_check();
