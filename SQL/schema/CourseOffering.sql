@@ -1,5 +1,6 @@
 drop table if exists CourseOfferings cascade;
 create table CourseOfferings (
+    id SERIAL UNIQUE NOT NULL,
     launch_date DATE,
     fees DEC(64,2),
     registration_deadline DATE,

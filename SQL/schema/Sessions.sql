@@ -1,6 +1,6 @@
 DROP TABLE IF EXISTS Sessions CASCADE;
 CREATE TABLE Sessions (
-    sid INTEGER UNIQUE NOT NULL, /* Session number is suppose to follow course offering */
+    sid INTEGER NOT NULL, /* Session number to follow course offering */
     date DATE NOT NULL,
     start_time TIMESTAMP NOT NULL,
     end_time TIMESTAMP NOT NULL,
@@ -10,8 +10,8 @@ CREATE TABLE Sessions (
     instructor_id INTEGER REFERENCES Instructors,
     unique(course_id, date),
 
-    PRIMARY KEY(sid, course_id, launch_date),
-    FOREIGN KEY(launch_date, course_id) REFERENCES CourseOfferings(launch_date, course_id) ON DELETE CASCADE,
+    PRIMARY KEY(sid, launch_date, course_id),
+    FOREIGN KEY(sid, launch_date, course_id) REFERENCES CourseOfferings(id, launch_date, course_id) ON DELETE CASCADE,
 
     -- Check if the session is conducted between 9am - 12pm to 2pm - 6pm and between
     CHECK(to_char(join_date, 'Day') IN ('Monday','Tuesday', 'Wednesday','Thursday','Friday')),
