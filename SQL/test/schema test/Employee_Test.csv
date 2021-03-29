@@ -1,0 +1,11 @@
+﻿eid,name ,address,phone,email,join_date,depart_date,contract,outcome,reason
+1,John ,Jurong,91234567,john@gmail.com,12/12/2020,5/5/2020,part time,pass,
+2,Jane ,Yishun,92345678,jane@gmail.com,13/2/2020,20/5/2021,full time,pass,
+3,Alice ,Changi,93456789,alice@gmail.com,15/1/2020,1/5/2021,full time,pass,
+4,Bob ,Expo,94567890,bob@gmail.com,17/12/2019,2/5/2021,part time,pass,
+5,Tom ,Jurong,95678901,tom@gmail.com,1/1/2018,3/5/2021,part time,pass,
+6,Harry,Pasir Ris,96789012,harry@gmail.com,2/2/2018,3/5/2020,full time,pass,
+7,Dick ,Bugis,97890123,dick@gmail.com,3/2/2020,10/5/2021,full time,pass,
+8,Potato,Bishan,98901234,potato@gmail.com,3/2/2020,1/2/2019,full time,fail,depart date is before join date
+9,Pitato,Bishan,99012345,pitato~gmail.com,1/1/2018,13/2/2020,full time,fail,email is invalid
+10,Putato,Bishan,90123456,putato@gmail.com,2/2/2018,3/2/2020,NULL,fail,no contract stated
