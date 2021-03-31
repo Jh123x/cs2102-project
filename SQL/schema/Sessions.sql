@@ -10,7 +10,7 @@ CREATE TABLE Sessions (
     instructor_id INTEGER REFERENCES Instructors,
     unique(course_id, date),
 
-    PRIMARY KEY(launch_date, course_id, id),
+    PRIMARY KEY(id, launch_date, course_id),
     FOREIGN KEY(id, launch_date, course_id) REFERENCES CourseOfferings(id, launch_date, course_id) ON DELETE CASCADE,
 
     -- Check if the session is conducted between 9am - 12pm to 2pm - 6pm and between
