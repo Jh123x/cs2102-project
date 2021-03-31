@@ -1,6 +1,6 @@
 DROP TABLE IF EXISTS Customers CASCADE;
 CREATE TABLE Customers (
-    cust_id INTEGER PRIMARY KEY,
+    cust_id SERIAL PRIMARY KEY,
     phone INTEGER,
     address TEXT,
     name TEXT,
