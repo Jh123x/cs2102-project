@@ -28,8 +28,8 @@ CREATE TABLE Cancels (
     CHECK(refund_amt >= 0),
     course_id INTEGER NOT NULL,
     sid INTEGER NOT NULL,
-    date DATE NOT NULL,
+    sesh_date DATE NOT NULL,
     launch_date DATE NOT NULL,
     cust_id INTEGER NOT NULL REFERENCES Customers(cust_id),
-    FOREIGN KEY (course_id, sid, date, launch_date) REFERENCES Sessions(course_id, sid) MATCH FULL
+    FOREIGN KEY (course_id, sid, sesh_date, launch_date) REFERENCES Sessions(course_id, sid, date, launch_date) MATCH FULL
 );
