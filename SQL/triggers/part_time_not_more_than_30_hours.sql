@@ -12,7 +12,7 @@ BEGIN
     END IF;
 
     RETURN NEW;
-END
+END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER not_more_than_30_trigger
