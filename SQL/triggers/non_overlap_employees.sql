@@ -21,6 +21,7 @@ BEGIN
     IF (inst_count + admin_count + man_count > 0) THEN
         RAISE EXCEPTION 'The Employee is already in another role.';
     END IF;
+
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;

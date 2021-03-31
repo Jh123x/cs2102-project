@@ -5,6 +5,8 @@ BEGIN
     THEN
         RAISE EXCEPTION 'Employee already exists in part time or full time role';
     END IF;
+
+    RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 

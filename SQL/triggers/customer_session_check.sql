@@ -15,6 +15,7 @@ BEGIN
     IF (register_count + redeem_count - cancels > 0) THEN
         RAISE EXCEPTION 'Already registered for a session of this course';
     END IF;
+
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;

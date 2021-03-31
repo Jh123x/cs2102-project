@@ -6,6 +6,7 @@ BEGIN
     IF (SELECT SUM(num_remaining_redemptions) FROM Buys WHERE customer_id = NEW.customer_id) <= 0 THEN
         RAISE EXCEPTION 'THERE IS NOTHING LEFT TO REDEEM';
     END IF;
+
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;

@@ -10,6 +10,8 @@ BEGIN
     IF (hours > 30) THEN 
         RAISE EXCEPTION 'Part time Employee working too much';
     END IF;
+
+    RETURN NEW;
 END
 $$ LANGUAGE plpgsql;
 
