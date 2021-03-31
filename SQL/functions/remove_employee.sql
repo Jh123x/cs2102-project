@@ -19,7 +19,7 @@ BEGIN
     SELECT COUNT(*) INTO isTeaching_count FROM Sessions s WHERE s.instructor_id = eid;
 
     IF (isAdmin_count + isManaging_count + isTeaching_count > 0) THEN
-        RAISE EXCEPTION "Employing is still Admin/Managing/Teaching";
+        RAISE EXCEPTION 'Employing is still Admin/Managing/Teaching';
     END IF;
 
     -- DELETE FROM Employees e WHERE e.eid = eid;
