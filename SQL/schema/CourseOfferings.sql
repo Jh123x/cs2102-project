@@ -1,5 +1,5 @@
-drop table if exists CourseOfferings cascade;
-create table CourseOfferings (
+DROP TABLE IF EXISTS CourseOfferings cascade;
+CREATE TABLE CourseOfferings (
     launch_date DATE UNIQUE NOT NULL, /*Courses have unique launch date*/
     fees DEC(64,2),
     registration_deadline DATE,
@@ -20,6 +20,6 @@ create table CourseOfferings (
     CHECK(start_date >= registration_deadline + INTEGER '10'),
 
     PRIMARY KEY(launch_date, course_id),
-    FOREIGN KEY(course_id) REFERENCES Courses on delete cascade,
-    FOREIGN KEY(admin_id) REFERENCES Administrators on update cascade
+    FOREIGN KEY(course_id) REFERENCES Courses ON DELETE CASCADE,
+    FOREIGN KEY(admin_id) REFERENCES Administrators ON UPDATE CASCADE
 );

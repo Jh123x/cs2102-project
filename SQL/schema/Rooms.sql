@@ -1,7 +1,8 @@
 DROP TABLE IF EXISTS Rooms CASCADE;
 CREATE TABLE Rooms (
-    rid Integer Primary key,
-    location Text UNIQUE NOT NULL,
-    seating_capacity Integer NOT NULL,
-    check(seating_capacity >= 0)
+    room_id INTEGER PRIMARY KEY,
+    location TEXT UNIQUE NOT NULL,
+    seating_capacity INTEGER NOT NULL,
+
+    CHECK(seating_capacity >= 0)
 );

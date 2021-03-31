@@ -1,16 +1,16 @@
 DROP TABLE IF EXISTS Sessions CASCADE;
 CREATE TABLE Sessions (
-    sid INTEGER NOT NULL,
+    session_id INTEGER NOT NULL,
     date DATE NOT NULL,
     start_time TIMESTAMP NOT NULL,
     end_time TIMESTAMP NOT NULL,
     course_id INTEGER NOT NULL,
     launch_date DATE NOT NULL,
-    rid INTEGER REFERENCES Rooms,
+    room_id INTEGER REFERENCES Rooms,
     instructor_id INTEGER REFERENCES Instructors,
-    unique(course_id, date),
 
-    PRIMARY KEY(sid, course_id, launch_date),
+    UNIQUE(course_id, date),
+    PRIMARY KEY(session_id, course_id, launch_date),
     FOREIGN KEY(course_id, launch_date) REFERENCES CourseOfferings(course_id, launch_date) ON DELETE CASCADE,
 
     -- Check if the session is conducted between 9am - 12pm to 2pm - 6pm and between
@@ -25,10 +25,11 @@ CREATE TABLE Cancels (
     date TIMESTAMP PRIMARY KEY,
     refund_amt DEC(64,2),
     package_credit INTEGER,
-    CHECK(refund_amt >= 0),
     course_id INTEGER NOT NULL,
-    sid INTEGER NOT NULL,
+    session_id INTEGER NOT NULL,
     launch_date DATE NOT NULL,
-    cust_id INTEGER NOT NULL REFERENCES Customers(cust_id),
-    FOREIGN KEY (course_id, sid, launch_date) REFERENCES Sessions(course_id, sid, launch_date) MATCH FULL
+    customer_id INTEGER NOT NULL REFERENCES Customers(customer_id),
+    
+    CHECK(refund_amt >= 0),
+    FOREIGN KEY (course_id, session_id, launch_date) REFERENCES Sessions(course_id, session_id, launch_date) MATCH FULL
 );
