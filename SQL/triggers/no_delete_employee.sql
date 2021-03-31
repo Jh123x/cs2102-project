@@ -7,6 +7,6 @@ CREATE OR REPLACE FUNCTION no_deletion_of_employees() RETURNS TRIGGER AS $$
 $$ LANGUAGE plpgsql;
 
 
-CREATE TRIGGER no_delete_employee_trigger 
+CREATE TRIGGER no_delete_employee_trigger
 BEFORE DELETE ON Employees
 FOR EACH ROW EXECUTE FUNCTION no_deletion_of_employees();
