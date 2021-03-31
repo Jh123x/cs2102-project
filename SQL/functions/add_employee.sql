@@ -61,5 +61,5 @@ BEGIN
     ELSE
         RAISE EXCEPTION "Category not found";
     END IF;
-END
+END;
 $$ LANGUAGE plpgsql;
