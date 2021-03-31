@@ -33,6 +33,6 @@ CREATE TABLE Registers (
     sid INTEGER NOT NULL,
     launch_date DATE,
     course_id INTEGER,
-    FOREIGN KEY(sid, launch_date, course_id) REFERENCES Sessions(id, launch_date, course_id)
+    FOREIGN KEY(sid, launch_date, course_id) REFERENCES Sessions(id, launch_date, course_id),
     FOREIGN KEY(cust_id, number) REFERENCES Owns (cust_id, number)
 );
