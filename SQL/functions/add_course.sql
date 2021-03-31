@@ -16,5 +16,5 @@ BEGIN
             duration,
             course_area_name
         );
-END
+END;
 $$ LANGUAGE plpgsql;
