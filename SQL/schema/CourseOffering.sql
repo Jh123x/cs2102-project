@@ -1,6 +1,6 @@
 drop table if exists CourseOfferings cascade;
 create table CourseOfferings (
-    launch_date DATE,
+    launch_date DATE UNIQUE NOT NULL, /*Courses have unique launch date*/
     fees DEC(64,2),
     registration_deadline DATE,
     target_number_registration INTEGER,
@@ -8,7 +8,7 @@ create table CourseOfferings (
     course_id INTEGER NOT NULL,
     admin_id INTEGER NOT NULL,
 
-    /*Start and end date to be added to view*/
+    /* Start and end date to be added to view */
     start_date DATE,
     end_date DATE,
     
