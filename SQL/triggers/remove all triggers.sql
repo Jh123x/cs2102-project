@@ -1,0 +1,10 @@
+DROP TRIGGER IF EXISTS part_time_insert_trigger ON PartTimeEmployees;
+DROP TRIGGER IF EXISTS full_time_insert_trigger ON FullTimeEmployees;
+DROP TRIGGER IF EXISTS redemption_check_trigger ON Redeems;
+DROP TRIGGER IF EXISTS not_more_than_30_trigger ON Sessions;
+DROP TRIGGER IF EXISTS admin_check_trigger ON Administrators;
+DROP TRIGGER IF EXISTS manager_check_trigger ON Managers;
+DROP TRIGGER IF EXISTS instructor_check_trigger ON Instructors;
+DROP TRIGGER IF EXISTS customer_redeems_trigger ON Redeems;
+DROP TRIGGER IF EXISTS customer_register_trigger ON Registers;
+DROP TRIGGER IF EXISTS session_collision_trigger ON Sessions;
