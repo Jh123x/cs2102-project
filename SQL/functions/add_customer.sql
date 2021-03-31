@@ -10,9 +10,16 @@ CREATE OR REPLACE PROCEDURE add_customer (
 DECLARE
     curr_id INTEGER;
 BEGIN
-    SELECT max(cust_id) + 1 INTO curr_id FROM Customers;
+    /* Insert values into credit card */
     INSERT INTO CreditCards (number, cvv, expiry_date) VALUES (number, cvv, expiry_date);
-    INSERT INTO Customers (cust_id, phone, address, name, email) VALUES (curr_id, phone, address, name, email);
-    INSERT INTO Owns (cust_id, number, from_date) VALUES (cust_id, number, CURRENT_DATE());
+
+    /* Insert customer values with auto generated id */
+    INSERT INTO Customers (phone, address, name, email) VALUES (phone, address, name, email);
+
+    /* Get the new id that was added */
+    SELECT cust_id INTO curr_id FROM Customers c WHERE c.phone = phone AND c.address = address AND c.name = name AND c.email = email;
+
+    /* Match the credit card into the owner */
+    INSERT INTO Owns (cust_id, number, from_date) VALUES (curr_id, number, CURRENT_DATE());
 END;
 $$ LANGUAGE plpgsql;
