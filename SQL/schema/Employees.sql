@@ -7,7 +7,7 @@ CREATE TABLE Employees (
     phone TEXT,
     email TEXT,
     join_date date,
-    depart_date date,
+    depart_date date DEFAULT NULL,
 
     CHECK (depart_date > join_date),
     CHECK (email LIKE '%@%.%')
