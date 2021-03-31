@@ -1,7 +1,7 @@
 DROP TABLE if exists Employees CASCADE;
 
 CREATE TABLE Employees (
-    eid INTEGER PRIMARY KEY,
+    eid SERIAL PRIMARY KEY,
     name TEXT,
     address TEXT,
     phone TEXT,
