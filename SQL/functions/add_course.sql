@@ -1,12 +1,12 @@
 CREATE OR REPLACE PROCEDURE add_course (
         title TEXT,
         course_description TEXT,
-        cArea_name TEXT,
+        course_area_name TEXT,
         duration INTEGER
-        
     ) AS $$
 DECLARE
     curr_id INTEGER;
+BEGIN
     SELECT MAX(course_id) + 1 INTO curr_id FROM Courses;
     INSERT INTO Courses
     VALUES (
@@ -14,6 +14,7 @@ DECLARE
             title,
             course_description,
             duration,
-            cArea_name
+            course_area_name
         );
-$$ LANGUAGE SQL
+END;
+$$ LANGUAGE plpgsql;

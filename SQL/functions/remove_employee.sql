@@ -16,13 +16,14 @@ BEGIN
     SELECT COUNT(*) INTO isManaging_count FROM Course_areas c WHERE c.manager_id = eid;
 
     -- Check if they are manager managing some area
-    SELECT COUNT(*) INTO isTeaching_count FROM Sessions WHERE s.instructor_id = eid;
+    SELECT COUNT(*) INTO isTeaching_count FROM Sessions s WHERE s.instructor_id = eid;
 
-    IF (isAdmin_count + isManaging_count + isTeaching_count > 0) THEN 
-        RAISE EXCEPTION "Employing is still Admin/Managing/Teaching"
-    ENDIF
+    IF (isAdmin_count + isManaging_count + isTeaching_count > 0) THEN
+        RAISE EXCEPTION "Employing is still Admin/Managing/Teaching";
+    END IF;
 
-    DELETE FROM Employees e WHERE e.eid = eid;
+    -- DELETE FROM Employees e WHERE e.eid = eid;
+    UPDATE Employees SET depart_date = departure_date WHERE e.eid = eid;
 
-END
+END;
 $$ LANGUAGE plpgsql

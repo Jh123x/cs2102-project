@@ -3,13 +3,13 @@ CREATE OR REPLACE PROCEDURE add_employee (
         address TEXT,
         phone TEXT,
         email TEXT,
-        join_date date,
+        join_date DATE,
         category TEXT, -- Manager / Admin / Instructor
         type TEXT, -- Full Time / Part Time
-        salary_amount numeric, -- hourly_rate for part-time and monthly_salary for full-time
+        salary_amount DEC(64, 2), -- hourly_rate for part-time and monthly_salary for full-time
         course_area TEXT[]
     ) AS $$
-DECLARE 
+DECLARE
     eid INTEGER;
 BEGIN
     -- Generate the next eid
@@ -32,14 +32,14 @@ BEGIN
         INSERT INTO FullTimeEmployees VALUES (eid, salary_amount);
     ELSE
         RAISE EXCEPTION "Type not found";
-    ENDIF;
+    END IF;
 
     -- Add into role specific table
     IF (category = "Manager") THEN
         INSERT INTO Managers VALUES (eid);
 
         -- Add them to the specified course area
-        FOR area IN course_area 
+        FOR area IN course_area
         LOOP
             INSERT INTO Course_areas VALUES (area, eid);
         END LOOP;
@@ -49,7 +49,7 @@ BEGIN
             RAISE EXCEPTION "Admin should not have course area";
     ELSE IF (category = "Instructor") THEN
         INSERT INTO Instructors VALUES (eid);
-        FOR area IN course_area 
+        FOR area IN course_area
         LOOP
             INSERT INTO Specializes VALUES (eid, area);
         END LOOP;
@@ -57,12 +57,9 @@ BEGIN
             INSERT INTO PartTimeInstructors VALUES (eid);
         ELSE IF (type = 'full-time') THEN
             INSERT INTO FullTimeInstructors VALUES (eid);
-        ENDIF;
+        END IF;
     ELSE
         RAISE EXCEPTION "Category not found";
-    ENDIF;
-
-    
-
-END
+    END IF;
+END;
 $$ LANGUAGE plpgsql;
