@@ -32,7 +32,7 @@ BEGIN
         INSERT INTO FullTimeEmployees VALUES (eid, salary_amount);
     ELSE
         RAISE EXCEPTION "Type not found";
-    ENDIF;
+    END IF;
 
     -- Add into role specific table
     IF (category = "Manager") THEN
@@ -57,9 +57,9 @@ BEGIN
             INSERT INTO PartTimeInstructors VALUES (eid);
         ELSE IF (type = 'full-time') THEN
             INSERT INTO FullTimeInstructors VALUES (eid);
-        ENDIF;
+        END IF;
     ELSE
         RAISE EXCEPTION "Category not found";
-    ENDIF;
+    END IF;
 END
 $$ LANGUAGE plpgsql;
