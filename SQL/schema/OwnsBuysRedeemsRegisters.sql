@@ -18,15 +18,21 @@ CREATE TABLE Buys (
 DROP TABLE IF EXISTS Redeems CASCADE;
 CREATE TABLE Redeems (
     date TIMESTAMP PRIMARY KEY,
-    sid INTEGER REFERENCES Sessions(sid),
     cust_id INTEGER NOT NULL,
-    package_id INTEGER NOT NULL
+    package_id INTEGER NOT NULL,
+    sid INTEGER,
+    launch_date DATE,
+    course_id INTEGER,
+    FOREIGN KEY(sid, launch_date, course_id) REFERENCES Sessions(id, launch_date, course_id)
 );
 DROP TABLE IF EXISTS Registers CASCADE;
 CREATE TABLE Registers (
     date TIMESTAMP PRIMARY KEY,
-    sid INTEGER NOT NULL REFERENCES Sessions(sid),
     cust_id INTEGER NOT NULL,
     number CHAR(16) NOT NULL,
+    sid INTEGER NOT NULL,
+    launch_date DATE,
+    course_id INTEGER,
+    FOREIGN KEY(sid, launch_date, course_id) REFERENCES Sessions(id, launch_date, course_id)
     FOREIGN KEY(cust_id, number) REFERENCES Owns (cust_id, number)
 );
