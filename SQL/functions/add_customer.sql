@@ -11,7 +11,7 @@ DECLARE
     curr_id INTEGER;
 BEGIN
     SELECT max(cust_id) + 1 INTO curr_id FROM Customers;
-    INSERT INTO Credit_cards (number, cvv, expiry_date) VALUES (number, cvv, expiry_date);
+    INSERT INTO CreditCards (number, cvv, expiry_date) VALUES (number, cvv, expiry_date);
     INSERT INTO Customers (cust_id, phone, address, name, email) VALUES (curr_id, phone, address, name, email);
     INSERT INTO Owns (cust_id, number, from_date) VALUES (cust_id, number, CURRENT_DATE());
 END;
