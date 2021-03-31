@@ -20,7 +20,7 @@ create table CourseOfferings (
     CHECK(fees >= 0),
     CHECK(start_date >= registration_deadline + INTEGER '10'),
 
-    PRIMARY KEY(launch_date, course_id),
+    PRIMARY KEY(launch_date, course_id, id),
     FOREIGN KEY(course_id) REFERENCES Courses on delete cascade,
     FOREIGN KEY(admin_id) REFERENCES Administrators on update cascade
 );
