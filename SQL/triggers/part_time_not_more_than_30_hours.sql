@@ -3,11 +3,11 @@ RETURNS TRIGGER AS $$
 DECLARE
     hours INTEGER;
 BEGIN
-    SELECT SUM(EXTRACT(epoch from (end_time - start_time)) / 3600.00) INTO hours
+    SELECT SUM(end_time - start_time) INTO hours
     FROM Sessions
     WHERE instructor_id = NEW.instructor_id;
 
-    IF (hours > 30) THEN 
+    IF (hours > 30) THEN
         RAISE EXCEPTION 'Part time Employee working too much';
     END IF;
 
