@@ -1,11 +1,79 @@
 CREATE OR REPLACE FUNCTION pay_salary()
 RETURNS TABLE (employee_id INTEGER, name TEXT, status TEXT,
     num_work_days INTEGER, num_work_hours INTEGER,
-    hourly_rate NUMERIC, monthly_salary NUMERIC, amount NUMERIC)
+    hourly_rate NUMERIC, monthly_salary NUMERIC, amount_paid NUMERIC)
 AS $$
 DECLARE
+    curs_part_time CURSOR FOR (
+        SELECT * FROM PartTimeEmployees NATURAL JOIN Employees;
+    );
+    curs_full_time CURSOR FOR (
+        SELECT * FROM FullTimeEmployees NATURAL JOIN Employees e
+        WHERE e.employee_depart_date IS NULL OR e.employee_depart_date >= DATE_TRUNC('month', NOW());
+    );
+    r RECORD;
 
+    first_work_day INTEGER;
+    last_work_day INTEGER;
+    num_days_in_month INTEGER;
 BEGIN
+    OPEN curs_part_time;
+    LOOP
+        FETCH curs_part_time INTO r;
+        EXIT WHEN NOT FOUND;
 
+        employee_id := r.employee_id;
+        name := r.name;
+        status := 'part-time';
+        num_work_days := NULL;
+
+        SELECT COALESCE(SUM(session_end_hour - session_start_hour), 0) INTO num_work_hours
+        FROM Sessions s
+        WHERE r.employee_id = s.instructor_id AND EXTRACT(MONTH FROM s.session_date) == EXTRACT(MONTH FROM CURRENT_DATE);
+
+        hourly_rate := r.employee_hourly_rate;
+        monthly_salary := NULL;
+
+        amount_paid := hourly_rate * num_work_hours;
+
+        INSERT INTO PaySlips(employee_id, payslip_date, payslip_amount, payslip_num_work_hours, payslip_num_work_days)
+        VALUES (employee_id, CURRENT_DATE, amount_paid, num_work_hours, num_work_days);
+        RETURN NEXT;
+    END LOOP;
+    CLOSE curs_part_time;
+
+    OPEN curs_full_time;
+    LOOP
+        FETCH curs_full_time INTO r;
+        EXIT WHEN NOT FOUND;
+
+        employee_id := r.employee_id;
+        name := r.name;
+        status := 'full-time';
+        num_work_hours := NULL;
+
+        num_days_in_month := EXTRACT(days FROM DATE_TRUNC('month', NOW()) + interval '1 month - 1 day');
+        IF r.employee_join_date < DATE_TRUNC('month', NOW()) THEN
+            first_work_day := 1;
+        ELSE
+            first_work_day := EXTRACT(days FROM r.employee_join_date - DATE_TRUNC('month', NOW()));
+        END IF
+        IF r.employee_depart_date IS NULL THEN
+            last_work_day := num_days_in_month;
+        ELSE
+            last_work_day := EXTRACT(days FROM r.employee_join_date - DATE_TRUNC('month', NOW()));
+        END IF
+        num_work_days := last_work_day - first_work_day + 1;
+
+        hourly_rate := NULL;
+        monthly_salary := r.employee_monthly_salary;
+
+        amount_paid := monthly_salary * num_work_days / num_days_in_month;
+
+        INSERT INTO PaySlips(employee_id, payslip_date, payslip_amount, payslip_num_work_hours, payslip_num_work_days)
+        VALUES (employee_id, CURRENT_DATE, amount_paid, num_work_hours, num_work_days);
+        RETURN NEXT;
+    END LOOP;
+    CLOSE curs_full_time;
 END;
 $$ LANGUAGE plpgsql;
