@@ -1,3 +1,4 @@
+DROP FUNCTION IF EXISTS customer_redeems_check CASCADE;
 CREATE OR REPLACE FUNCTION customer_redeems_check() RETURNS TRIGGER AS $$
     DECLARE
         redemptions_left INTEGER;
@@ -12,7 +13,6 @@ CREATE OR REPLACE FUNCTION customer_redeems_check() RETURNS TRIGGER AS $$
         RETURN NEW;
     END;
 $$ LANGUAGE plpgsql;
-
 
 CREATE TRIGGER customer_redeems_trigger
 BEFORE INSERT ON Redeems
