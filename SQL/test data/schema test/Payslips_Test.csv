@@ -6,6 +6,3 @@ employee_id,payslip_date,payslip_amount,payslip_num_work_hours,payslip_num_work_
 5,2021-03-31 00:00:00,=10*10,10,
 6,2021-03-31 00:00:00,3000,,10
 7,2021-03-31 00:00:00,4000,,10
-,,,,
-,,,,
-,,,,
