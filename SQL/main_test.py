@@ -345,11 +345,16 @@ if __name__ == "__main__":
         except Exception as e:
             logging.critical(f"Error with adding: {e}")
 
-        # Positive test cases
-        load_success_data('./test data/schema test', cursor)
+        ### TODO below
+        # Positive test cases for schema
+        # Run the negative test cases for schema
+        # Positive test cases for triggers
+        # Run the negative test cases for triggers
+        # Positive test cases for view
+        # Run the negative test cases for view
+        # Positive test cases for function
+        # Run the negative test cases for function
 
-        # TODO Run the negative test cases
-        load_fail_data('./test data/schema fail', cursor)
 
         # Commit
         db.commit()
