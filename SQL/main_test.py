@@ -46,6 +46,7 @@ def check_date(date_string: str) -> datetime.datetime:
 
 def order_correctly(header, data) -> str:
     """Fix the ordering of the dict"""
+    head2 = []
     acc = []
     for head in header:
         d = data[head]
@@ -54,15 +55,19 @@ def order_correctly(header, data) -> str:
             d = d
         elif c:
             d = f"'{c.strftime(r'%Y-%m-%d')}'"
+        elif '_num_work_' in head and not d.strip():
+            continue
         else:
             d = f"'{d}'"
         acc.append(d)
-    return f"""({', '.join(acc)})"""
+        head2.append(head)
+    return head2, f"""({', '.join(acc)})"""
 
 
 def generate_query(table_name: str, header: tuple, data: dict) -> str:
     """Generate the query based on header and data"""
-    return f"INSERT INTO {table_name}({', '.join(header)}) VALUES {order_correctly(header, data)};"
+    header, values = order_correctly(header, data)
+    return f"INSERT INTO {table_name}({', '.join(header)}) VALUES {values};"
 
 
 def get_query(path: str) -> str:
@@ -177,6 +182,24 @@ def setup_view(cursor, view_dir: str) -> None:
 
 
 # Test data functions
+def test_data(cursor, query: str, isPass: bool = True) -> bool:
+    """Test the query"""
+    msg = "Passed when it should fail"
+    p = True
+    try:
+        cursor.execute(query)
+    except Exception as e:
+        p = False
+        msg = e
+
+    # Flip if the target is to fail
+    if not isPass:
+        p = not p
+
+    # Return bool, err msg
+    return p, msg
+
+
 def load_success_data(test_path: str, cursor) -> list:
     """Load the data"""
 
@@ -199,12 +222,12 @@ def load_success_data(test_path: str, cursor) -> list:
         ('Course_Package_Test.csv', 'CoursePackages'),
         ('Specializes_Test.csv', 'Specializes'),
         ('Room_Test.csv', 'Rooms'),
-        # ('Session_Test.csv', 'Sessions'),
-        # ('Buys_Test.csv', 'Buys'),
-        # ('Redeem_Test.csv', 'Redeems'),
-        # ('Registers_Test.csv', 'Registers'),
-        # ('Cancels_Test.csv', 'Cancels'),
-        # ('Payslips_Test.csv', 'PaySlips'),
+        ('Session_Test.csv', 'Sessions'),
+        ('Buys_Test.csv', 'Buys'),
+        ('Redeem_Test.csv', 'Redeems'),
+        ('Registers_Test.csv', 'Registers'),
+        ('Cancels_Test.csv', 'Cancels'),
+        ('Payslips_Test.csv', 'PaySlips'),
     ]
 
     # Generate the file path
@@ -218,12 +241,49 @@ def load_success_data(test_path: str, cursor) -> list:
             if not "".join(item.values()):
                 continue
             q = generate_query(table, header, item)
-            try:
-                cursor.execute(q)
-            except Exception as e:
+            passed, msg = test_data(cursor, q)
+            if not passed:
                 logger.critical(
-                    f'Error with {os.path.basename(path)}: Row {index + 1}\nError: {e}\nQuery: {q}\nBreaking out of other testcases')
+                    f"Fail Testcase: Row {index + 1} of {os.path.basename(path)}\nQuery: {q}\nError: {msg}")
                 return
+
+
+def load_fail_data(test_path: str, cursor):
+    """Load the fail data"""
+    files = [
+
+    ]
+
+    # Generate the file path
+    file_paths = zip(map_with_dir(test_path, map(
+        lambda x: x[0], files)), map(lambda x: x[1], files))
+
+    # Load the data in order
+    for path, table in file_paths:
+
+        header, data = get_data(path)
+
+        for index, all_item in enumerate(data):
+
+            # If it is empty, skip it
+            if not "".join(all_item.values()):
+                continue
+
+            # Unpack the values
+            item, isPass, remarks = all_item[:-2], all_item[-2], all_item[-1]
+
+            # Generate and test query
+            q = generate_query(table, header, item)
+            passed, msg = test_data(cursor, q, isPass)
+
+            # If passed continue
+            if passed:
+                continue
+
+            # Throw an error
+            logger.critical(
+                f"Fail Testcase: Row {index + 1} of {os.path.basename(path)}\nQuery: {q}\nError: {msg}\n Remarks: {remarks}")
+            return
 
 
 # Parsing functions
@@ -289,6 +349,7 @@ if __name__ == "__main__":
         load_success_data('./test data/schema test', cursor)
 
         # TODO Run the negative test cases
+        load_fail_data('./test data/schema fail', cursor)
 
         # Commit
         db.commit()
