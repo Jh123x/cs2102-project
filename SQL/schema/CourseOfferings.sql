@@ -17,7 +17,7 @@ CREATE TABLE CourseOfferings (
     CHECK(offering_seating_capacity >= offering_num_target_registration),
     CHECK(offering_num_target_registration >= 0),
     CHECK(offering_fees >= 0),
-    CHECK(offering_registration_deadline >= offering_start_date + INTEGER '10'),
+    CHECK(offering_start_date >= offering_registration_deadline + INTEGER '10'),
 
     PRIMARY KEY(offering_launch_date, course_id),
     FOREIGN KEY(course_id) REFERENCES Courses ON DELETE CASCADE,
