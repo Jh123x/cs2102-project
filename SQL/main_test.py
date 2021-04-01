@@ -11,7 +11,7 @@ SETTINGS_DIRECTORY = "settings.cfg"
 
 # Make the logger
 logger = logging.Logger("Logs")
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 
 # DB functions
 def connect_db(host: str, port: int, user: str, password: str, dbname: str):
