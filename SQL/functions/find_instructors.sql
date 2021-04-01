@@ -16,11 +16,13 @@ BEGIN
     FROM Employees e NATURAL JOIN Specializes s NATURAL JOIN Courses c
     WHERE c.course_id = course_id
           AND NOT EXISTS (
-              SELECT 1 FROM Sessions s
-              WHERE s.date = session_date and s.employee_id = e.employee_id
-                    and s.session_start_hour <= session_start_hour <= session_end_hour;)
+                SELECT 1 FROM Sessions s
+                WHERE s.date = session_date AND s.employee_id = e.employee_id
+                AND s.session_start_hour <= session_start_hour <= session_end_hour;)
           AND (
-              SELECT SUM(end_time - start_time) INTO hours FROM Sessions s WHERE s.employee_id = e.employee_id;
+                SELECT COALESCE(SUM(end_time - start_time), 0) INTO hours FROM Sessions s
+                WHERE s.employee_id = e.employee_id
+                AND EXTRACT(MONTH FROM date) == EXTRACT(MONTH FROM CURRENT_DATE);
               ) < 30;
 END;
 $$ LANGUAGE plpgsql;

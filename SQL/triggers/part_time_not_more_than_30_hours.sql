@@ -3,9 +3,9 @@ RETURNS TRIGGER AS $$
 DECLARE
     hours INTEGER;
 BEGIN
-    SELECT SUM(end_time - start_time) INTO hours
+    SELECT COALESCE(SUM(end_time - start_time), 0) INTO hours
     FROM Sessions
-    WHERE instructor_id = NEW.instructor_id;
+    WHERE instructor_id = NEW.instructor_id AND EXTRACT(MONTH FROM date) == EXTRACT(MONTH FROM CURRENT_DATE);
 
     IF (hours > 30) THEN
         RAISE EXCEPTION 'Part time Employee working too much';
