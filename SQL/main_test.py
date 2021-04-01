@@ -14,33 +14,33 @@ SETTINGS_DIRECTORY = "settings.cfg"
 
 # Make the logger
 logger = logging.Logger("Logs")
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.NOTSET)
 
 FILES_TEST_MAP = [
-        ('Employee_Test.csv', "Employees"),
-        ('Customers_Test.csv', 'Customers'),
-        ('Full_Time_Employee_Test.csv', 'FullTimeEmployees'),
-        ('Part_Time_Employee_Test.csv', 'PartTimeEmployees'),
-        ('Instructor_Test.csv', 'Instructors'),
-        ('Admin_Test.csv', 'Administrators'),
-        ('Manager_Test.csv', 'Managers'),
-        ('Full_Time_Instructors_Test.csv', 'FullTimeInstructors'),
-        ('Part_Time_Instructors_Test.csv', 'PartTimeInstructors'),
-        ('Credit_Card_Test.csv', 'CreditCards'),
-        ('Owns_Test.csv', 'Owns'),
-        ('Course_Area_Test.csv', 'CourseAreas'),
-        ('Course_Test.csv', 'Courses'),
-        ('Course_Offering_Test.csv', 'CourseOfferings'),
-        ('Course_Package_Test.csv', 'CoursePackages'),
-        ('Specializes_Test.csv', 'Specializes'),
-        ('Room_Test.csv', 'Rooms'),
-        ('Session_Test.csv', 'Sessions'),
-        ('Buys_Test.csv', 'Buys'),
-        ('Redeem_Test.csv', 'Redeems'),
-        ('Registers_Test.csv', 'Registers'),
-        ('Cancels_Test.csv', 'Cancels'),
-        ('Payslips_Test.csv', 'PaySlips'),
-    ]
+    ('Employee_Test.csv', "Employees"),
+    ('Customers_Test.csv', 'Customers'),
+    ('Full_Time_Employee_Test.csv', 'FullTimeEmployees'),
+    ('Part_Time_Employee_Test.csv', 'PartTimeEmployees'),
+    ('Instructor_Test.csv', 'Instructors'),
+    ('Admin_Test.csv', 'Administrators'),
+    ('Manager_Test.csv', 'Managers'),
+    ('Full_Time_Instructors_Test.csv', 'FullTimeInstructors'),
+    ('Part_Time_Instructors_Test.csv', 'PartTimeInstructors'),
+    ('Credit_Card_Test.csv', 'CreditCards'),
+    ('Owns_Test.csv', 'Owns'),
+    ('Course_Area_Test.csv', 'CourseAreas'),
+    ('Course_Test.csv', 'Courses'),
+    ('Course_Offering_Test.csv', 'CourseOfferings'),
+    ('Course_Package_Test.csv', 'CoursePackages'),
+    ('Specializes_Test.csv', 'Specializes'),
+    ('Room_Test.csv', 'Rooms'),
+    ('Session_Test.csv', 'Sessions'),
+    ('Buys_Test.csv', 'Buys'),
+    ('Redeem_Test.csv', 'Redeems'),
+    ('Registers_Test.csv', 'Registers'),
+    ('Cancels_Test.csv', 'Cancels'),
+    ('Payslips_Test.csv', 'PaySlips'),
+]
 
 
 # DB functions
@@ -267,19 +267,21 @@ def load_fail_data(test_path: str, cursor):
         if not os.path.isfile(path):
             continue
 
-        header, data = get_data(path)
+        _, data = get_data(path)
 
-        for index, all_item in enumerate(data):
+        for index, item in enumerate(data):
 
             # If it is empty, skip it
-            if not "".join(all_item.values()):
+            if not "".join(item.values()):
                 continue
 
             # Unpack the values
-            item, isPass, remarks = all_item[:-2], all_item[-2], all_item[-1]
+            isPass, remarks = item['outcome'] == 'pass', item['reason']
+            del item['outcome']
+            del item['reason']
 
             # Generate and test query
-            q = generate_query(table, header, item)
+            q = generate_query(table, item.keys(), item)
             passed, msg = test_data(cursor, q, isPass)
 
             # If passed continue
@@ -297,7 +299,7 @@ def load_custom_testcases(test_path: str, cursor) -> None:
 
     # Generate the file path
     file_paths = map_with_dir(test_path, get_files(test_path))
-    
+
     # Load each path
     for path in file_paths:
 
@@ -315,13 +317,16 @@ def load_custom_testcases(test_path: str, cursor) -> None:
 
         # Generate query
         q = generate_query(table_name, data.keys(), data)
-        
+
         # Test the query
         passed, msg = test_data(cursor, q, isPass)
         if not passed:
-            logger.critical(f'Failed test: Test file {os.path.basename(path)}\nQuery: {q}\nError: {msg}')
+            logger.critical(
+                f'Failed test: Test file {os.path.basename(path)}\nQuery: {q}\nError: {msg}')
 
 # Parsing functions
+
+
 def parse_constants(host: str, port: str, dbname: str) -> tuple:
     """Parse the constants"""
     return host, int(port), dbname
@@ -382,24 +387,45 @@ if __name__ == "__main__":
 
         # Commit
         db.commit()
-        
+
         # Positive test cases for schema (Cumulative)
         load_success_data('./test data/schema test', cursor)
+        db.rollback()
 
         # Run the negative test cases for schema Data TODO
         load_fail_data('./test data/schema fail', cursor)
+        db.rollback()
 
-        ### Other TODO below
+        # Other TODO below
         # Positive test cases for triggers
+
+        db.rollback()
+
         # Run the negative test cases for triggers
+
+        db.rollback()
+
         # Positive test cases for view
+
+        db.rollback()
+
         # Run the negative test cases for view
+
+        db.rollback()
+
         # Positive test cases for function
+
+        db.rollback()
+
         # Run the negative test cases for function
 
-        # Load Custom Test cases TODO
+        db.rollback()
+
+        # Load Custom Test cases
         load_custom_testcases("./test data/custom test cases", cursor)
+        db.rollback()
 
         # Commit
         db.commit()
         
+    print("Test Completed")
