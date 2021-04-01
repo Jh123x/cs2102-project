@@ -1,3 +1,10 @@
+/*
+This routine is used to change the instructor for a course session.
+The inputs to the routine include the following:
+    course offering identifier, session number, and identifier of the new instructor.
+If the course session has not yet started and the update request is valid,
+    the routine will process the request with the necessary updates.
+*/
 CREATE OR REPLACE PROCEDURE update_instructor(
     course_offering_id INTEGER,
     session_number INTEGER,
@@ -6,7 +13,6 @@ CREATE OR REPLACE PROCEDURE update_instructor(
 DECLARE
     session_date DATE;
     session_start_time TIMESTAMP;
-    is_valid_instructor INTEGER;
 BEGIN
     SELECT s.date, s.start_time INTO session_date, session_start_time
     FROM Sessions s
@@ -16,19 +22,8 @@ BEGIN
         RAISE EXCEPTION 'Session already started! Cannot update instructor!';
     END IF;
 
-
-    /*
-        Can simplify the whole logic below to:
-            IF new_instructor_employee_id NOT IN (SELECT employee_id FROM find_instructors(course_id, session_date, session_start_hour)) THEN
-                RAISE EXCEPTION 'This instructor cannot teach this session!';
-            END IF;
-    */
-
-    SELECT COUNT(*) INTO is_valid_instructor
-    FROM find_instructors(course_id, session_date, session_start_hour)
-    WHERE employee_id = new_instructor_employee_id;
-
-    IF is_valid_instructor = 0 THEN
+    IF new_instructor_employee_id NOT IN
+        (SELECT employee_id FROM find_instructors(course_id, session_date, session_start_hour)) THEN
         RAISE EXCEPTION 'This instructor cannot teach this session!';
     END IF;
 END;
