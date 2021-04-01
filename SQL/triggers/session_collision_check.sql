@@ -1,4 +1,4 @@
--- Make sure no 2 sessions are using the same room at the same time.
+/* Make sure no 2 sessions are using the same room at the same time. */
 CREATE OR REPLACE FUNCTION session_collision_check()
 RETURNS TRIGGER AS $$
 DECLARE
@@ -14,7 +14,7 @@ BEGIN
     END IF;
 
     /* Find collisions */
-    SELECT COUNT(*) INTO collisions 
+    SELECT COUNT(*) INTO collisions
     FROM Sessions s
     WHERE NEW.date = s.date
         AND (
@@ -22,7 +22,7 @@ BEGIN
             OR s.start_time BETWEEN NEW.start_time AND NEW.end_time
         )
         AND (
-            NEW.course_id = s.course_id 
+            NEW.course_id = s.course_id
             OR NEW.room_id = s.room_id
         ); /* Check if it is the same course at the same time or if it is in the same room */
 

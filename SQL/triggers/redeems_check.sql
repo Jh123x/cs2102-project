@@ -1,6 +1,6 @@
--- Check if the customer purchased the package when 
--- inserting into redeems table
-CREATE OR REPLACE FUNCTION redeems_check() 
+/* Check if the customer purchased the package when */
+/* inserting into redeems table */
+CREATE OR REPLACE FUNCTION redeems_check()
 RETURNS TRIGGER AS $$
 BEGIN
     IF (SELECT SUM(num_remaining_redemptions) FROM Buys WHERE customer_id = NEW.customer_id) <= 0 THEN
