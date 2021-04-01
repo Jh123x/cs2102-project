@@ -2,8 +2,8 @@ DROP TABLE IF EXISTS Sessions CASCADE;
 CREATE TABLE Sessions (
     session_id INTEGER NOT NULL,
     date DATE NOT NULL,
-    start_time TIMESTAMP NOT NULL,
-    end_time TIMESTAMP NOT NULL,
+    start_time INTEGER NOT NULL,
+    end_time INTEGER NOT NULL,
     course_id INTEGER NOT NULL,
     launch_date DATE NOT NULL,
     room_id INTEGER REFERENCES Rooms,
@@ -13,10 +13,10 @@ CREATE TABLE Sessions (
     PRIMARY KEY(session_id, course_id, launch_date),
     FOREIGN KEY(course_id, launch_date) REFERENCES CourseOfferings(course_id, launch_date) ON DELETE CASCADE,
 
-    -- Check if the session is conducted between 9am - 12pm to 2pm - 6pm and between
+    /* Check if the session is conducted between 9am - 12pm to 2pm - 6pm and between */
     CHECK(to_char(date, 'Day') IN ('Monday','Tuesday', 'Wednesday','Thursday','Friday')),
-    CHECK((9 <= EXTRACT(HOUR FROM start_time) AND EXTRACT(HOUR FROM start_time) <= 12) OR (14 <= EXTRACT(HOUR FROM start_time) AND EXTRACT(HOUR FROM start_time) <= 18)),
-    CHECK((9 <= EXTRACT(HOUR FROM end_time) AND EXTRACT(HOUR FROM end_time) <= 12) OR (14 <= EXTRACT(HOUR FROM end_time) AND EXTRACT(HOUR FROM end_time) <= 18)),
+    CHECK((9 <= start_time <= 12) OR (14 <= start_time <= 18)),
+    CHECK((9 <= end_time <= 12) OR (14 <= end_time <= 18)),
     CHECK(end_time > start_time)
 );
 
@@ -29,7 +29,7 @@ CREATE TABLE Cancels (
     session_id INTEGER NOT NULL,
     launch_date DATE NOT NULL,
     customer_id INTEGER NOT NULL REFERENCES Customers(customer_id),
-    
+
     CHECK(refund_amt >= 0),
     FOREIGN KEY (course_id, session_id, launch_date) REFERENCES Sessions(course_id, session_id, launch_date) MATCH FULL
 );
