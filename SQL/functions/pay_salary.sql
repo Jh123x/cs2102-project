@@ -5,11 +5,11 @@ RETURNS TABLE (employee_id INTEGER, name TEXT, status TEXT,
 AS $$
 DECLARE
     curs_part_time CURSOR FOR (
-        SELECT * FROM PartTimeEmployees NATURAL JOIN Employees;
+        SELECT * FROM PartTimeEmployees NATURAL JOIN Employees
     );
     curs_full_time CURSOR FOR (
         SELECT * FROM FullTimeEmployees NATURAL JOIN Employees e
-        WHERE e.employee_depart_date IS NULL OR e.employee_depart_date >= DATE_TRUNC('month', NOW());
+        WHERE e.employee_depart_date IS NULL OR e.employee_depart_date >= DATE_TRUNC('month', NOW())
     );
     r RECORD;
 
@@ -57,12 +57,12 @@ BEGIN
             first_work_day := 1;
         ELSE
             first_work_day := EXTRACT(days FROM r.employee_join_date - DATE_TRUNC('month', NOW()));
-        END IF
+        END IF;
         IF r.employee_depart_date IS NULL THEN
             last_work_day := num_days_in_month;
         ELSE
             last_work_day := EXTRACT(days FROM r.employee_join_date - DATE_TRUNC('month', NOW()));
-        END IF
+        END IF;
         num_work_days := last_work_day - first_work_day + 1;
 
         hourly_rate := NULL;
