@@ -16,6 +16,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER customer_redeems_trigger
+CREATE TRIGGER customer_redemption_trigger
 BEFORE INSERT ON Redeems
 FOR EACH ROW EXECUTE FUNCTION customer_redeems_check();
