@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 import os
+import csv
 import logging
 import psycopg2
 import configparser
@@ -23,6 +24,26 @@ def connect_db(host: str, port: int, user: str, password: str, dbname: str):
 
 
 # General functions
+def get_data(csv_path: str) -> tuple:
+    """Get data from csv"""
+    data = []
+    with open(csv_path) as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            data.append(row)
+    return tuple(data[0].keys()), data
+
+def order_correctly(header, data) -> str:
+    """Fix the ordering of the dict"""
+    acc = []
+    for head in header:
+        acc.append(data[head])
+    return f"""({', '.join(map(lambda x: x if x.isdigit() else f"'{x}'" , acc))})"""
+
+def generate_query(table_name: str, header:tuple, data: dict) -> str:
+    """Generate the query based on header and data"""
+    return f"INSERT INTO {table_name}({', '.join(header)}) VALUES {order_correctly(header, data)};"
+
 def get_query(path: str) -> str:
     """Get the query from the file"""
     with open(path) as file:
@@ -133,6 +154,55 @@ def setup_view(cursor, view_dir: str) -> None:
     logger.debug("Views created")
 
 
+# Test data functions
+def load_success_data(test_path:str, cursor) -> list:
+    """Load the data"""
+
+    # Order to load the data as they are dependent on each other
+    files = [
+        ('Employee_Test.csv', "Employees"),
+        ('Customers_Test.csv', 'Customers'),
+        ('Full_Time_Employee_Test.csv', 'FullTimeEmployees'),
+        ('Part_Time_Employee_Test.csv', 'PartTimeEmployees'),
+        ('Instructor_Test.csv', 'Instructors'),
+        ('Admin_Test.csv', 'Administrators'),
+        ('Manager_Test.csv', 'Managers'),
+        ('Full_Time_Instructors_Test.csv', 'FullTimeInstructors.csv'),
+        ('Part_Time_Instructors_Test.csv', 'PartTimeInstructors.csv'),
+        ('Credit_Card_Test.csv', 'CreditCards'),
+        ('Owns_Test.csv', 'Owns'),
+        ('Course_Area_Test.csv', 'CourseAreas'),
+        ('Course_Test.csv', 'Courses'),
+        ('Course_Offering_Test.csv', 'CourseOfferings'),
+        ('Course_Package_Test.csv', 'CoursePackages'),
+        ('Specializes_Test.csv', 'Specializes'),
+        ('Room_Test.csv', 'Rooms'),
+        ('Session_Test.csv', 'Sessions'),
+        ('Buys_Test.csv', 'Buys'),
+        ('Redeem_Test.csv', 'Redeems'),
+        ('Registers_Test.csv', 'Registers'),
+        ('Cancels_Test.csv', 'Cancels'),
+        ('Payslips_Test.csv', 'PaySlips'),
+    ]
+    
+    # Generate the file path
+    file_paths = zip(map_with_dir(test_path, map(lambda x: x[0], files)), map(lambda x: x[1], files))
+
+    # Load the data in order
+    for path, table in file_paths:
+        header, data = get_data(path)
+        for index, item in enumerate(data):
+            if not "".join(item.values()):
+                continue
+            q = generate_query(table, header, item)
+            try:
+                cursor.execute(q)
+            except Exception as e:
+                logger.critical(f'Error with {os.path.basename(path)}: Row {index + 1}\nError: {e}\nBreaking out of other testcases')
+                return
+
+
+
 # Parsing functions
 def parse_constants(host: str, port: str, dbname: str) -> tuple:
     """Parse the constants"""
@@ -191,7 +261,12 @@ if __name__ == "__main__":
         except Exception as e:
             logging.critical(f"Error with adding: {e}")
 
-        # TODO Run the test cases
+
+        # Positive test cases
+        load_success_data('./test data/schema test', cursor)
+
+        # TODO Run the negative test cases
+
 
         # Commit
         db.commit()
