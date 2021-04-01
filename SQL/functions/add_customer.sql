@@ -8,6 +8,8 @@ CREATE OR REPLACE FUNCTION add_customer (
     credit_card_expiry_date DATE
 )
 RETURNS TABLE (customer_id INTEGER) AS $$
+DECLARE
+    new_customer RECORD;
 BEGIN
     /* Insert values into credit card */
     INSERT INTO CreditCards
@@ -29,5 +31,7 @@ BEGIN
     (customer_id, credit_card_number, own_from_date)
     VALUES
     (customer_id, credit_card_number, CURRENT_DATE);
+
+    RETURN NEXT;
 END;
 $$ LANGUAGE plpgsql;
