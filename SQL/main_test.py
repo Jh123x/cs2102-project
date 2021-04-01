@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 import os
+import csv
 import logging
+import datetime
 import psycopg2
 import configparser
 from getpass import getpass
@@ -13,6 +15,7 @@ SETTINGS_DIRECTORY = "settings.cfg"
 logger = logging.Logger("Logs")
 logger.setLevel(logging.DEBUG)
 
+
 # DB functions
 def connect_db(host: str, port: int, user: str, password: str, dbname: str):
     """Connect to the database and return the database object"""
@@ -23,6 +26,45 @@ def connect_db(host: str, port: int, user: str, password: str, dbname: str):
 
 
 # General functions
+def get_data(csv_path: str) -> tuple:
+    """Get data from csv"""
+    data = []
+    with open(csv_path) as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            data.append(row)
+    return tuple(data[0].keys()), data
+
+
+def check_date(date_string: str) -> datetime.datetime:
+    """Check if the format is correct"""
+    try:
+        return datetime.datetime.strptime(date_string, r"%d/%m/%Y")
+    except Exception as e:
+        return False
+
+
+def order_correctly(header, data) -> str:
+    """Fix the ordering of the dict"""
+    acc = []
+    for head in header:
+        d = data[head]
+        c = check_date(d)
+        if d.isdigit() and 'credit' not in head:
+            d = d
+        elif c:
+            d = f"'{c.strftime(r'%Y-%m-%d')}'"
+        else:
+            d = f"'{d}'"
+        acc.append(d)
+    return f"""({', '.join(acc)})"""
+
+
+def generate_query(table_name: str, header: tuple, data: dict) -> str:
+    """Generate the query based on header and data"""
+    return f"INSERT INTO {table_name}({', '.join(header)}) VALUES {order_correctly(header, data)};"
+
+
 def get_query(path: str) -> str:
     """Get the query from the file"""
     with open(path) as file:
@@ -80,7 +122,8 @@ def setup_schema(cursor, schema_dir: str) -> None:
     ]
 
     # Run the query
-    execute_query(cursor, map_with_dir(schema_dir, map(lambda x: f"{x}.sql", filenames)))
+    execute_query(cursor, map_with_dir(
+        schema_dir, map(lambda x: f"{x}.sql", filenames)))
     logger.debug("Schema added")
 
 
@@ -94,7 +137,6 @@ def drop_triggers(cursor, trigger_dir: str) -> None:
 
 def setup_triggers(cursor, trigger_dir: str) -> None:
     """Set up the triggers"""
-
     logger.debug("Setting up triggers")
     trigger_files = get_files(trigger_dir)
     execute_query(cursor, map_with_dir(trigger_dir, trigger_files))
@@ -105,7 +147,8 @@ def setup_triggers(cursor, trigger_dir: str) -> None:
 def drop_functions(cursor, function_dir: str) -> None:
     """Remove the functions"""
     logger.debug("Dropping functions")
-    execute_query(cursor, map_with_dir(function_dir, ["drop_all_functions.sql"]))
+    execute_query(cursor, map_with_dir(
+        function_dir, ["drop_all_functions.sql"]))
     logger.debug("Functions dropped")
 
 
@@ -131,6 +174,56 @@ def setup_view(cursor, view_dir: str) -> None:
     view_files = get_files(view_dir)
     execute_query(cursor, map_with_dir(view_dir, view_files))
     logger.debug("Views created")
+
+
+# Test data functions
+def load_success_data(test_path: str, cursor) -> list:
+    """Load the data"""
+
+    # Order to load the data as they are dependent on each other
+    files = [
+        ('Employee_Test.csv', "Employees"),
+        ('Customers_Test.csv', 'Customers'),
+        ('Full_Time_Employee_Test.csv', 'FullTimeEmployees'),
+        ('Part_Time_Employee_Test.csv', 'PartTimeEmployees'),
+        ('Instructor_Test.csv', 'Instructors'),
+        ('Admin_Test.csv', 'Administrators'),
+        ('Manager_Test.csv', 'Managers'),
+        ('Full_Time_Instructors_Test.csv', 'FullTimeInstructors'),
+        ('Part_Time_Instructors_Test.csv', 'PartTimeInstructors'),
+        ('Credit_Card_Test.csv', 'CreditCards'),
+        ('Owns_Test.csv', 'Owns'),
+        ('Course_Area_Test.csv', 'CourseAreas'),
+        ('Course_Test.csv', 'Courses'),
+        ('Course_Offering_Test.csv', 'CourseOfferings'),
+        ('Course_Package_Test.csv', 'CoursePackages'),
+        ('Specializes_Test.csv', 'Specializes'),
+        ('Room_Test.csv', 'Rooms'),
+        # ('Session_Test.csv', 'Sessions'),
+        # ('Buys_Test.csv', 'Buys'),
+        # ('Redeem_Test.csv', 'Redeems'),
+        # ('Registers_Test.csv', 'Registers'),
+        # ('Cancels_Test.csv', 'Cancels'),
+        # ('Payslips_Test.csv', 'PaySlips'),
+    ]
+
+    # Generate the file path
+    file_paths = zip(map_with_dir(test_path, map(
+        lambda x: x[0], files)), map(lambda x: x[1], files))
+
+    # Load the data in order
+    for path, table in file_paths:
+        header, data = get_data(path)
+        for index, item in enumerate(data):
+            if not "".join(item.values()):
+                continue
+            q = generate_query(table, header, item)
+            try:
+                cursor.execute(q)
+            except Exception as e:
+                logger.critical(
+                    f'Error with {os.path.basename(path)}: Row {index + 1}\nError: {e}\nQuery: {q}\nBreaking out of other testcases')
+                return
 
 
 # Parsing functions
@@ -159,7 +252,8 @@ if __name__ == "__main__":
     const = parser["CONSTANTS"]
     HOST, PORT, DBNAME = parse_constants(**parser["CONSTANTS"])
     user, password = parse_credentials(**parser["CREDENTIALS"])
-    schema_dir, function_dir, trigger_dir, view_dir = parse_dir(**parser["DIRECTORIES"])
+    schema_dir, function_dir, trigger_dir, view_dir = parse_dir(
+        **parser["DIRECTORIES"])
 
     # Check if username exists
     if not user:
@@ -180,7 +274,7 @@ if __name__ == "__main__":
             drop_functions(cursor, function_dir)
             drop_view(cursor, view_dir)
             drop_schema(cursor, schema_dir)
-        except Exception as e: 
+        except Exception as e:
             logging.critical(f"Error with Dropping: {e}")
 
         try:
@@ -191,7 +285,10 @@ if __name__ == "__main__":
         except Exception as e:
             logging.critical(f"Error with adding: {e}")
 
-        # TODO Run the test cases
+        # Positive test cases
+        load_success_data('./test data/schema test', cursor)
+
+        # TODO Run the negative test cases
 
         # Commit
         db.commit()
