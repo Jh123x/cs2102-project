@@ -2,7 +2,7 @@ DROP TABLE IF EXISTS Owns CASCADE;
 CREATE TABLE Owns (
     customer_id INTEGER NOT NULL REFERENCES Customers,
     credit_card_number CHAR(16) NOT NULL REFERENCES CreditCards,
-    own_from_date DATE NOT NULL,
+    own_from_date TIMESTAMP NOT NULL,
     PRIMARY KEY(customer_id, credit_card_number)
 );
 
