@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 import os
+import logging
 import psycopg2
 import configparser
-import logging
 from getpass import getpass
 
 
@@ -11,7 +11,7 @@ SETTINGS_DIRECTORY = "settings.cfg"
 
 # Make the logger
 logger = logging.Logger("Logs")
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 
 # DB functions
 def connect_db(host: str, port: int, user: str, password: str, dbname: str):
@@ -40,7 +40,13 @@ def execute_query(cursor, query_paths: list) -> None:
     """Read query from list of files and execute them"""
     for path in query_paths:
         query = get_query(path)
-        cursor.execute(query)
+        if not query.strip():
+            logging.info(f"File {path} is empty, skipping")
+            continue
+        try:
+            cursor.execute(query)
+        except Exception as e:
+            raise ValueError(f"Query: at {path} has error: {e}")
 
 
 def map_with_dir(dirname: str, filenames: list) -> list:
@@ -74,7 +80,7 @@ def setup_schema(cursor, schema_dir: str) -> None:
     ]
 
     # Run the query
-    execute_query(cursor, map_with_dir(schema_dir, filenames))
+    execute_query(cursor, map_with_dir(schema_dir, map(lambda x: f"{x}.sql", filenames)))
     logger.debug("Schema added")
 
 
@@ -105,10 +111,10 @@ def drop_functions(cursor, function_dir: str) -> None:
 
 def setup_functions(cursor, function_dir: str) -> None:
     """Create the functions"""
-    logger.debug("Setting up triggers")
+    logger.debug("Setting up Functions")
     function_files = get_files(function_dir)
     execute_query(cursor, map_with_dir(function_dir, function_files))
-    logger.debug("Triggers Added")
+    logger.debug("Functions Added")
 
 
 # Views
@@ -145,13 +151,7 @@ def parse_dir(schemas: str, functions: str, triggers: str, views: str) -> tuple:
 
 if __name__ == "__main__":
     # Main code for the test cases
-    print(
-        """
-        Connect to NUS Posgresql
-        Make sure you are on SoC VPN
-        Not sure if it will work outside SoC
-        """
-    )
+    print("Loading Test")
 
     # Parse the config file
     parser = configparser.ConfigParser()
@@ -175,14 +175,21 @@ if __name__ == "__main__":
         cursor = db.cursor()
 
         # Setup the sql env
-        drop_triggers(cursor, trigger_dir)
-        drop_functions(cursor, function_dir)
-        drop_view(cursor, view_dir)
-        drop_schema(cursor, schema_dir)
-        setup_schema(cursor, schema_dir)
-        setup_view(cursor, view_dir)
-        setup_functions(cursor, function_dir)
-        setup_triggers(cursor, trigger_dir)
+        try:
+            drop_triggers(cursor, trigger_dir)
+            drop_functions(cursor, function_dir)
+            drop_view(cursor, view_dir)
+            drop_schema(cursor, schema_dir)
+        except Exception as e: 
+            logging.critical(f"Error with Dropping: {e}")
+
+        try:
+            setup_schema(cursor, schema_dir)
+            setup_view(cursor, view_dir)
+            setup_functions(cursor, function_dir)
+            setup_triggers(cursor, trigger_dir)
+        except Exception as e:
+            logging.critical(f"Error with adding: {e}")
 
         # TODO Run the test cases
 

@@ -32,13 +32,13 @@ BEGIN
             FROM Sessions s
             WHERE s.session_date = session_date 
                 AND s.instructor_id = e.employee_id
-                AND s.session_start_hour <= session_start_hour <= session_end_hour
+                AND (s.session_start_hour <= session_start_hour AND session_start_hour <= session_end_hour)
         )
         AND (
             SELECT COALESCE(SUM(session_end_hour - session_start_hour), 0)
             FROM Sessions s
             WHERE s.instructor_id = e.employee_id
-                AND EXTRACT(MONTH FROM session_date) = EXTRACT(MONTH FROM CURRENT_DATE);
+                AND EXTRACT(MONTH FROM session_date) = EXTRACT(MONTH FROM CURRENT_DATE)
         ) < 30;
 END;
 $$ LANGUAGE plpgsql;

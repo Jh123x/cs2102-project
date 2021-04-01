@@ -30,6 +30,9 @@ DECLARE
     );
     r RECORD;
     cur_date DATE;
+    hour INTEGER;
+    arr INTEGER[] := ARRAY[9,10,11,14,15,16,17];
+    
 BEGIN
     OPEN curs;
     LOOP
@@ -47,8 +50,7 @@ BEGIN
                     AND EXTRACT(MONTH FROM date) == EXTRACT(MONTH FROM CURRENT_DATE);
             available_hours := '{}';
 
-            FOREACH hour IN ARRAY[9, 10, 11, 14，15，16，17]
-            LOOP
+            FOREACH hour IN ARRAY arr LOOP
                 IF new_instructor_employee_id IN
                     (SELECT employee_id FROM find_instructors(course_id, cur_date, hour)) THEN
                     available_hours := array_append(available_hours, hour);

@@ -15,13 +15,15 @@ CREATE OR REPLACE FUNCTION add_course_offering (
     course_id INTEGER,
     admin_id INTEGER
 )
-RETURNS TABLE (offering_launch_date DATE) AS $$
+RETURNS DATE AS $$
 DECLARE
-    new_package RECORD;
+    new_package DATE;
 BEGIN
     INSERT INTO CourseOfferings
     (offering_launch_date, offering_fees, offering_registration_deadline, offering_num_target_registration, offering_seating_capacity, course_id, admin_id)
     VALUES
-    (offering_launch_date, offering_fees, offering_registration_deadline, offering_num_target_registration, offering_seating_capacity, course_id, admin_id);
+    (offering_launch_date, offering_fees, offering_registration_deadline, offering_num_target_registration, offering_seating_capacity, course_id, admin_id)
+    RETURNING offering_launch_date into new_package;
+    RETURN new_package;
 END;
 $$ LANGUAGE plpgsql;
