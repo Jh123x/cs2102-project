@@ -1,0 +1,14 @@
+customer_id,customer_phone,customer_address,customer_name,customer_email,outcome,reason
+1,81234567,Jurong,Karla,Karla@gmail.com,pass,
+2,82345678,Yishun,Samual,Samual@gmail.com,pass,
+3,83456789,Changi,Taren,Taren@gmail.com,pass,
+4,84567890,Expo,Debi,Debi@gmail.com,pass,
+5,85678901,Jurong,Aisha,Aisha@gmail.com,pass,
+6,86789012,Pasir Ris,Kesha,Kesha@gmail.com,pass,
+7,87890123,Bugis,Liane,Liane@gmail.com,pass,
+8,88901234,Jurong,Cuc,Cuc@gmail.com,pass,
+9,89012345,Yishun,Tara ,Tara@gmail.com,pass,
+10,80123456,Changi,Natalya,Natalya@gmail.com,pass,
+10,90953380,Jurong,Jack,Jack@gmail.com,fail,cust_id is unique
+11,0,Yishun,Jill ,Jill@gmail.com,fail,phone number > 0
+12,89118548,Changi,Helen,Helen~.com,fail,email must include @
