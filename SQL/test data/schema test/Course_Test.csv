@@ -1,11 +1,10 @@
-﻿course_id,title,course_description,duration,course_area_name ,outcome,reason
-1,Linear Algebra,,2,Maths,pass,
-2,Statistics,,3,Maths,pass,
-3,Computer Security,,2,Security,pass,
-4,Database,,4,Database ,pass,
-5,Operatin System,,7,Computing,pass,
-6,Web Security,,5,Security,pass,
-7,Machine Learning,,6,Computing,pass,
-8,Computational Thinking,,6,Computing,pass,
-9,Communication,,8,English,pass,
-10,Communication,,4,English,fail,not unique course title
+course_id,course_title,course_description,course_duration,course_area_name 
+1,Linear Algebra,cool subject,2,Maths
+2,Statistics,cool subject,3,Maths
+3,Computer Security,cool subject,2,Security
+4,Database,cool subject,4,Database
+5,Operatin System,cool subject,7,Computing
+6,Web Security,cool subject,5,Security
+7,Machine Learning,cool subject,6,Computing
+8,Computational Thinking,cool subject,6,Computing
+9,Communication,cool subject,8,English
