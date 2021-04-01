@@ -15,6 +15,32 @@ SETTINGS_DIRECTORY = "settings.cfg"
 logger = logging.Logger("Logs")
 logger.setLevel(logging.DEBUG)
 
+FILES_TEST_MAP = [
+        ('Employee_Test.csv', "Employees"),
+        ('Customers_Test.csv', 'Customers'),
+        ('Full_Time_Employee_Test.csv', 'FullTimeEmployees'),
+        ('Part_Time_Employee_Test.csv', 'PartTimeEmployees'),
+        ('Instructor_Test.csv', 'Instructors'),
+        ('Admin_Test.csv', 'Administrators'),
+        ('Manager_Test.csv', 'Managers'),
+        ('Full_Time_Instructors_Test.csv', 'FullTimeInstructors'),
+        ('Part_Time_Instructors_Test.csv', 'PartTimeInstructors'),
+        ('Credit_Card_Test.csv', 'CreditCards'),
+        ('Owns_Test.csv', 'Owns'),
+        ('Course_Area_Test.csv', 'CourseAreas'),
+        ('Course_Test.csv', 'Courses'),
+        ('Course_Offering_Test.csv', 'CourseOfferings'),
+        ('Course_Package_Test.csv', 'CoursePackages'),
+        ('Specializes_Test.csv', 'Specializes'),
+        ('Room_Test.csv', 'Rooms'),
+        ('Session_Test.csv', 'Sessions'),
+        ('Buys_Test.csv', 'Buys'),
+        ('Redeem_Test.csv', 'Redeems'),
+        ('Registers_Test.csv', 'Registers'),
+        ('Cancels_Test.csv', 'Cancels'),
+        ('Payslips_Test.csv', 'PaySlips'),
+    ]
+
 
 # DB functions
 def connect_db(host: str, port: int, user: str, password: str, dbname: str):
@@ -46,6 +72,7 @@ def check_date(date_string: str) -> datetime.datetime:
 
 def order_correctly(header, data) -> str:
     """Fix the ordering of the dict"""
+    head2 = []
     acc = []
     for head in header:
         d = data[head]
@@ -54,15 +81,19 @@ def order_correctly(header, data) -> str:
             d = d
         elif c:
             d = f"'{c.strftime(r'%Y-%m-%d')}'"
+        elif '_num_work_' in head and not d.strip():
+            continue
         else:
             d = f"'{d}'"
         acc.append(d)
-    return f"""({', '.join(acc)})"""
+        head2.append(head)
+    return head2, f"""({', '.join(acc)})"""
 
 
 def generate_query(table_name: str, header: tuple, data: dict) -> str:
     """Generate the query based on header and data"""
-    return f"INSERT INTO {table_name}({', '.join(header)}) VALUES {order_correctly(header, data)};"
+    header, values = order_correctly(header, data)
+    return f"INSERT INTO {table_name}({', '.join(header)}) VALUES {values};"
 
 
 def get_query(path: str) -> str:
@@ -177,39 +208,30 @@ def setup_view(cursor, view_dir: str) -> None:
 
 
 # Test data functions
+def test_data(cursor, query: str, isPass: bool = True) -> bool:
+    """Test the query"""
+    msg = "Passed when it should fail"
+    p = True
+    try:
+        cursor.execute(query)
+    except Exception as e:
+        p = False
+        msg = e
+
+    # Flip if the target is to fail
+    if not isPass:
+        p = not p
+
+    # Return bool, err msg
+    return p, msg
+
+
 def load_success_data(test_path: str, cursor) -> list:
     """Load the data"""
 
-    # Order to load the data as they are dependent on each other
-    files = [
-        ('Employee_Test.csv', "Employees"),
-        ('Customers_Test.csv', 'Customers'),
-        ('Full_Time_Employee_Test.csv', 'FullTimeEmployees'),
-        ('Part_Time_Employee_Test.csv', 'PartTimeEmployees'),
-        ('Instructor_Test.csv', 'Instructors'),
-        ('Admin_Test.csv', 'Administrators'),
-        ('Manager_Test.csv', 'Managers'),
-        ('Full_Time_Instructors_Test.csv', 'FullTimeInstructors'),
-        ('Part_Time_Instructors_Test.csv', 'PartTimeInstructors'),
-        ('Credit_Card_Test.csv', 'CreditCards'),
-        ('Owns_Test.csv', 'Owns'),
-        ('Course_Area_Test.csv', 'CourseAreas'),
-        ('Course_Test.csv', 'Courses'),
-        ('Course_Offering_Test.csv', 'CourseOfferings'),
-        ('Course_Package_Test.csv', 'CoursePackages'),
-        ('Specializes_Test.csv', 'Specializes'),
-        ('Room_Test.csv', 'Rooms'),
-        # ('Session_Test.csv', 'Sessions'),
-        # ('Buys_Test.csv', 'Buys'),
-        # ('Redeem_Test.csv', 'Redeems'),
-        # ('Registers_Test.csv', 'Registers'),
-        # ('Cancels_Test.csv', 'Cancels'),
-        # ('Payslips_Test.csv', 'PaySlips'),
-    ]
-
     # Generate the file path
     file_paths = zip(map_with_dir(test_path, map(
-        lambda x: x[0], files)), map(lambda x: x[1], files))
+        lambda x: x[0], FILES_TEST_MAP)), map(lambda x: x[1], FILES_TEST_MAP))
 
     # Load the data in order
     for path, table in file_paths:
@@ -218,12 +240,46 @@ def load_success_data(test_path: str, cursor) -> list:
             if not "".join(item.values()):
                 continue
             q = generate_query(table, header, item)
-            try:
-                cursor.execute(q)
-            except Exception as e:
+            passed, msg = test_data(cursor, q)
+            if not passed:
                 logger.critical(
-                    f'Error with {os.path.basename(path)}: Row {index + 1}\nError: {e}\nQuery: {q}\nBreaking out of other testcases')
+                    f"Fail Testcase: Row {index + 1} of {os.path.basename(path)}\nQuery: {q}\nError: {msg}")
                 return
+
+
+def load_fail_data(test_path: str, cursor):
+    """Load the fail data"""
+
+    # Generate the file path
+    file_paths = zip(map_with_dir(test_path, map(
+        lambda x: x[0], FILES_TEST_MAP)), map(lambda x: x[1], FILES_TEST_MAP))
+
+    # Load the data in order
+    for path, table in file_paths:
+
+        header, data = get_data(path)
+
+        for index, all_item in enumerate(data):
+
+            # If it is empty, skip it
+            if not "".join(all_item.values()):
+                continue
+
+            # Unpack the values
+            item, isPass, remarks = all_item[:-2], all_item[-2], all_item[-1]
+
+            # Generate and test query
+            q = generate_query(table, header, item)
+            passed, msg = test_data(cursor, q, isPass)
+
+            # If passed continue
+            if passed:
+                continue
+
+            # Throw an error
+            logger.critical(
+                f"Fail Testcase: Row {index + 1} of {os.path.basename(path)}\nQuery: {q}\nError: {msg}\n Remarks: {remarks}")
+            return
 
 
 # Parsing functions
@@ -285,10 +341,21 @@ if __name__ == "__main__":
         except Exception as e:
             logging.critical(f"Error with adding: {e}")
 
-        # Positive test cases
-        load_success_data('./test data/schema test', cursor)
+        
+        # Positive test cases for schema
+        load_success_data('./test data/schema test')
 
-        # TODO Run the negative test cases
+        # Run the negative test cases for schema Data TODO
+        # load_fail_data('./test data/schema fail')
+
+        ### Other TODO below
+        # Positive test cases for triggers
+        # Run the negative test cases for triggers
+        # Positive test cases for view
+        # Run the negative test cases for view
+        # Positive test cases for function
+        # Run the negative test cases for function
+
 
         # Commit
         db.commit()
