@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 import os
+import logging
 import psycopg2
 import configparser
-import logging
 from getpass import getpass
 
 
@@ -40,6 +40,9 @@ def execute_query(cursor, query_paths: list) -> None:
     """Read query from list of files and execute them"""
     for path in query_paths:
         query = get_query(path)
+        if not query.strip():
+            logging.info(f"File {path} is empty, skipping")
+            continue
         try:
             cursor.execute(query)
         except Exception as e:
@@ -110,7 +113,6 @@ def setup_functions(cursor, function_dir: str) -> None:
     """Create the functions"""
     logger.debug("Setting up Functions")
     function_files = get_files(function_dir)
-    print(function_files)
     execute_query(cursor, map_with_dir(function_dir, function_files))
     logger.debug("Functions Added")
 
@@ -149,13 +151,7 @@ def parse_dir(schemas: str, functions: str, triggers: str, views: str) -> tuple:
 
 if __name__ == "__main__":
     # Main code for the test cases
-    print(
-        """
-        Connect to NUS Posgresql
-        Make sure you are on SoC VPN
-        Not sure if it will work outside SoC
-        """
-    )
+    print("Loading Test")
 
     # Parse the config file
     parser = configparser.ConfigParser()
