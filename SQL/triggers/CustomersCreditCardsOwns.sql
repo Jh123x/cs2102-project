@@ -99,6 +99,7 @@ FOR EACH ROW EXECUTE FUNCTION credit_cards_key_constraint_check();
     INSERT INTO Owns (customer_id, number, from_Date) VALUES ('2', '1234567890123457', CURRENT_DATE);
     COMMIT;
 
+    -- Below should fail
     INSERT INTO Owns (customer_id, number, from_Date) VALUES ('1', '1234567890123457', CURRENT_DATE);
     UPDATE Owns Set customer_id = 1 WHERE customer_id=2;
     DELETE FROM Owns;
