@@ -43,7 +43,7 @@ BEGIN
             employee_id := r.employee_id;
             name := r.name;
             SELECT COALESCE(SUM(end_time - start_time), 0) INTO total_teaching_hours FROM Sessions s
-                    WHERE s.employee_id = e.employee_id
+                    WHERE s.instructor_id = r.employee_id
                     AND EXTRACT(MONTH FROM date) == EXTRACT(MONTH FROM CURRENT_DATE);
             available_hours := '{}';
 
