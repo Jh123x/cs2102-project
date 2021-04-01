@@ -15,6 +15,32 @@ SETTINGS_DIRECTORY = "settings.cfg"
 logger = logging.Logger("Logs")
 logger.setLevel(logging.DEBUG)
 
+FILES_TEST_MAP = [
+        ('Employee_Test.csv', "Employees"),
+        ('Customers_Test.csv', 'Customers'),
+        ('Full_Time_Employee_Test.csv', 'FullTimeEmployees'),
+        ('Part_Time_Employee_Test.csv', 'PartTimeEmployees'),
+        ('Instructor_Test.csv', 'Instructors'),
+        ('Admin_Test.csv', 'Administrators'),
+        ('Manager_Test.csv', 'Managers'),
+        ('Full_Time_Instructors_Test.csv', 'FullTimeInstructors'),
+        ('Part_Time_Instructors_Test.csv', 'PartTimeInstructors'),
+        ('Credit_Card_Test.csv', 'CreditCards'),
+        ('Owns_Test.csv', 'Owns'),
+        ('Course_Area_Test.csv', 'CourseAreas'),
+        ('Course_Test.csv', 'Courses'),
+        ('Course_Offering_Test.csv', 'CourseOfferings'),
+        ('Course_Package_Test.csv', 'CoursePackages'),
+        ('Specializes_Test.csv', 'Specializes'),
+        ('Room_Test.csv', 'Rooms'),
+        ('Session_Test.csv', 'Sessions'),
+        ('Buys_Test.csv', 'Buys'),
+        ('Redeem_Test.csv', 'Redeems'),
+        ('Registers_Test.csv', 'Registers'),
+        ('Cancels_Test.csv', 'Cancels'),
+        ('Payslips_Test.csv', 'PaySlips'),
+    ]
+
 
 # DB functions
 def connect_db(host: str, port: int, user: str, password: str, dbname: str):
@@ -203,36 +229,9 @@ def test_data(cursor, query: str, isPass: bool = True) -> bool:
 def load_success_data(test_path: str, cursor) -> list:
     """Load the data"""
 
-    # Order to load the data as they are dependent on each other
-    files = [
-        ('Employee_Test.csv', "Employees"),
-        ('Customers_Test.csv', 'Customers'),
-        ('Full_Time_Employee_Test.csv', 'FullTimeEmployees'),
-        ('Part_Time_Employee_Test.csv', 'PartTimeEmployees'),
-        ('Instructor_Test.csv', 'Instructors'),
-        ('Admin_Test.csv', 'Administrators'),
-        ('Manager_Test.csv', 'Managers'),
-        ('Full_Time_Instructors_Test.csv', 'FullTimeInstructors'),
-        ('Part_Time_Instructors_Test.csv', 'PartTimeInstructors'),
-        ('Credit_Card_Test.csv', 'CreditCards'),
-        ('Owns_Test.csv', 'Owns'),
-        ('Course_Area_Test.csv', 'CourseAreas'),
-        ('Course_Test.csv', 'Courses'),
-        ('Course_Offering_Test.csv', 'CourseOfferings'),
-        ('Course_Package_Test.csv', 'CoursePackages'),
-        ('Specializes_Test.csv', 'Specializes'),
-        ('Room_Test.csv', 'Rooms'),
-        ('Session_Test.csv', 'Sessions'),
-        ('Buys_Test.csv', 'Buys'),
-        ('Redeem_Test.csv', 'Redeems'),
-        ('Registers_Test.csv', 'Registers'),
-        ('Cancels_Test.csv', 'Cancels'),
-        ('Payslips_Test.csv', 'PaySlips'),
-    ]
-
     # Generate the file path
     file_paths = zip(map_with_dir(test_path, map(
-        lambda x: x[0], files)), map(lambda x: x[1], files))
+        lambda x: x[0], FILES_TEST_MAP)), map(lambda x: x[1], FILES_TEST_MAP))
 
     # Load the data in order
     for path, table in file_paths:
@@ -250,13 +249,10 @@ def load_success_data(test_path: str, cursor) -> list:
 
 def load_fail_data(test_path: str, cursor):
     """Load the fail data"""
-    files = [
-
-    ]
 
     # Generate the file path
     file_paths = zip(map_with_dir(test_path, map(
-        lambda x: x[0], files)), map(lambda x: x[1], files))
+        lambda x: x[0], FILES_TEST_MAP)), map(lambda x: x[1], FILES_TEST_MAP))
 
     # Load the data in order
     for path, table in file_paths:
@@ -345,9 +341,14 @@ if __name__ == "__main__":
         except Exception as e:
             logging.critical(f"Error with adding: {e}")
 
-        ### TODO below
+        
         # Positive test cases for schema
-        # Run the negative test cases for schema
+        load_success_data('./test data/schema test')
+
+        # Run the negative test cases for schema Data TODO
+        # load_fail_data('./test data/schema fail')
+
+        ### Other TODO below
         # Positive test cases for triggers
         # Run the negative test cases for triggers
         # Positive test cases for view
