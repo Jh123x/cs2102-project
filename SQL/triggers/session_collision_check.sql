@@ -6,7 +6,7 @@ DECLARE
 BEGIN
 
     /* Check if the old time and date = new time and date */
-    IF (TG_OP = 'UPDATE' AND NEW.date = OLD.date AND NEW.start_time = OLD.start_time) THEN
+    IF (TG_OP = 'UPDATE' AND NEW.session_date = OLD.session_date AND NEW.session_start_hour = OLD.session_start_hour) THEN
         RETURN NEW;
     /* Check if it is a valid operation */
     ELSIF (TG_OP NOT IN ('INSERT', 'UPDATE')) THEN
@@ -16,10 +16,10 @@ BEGIN
     /* Find collisions */
     SELECT COUNT(*) INTO collisions
     FROM Sessions s
-    WHERE NEW.date = s.date
+    WHERE NEW.session_date = s.session_date
         AND (
-            NEW.start_time BETWEEN s.start_time and s.end_time
-            OR s.start_time BETWEEN NEW.start_time AND NEW.end_time
+            NEW.session_start_hour BETWEEN s.session_start_hour and s.session_end_hour
+            OR s.session_start_hour BETWEEN NEW.session_start_hour AND NEW.session_end_hour
         )
         AND (
             NEW.course_id = s.course_id

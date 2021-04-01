@@ -51,10 +51,12 @@ CREATE TABLE Instructors (
 
 DROP TABLE IF EXISTS PartTimeInstructors;
 CREATE TABLE PartTimeInstructors (
-    instructor_id INTEGER REFERENCES PartTimeEmployees (employee_id) REFERENCES Instructors (instructor_id) ON UPDATE CASCADE ON DELETE CASCADE
+    instructor_id INTEGER PRIMARY KEY,
+    FOREIGN KEY (instructor_id) REFERENCES PartTimeEmployees (employee_id) REFERENCES Instructors (instructor_id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 DROP TABLE IF EXISTS FullTimeInstructors;
 CREATE TABLE FullTimeInstructors (
-    instructor_id INTEGER REFERENCES FullTimeEmployees (employee_id) REFERENCES Instructors (instructor_id) ON UPDATE CASCADE ON DELETE CASCADE
+    instructor_id INTEGER PRIMARY KEY,
+    FOREIGN KEY (instructor_id) REFERENCES FullTimeEmployees (employee_id) REFERENCES Instructors (instructor_id) ON UPDATE CASCADE ON DELETE CASCADE
 );

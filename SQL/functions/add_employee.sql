@@ -1,13 +1,13 @@
 CREATE OR REPLACE FUNCTION add_employee (
-    name TEXT,
-    address TEXT,
-    phone TEXT,
-    email TEXT,
-    join_date DATE,
+    employee_name TEXT,
+    employee_address TEXT,
+    employee_phone TEXT,
+    employee_email TEXT,
+    employee_join_date DATE,
     category TEXT, /* Manager / Admin / Instructor */
     type TEXT, /* Full Time / Part Time */
     salary_amount DEC(64, 2), /* hourly_rate for part-time and monthly_salary for full-time */
-    course_area TEXT[] DEFAULT '{}'
+    course_areas TEXT[] DEFAULT '{}'
 )
 RETURNS TABLE (employee_id INTEGER) AS $$
 DECLARE
@@ -16,9 +16,9 @@ DECLARE
 BEGIN
     /* Insert the employee in */
     INSERT INTO Employees
-        (name, address, phone, email, join_date)
+        (employee_name, employee_address, employee_phone, employee_email, employee_join_date)
     VALUES
-        (name, address, phone, email, join_date)
+        (employee_name, employee_address, employee_phone, employee_email, employee_join_date)
     RETURNING * INTO new_employee;
 
     employee_id := new_employee.employee_id;
@@ -34,32 +34,32 @@ BEGIN
 
     /* Add into role specific table */
     IF (category ILIKE 'Manager') THEN
-        INSERT INTO Managers (employee_id) VALUES (employee_id);
+        INSERT INTO Managers (manager_id) VALUES (employee_id);
 
         /* Add them to the specified course area */
-        FOREACH area IN ARRAY course_area
+        FOREACH course_area_name IN ARRAY course_areas
         LOOP
-            INSERT INTO CourseAreas (area, employee_id) VALUES (area, employee_id);
+            INSERT INTO CourseAreas (course_area_name, manager_id) VALUES (course_area_name, employee_id);
         END LOOP;
     ELSIF (category ILIKE 'Admin') THEN
-        INSERT INTO Administrators (employee_id) VALUES (employee_id);
-        IF (course_area.COUNT > 0) THEN
+        INSERT INTO Administrators (admin_id) VALUES (employee_id);
+        IF (course_areas.COUNT > 0) THEN
             RAISE EXCEPTION 'Admin should not have course area';
         END IF;
     ELSIF (category ILIKE 'Instructor') THEN
-        INSERT INTO Instructors (employee_id) VALUES (employee_id);
+        INSERT INTO Instructors (instructor_id) VALUES (employee_id);
 
         IF (type ILIKE 'part-time') THEN
-            INSERT INTO PartTimeInstructors (employee_id) VALUES (employee_id);
+            INSERT INTO PartTimeInstructors (instructor_id) VALUES (employee_id);
         ELSIF (type ILIKE 'full-time') THEN
-            INSERT INTO FullTimeInstructors (employee_id) VALUES (employee_id);
+            INSERT INTO FullTimeInstructors (instructor_id) VALUES (employee_id);
         ELSE
             RAISE EXCEPTION 'Invalid type of instructor';
         END IF;
 
-        FOREACH area IN ARRAY course_area
+        FOREACH course_area_name IN ARRAY course_area
         LOOP
-            INSERT INTO Specializes (employee_id, area) VALUES (employee_id, area);
+            INSERT INTO Specializes (instructor_id, course_area_name) VALUES (employee_id, course_area_name);
         END LOOP;
     ELSE
         RAISE EXCEPTION 'Category not found';

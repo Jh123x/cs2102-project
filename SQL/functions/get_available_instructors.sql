@@ -9,13 +9,25 @@ The output is sorted in ascending order of employee identifier and day,
     and the array entries are sorted in ascending order of hour.
 */
 
-CREATE OR REPLACE FUNCTION get_available_instructors(course_id INTEGER, start_date DATE, end_date DATE)
-RETURNS TABLE (employee_id INTEGER, name TEXT, total_teaching_hours INTEGER, day DATE, available_hours TIMESTAMP[]) AS $$
+CREATE OR REPLACE FUNCTION get_available_instructors (
+    course_id INTEGER,
+    start_date DATE,
+    end_date DATE
+)
+RETURNS TABLE (
+    employee_id INTEGER,
+    name TEXT,
+    total_teaching_hours INTEGER,
+    day DATE,
+    available_hours TIMESTAMP[]
+) AS $$
 DECLARE
     curs CURSOR FOR (
-            SELECT e.employee_id, e.name
-            FROM Employees e NATURAL JOIN Specializes s NATURAL JOIN Courses c
-            );
+        SELECT e.employee_id, e.employee_name
+        FROM Employees e
+        NATURAL JOIN Specializes s
+        NATURAL JOIN Courses c
+    );
     r RECORD;
     cur_date DATE;
 BEGIN

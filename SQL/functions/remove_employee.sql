@@ -7,6 +7,7 @@ DECLARE
     isManaging_count INTEGER;
     isTeaching_count INTEGER;
 BEGIN
+    /* The below conditions needs changing; need to check if it's managing a course offering/session AFTER departure date */
     /* Check if they are still handling admin tasks */
     SELECT COUNT(*) INTO isAdmin_count FROM CourseOfferings c WHERE c.admin_id = employee_id;
 
@@ -21,6 +22,8 @@ BEGIN
     END IF;
 
     /* DELETE FROM Employees e WHERE e.employee_id = employee_id; */
-    UPDATE Employees SET depart_date = departure_date WHERE e.employee_id = employee_id;
+    UPDATE Employees
+    SET employee_depart_date = departure_date
+    WHERE e.employee_id = employee_id;
 END;
 $$ LANGUAGE plpgsql;
