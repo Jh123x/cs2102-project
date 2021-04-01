@@ -19,7 +19,7 @@ CREATE TABLE PartTimeEmployees (
     employee_hourly_rate DEC(64,2),
     CHECK (employee_hourly_rate >= 0),
 
-    FOREIGN KEY (employee_id) REFERENCES Employees ON UPDATE CASCADE ON DELETE CASCADE
+    FOREIGN KEY (employee_id) REFERENCES Employees (employee_id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 DROP TABLE IF EXISTS FullTimeEmployees;
@@ -27,34 +27,34 @@ CREATE TABLE FullTimeEmployees (
     employee_id INTEGER PRIMARY KEY,
     employee_monthly_salary DEC(64,2),
 
-    FOREIGN KEY (employee_id) REFERENCES Employees ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (employee_id) REFERENCES Employees (employee_id) ON UPDATE CASCADE ON DELETE CASCADE,
     CHECK (employee_monthly_salary >= 0)
 );
 
 DROP TABLE IF EXISTS Managers;
 CREATE TABLE Managers (
-    employee_id INTEGER PRIMARY KEY,
-    FOREIGN KEY (employee_id) REFERENCES FullTimeEmployees ON UPDATE CASCADE ON DELETE CASCADE
+    manager_id INTEGER PRIMARY KEY,
+    FOREIGN KEY (manager_id) REFERENCES FullTimeEmployees (employee_id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 DROP TABLE IF EXISTS Administrators;
 CREATE TABLE Administrators (
-    employee_id INTEGER PRIMARY KEY,
-    FOREIGN KEY (employee_id) REFERENCES FullTimeEmployees ON UPDATE CASCADE ON DELETE CASCADE
+    admin_id INTEGER PRIMARY KEY,
+    FOREIGN KEY (admin_id) REFERENCES FullTimeEmployees (employee_id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 DROP TABLE IF EXISTS Instructors;
 CREATE TABLE Instructors (
-    employee_id INTEGER PRIMARY KEY,
-    FOREIGN KEY (employee_id) REFERENCES Employees ON UPDATE CASCADE ON DELETE CASCADE
+    instructor_id INTEGER PRIMARY KEY,
+    FOREIGN KEY (instructor_id) REFERENCES Employees (employee_id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 DROP TABLE IF EXISTS PartTimeInstructors;
 CREATE TABLE PartTimeInstructors (
-    employee_id INTEGER REFERENCES PartTimeEmployees REFERENCES Instructors ON UPDATE CASCADE ON DELETE CASCADE
+    instructor_id INTEGER REFERENCES PartTimeEmployees (employee_id) REFERENCES Instructors (instructor_id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 DROP TABLE IF EXISTS FullTimeInstructors;
 CREATE TABLE FullTimeInstructors (
-    employee_id INTEGER REFERENCES FullTimeEmployees REFERENCES Instructors ON UPDATE CASCADE ON DELETE CASCADE
+    instructor_id INTEGER REFERENCES FullTimeEmployees (employee_id) REFERENCES Instructors (instructor_id) ON UPDATE CASCADE ON DELETE CASCADE
 );

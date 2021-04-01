@@ -6,7 +6,7 @@ CREATE TABLE CourseOfferings (
     offering_num_target_registration INTEGER NOT NULL,
     offering_seating_capacity INTEGER NOT NULL,
     course_id INTEGER NOT NULL,
-    employee_id INTEGER NOT NULL,
+    admin_id INTEGER NOT NULL,
 
     /* Start and end date to be added to view */
     offering_start_date DATE NOT NULL,
@@ -21,5 +21,5 @@ CREATE TABLE CourseOfferings (
 
     PRIMARY KEY(offering_launch_date, course_id),
     FOREIGN KEY(course_id) REFERENCES Courses ON DELETE CASCADE,
-    FOREIGN KEY(employee_id) REFERENCES Administrators ON UPDATE CASCADE
+    FOREIGN KEY(admin_id) REFERENCES Administrators ON UPDATE CASCADE
 );
