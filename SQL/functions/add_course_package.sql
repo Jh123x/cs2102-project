@@ -1,3 +1,4 @@
+DROP FUNCTION IF EXISTS add_course_package CASCADE;
 CREATE OR REPLACE FUNCTION add_course_package (
     package_name TEXT,
     package_num_free_registrations INTEGER,

@@ -1,6 +1,6 @@
 DROP TABLE IF EXISTS CourseOfferings CASCADE;
 CREATE TABLE CourseOfferings (
-    offering_launch_date DATE NOT NULL, /*Courses have unique launch date*/
+    offering_launch_date DATE NOT NULL, /* Courses have unique launch date */
     offering_fees DEC(64,2) NOT NULL,
     offering_registration_deadline DATE NOT NULL,
     offering_num_target_registration INTEGER NOT NULL,
@@ -17,7 +17,7 @@ CREATE TABLE CourseOfferings (
     CHECK(offering_seating_capacity >= offering_num_target_registration),
     CHECK(offering_num_target_registration >= 0),
     CHECK(offering_fees >= 0),
-    CHECK(offering_start_date >= offering_registration_deadline + INTEGER '10'),
+    CHECK(offering_registration_deadline >= offering_start_date + INTEGER '10'),
 
     PRIMARY KEY(offering_launch_date, course_id),
     FOREIGN KEY(course_id) REFERENCES Courses ON DELETE CASCADE,

@@ -1,3 +1,4 @@
+DROP FUNCTION IF EXISTS add_customer CASCADE;
 CREATE OR REPLACE FUNCTION add_customer (
     customer_name TEXT,
     customer_phone INTEGER,

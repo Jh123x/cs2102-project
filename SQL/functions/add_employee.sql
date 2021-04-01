@@ -1,3 +1,4 @@
+DROP FUNCTION IF EXISTS add_employee CASCADE;
 CREATE OR REPLACE FUNCTION add_employee (
     employee_name TEXT,
     employee_address TEXT,
