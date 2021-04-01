@@ -17,7 +17,7 @@ BEGIN
     END IF;
 
 
-    /* 
+    /*
         Can simplify the whole logic below to:
             IF new_instructor_employee_id NOT IN (SELECT employee_id FROM find_instructors(course_id, session_date, session_start_hour)) THEN
                 RAISE EXCEPTION 'This instructor cannot teach this session!';

@@ -7,7 +7,7 @@ CREATE OR REPLACE PROCEDURE add_course (
 BEGIN
     INSERT INTO Courses
         (title, course_description, duration, course_area_name)
-    VALUES 
+    VALUES
         (title, course_description, duration, course_area_name);
 END;
 $$ LANGUAGE plpgsql;

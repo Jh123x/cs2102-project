@@ -12,7 +12,7 @@ CREATE OR REPLACE PROCEDURE add_course_offering(
 BEGIN
     INSERT INTO CourseOfferings
         (launch_date, fees, registration_deadline, target_number_registration, seating_capacity, course_id, admin_id)
-    VALUES 
+    VALUES
         (launch_date, fees, registration_deadline, target_number_registration, seating_capacity, course_id, admin_id);
 END;
 $$ LANGUAGE plpgsql;
