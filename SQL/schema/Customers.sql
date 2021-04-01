@@ -1,21 +1,21 @@
 DROP TABLE IF EXISTS Customers CASCADE;
 CREATE TABLE Customers (
     customer_id SERIAL PRIMARY KEY,
-    phone INTEGER,
-    address TEXT,
-    name TEXT,
-    email TEXT,
+    customer_phone INTEGER NOT NULL,
+    customer_address TEXT NOT NULL,
+    customer_name TEXT NOT NULL,
+    customer_email TEXT NOT NULL,
 
-    CHECK(email ~ '.+@.+\..+'),
-    CHECK(phone > 0)
+    CHECK(customer_email ~ '.+@.+\..+'),
+    CHECK(customer_phone > 0)
 );
 
 DROP TABLE IF EXISTS CreditCards CASCADE;
 CREATE TABLE CreditCards (
-    number CHAR(16) PRIMARY KEY,
-    cvv CHAR(3),
-    expiry_date DATE,
+    credit_card_number CHAR(16) PRIMARY KEY,
+    credit_card_cvv CHAR(3) NOT NULL,
+    credit_card_expiry_date DATE NOT NULL,
 
-    CHECK (number ~ '[0-9]{16}'),
-    CHECK (cvv ~ '[0-9]{3}')
+    CHECK (credit_card_number ~ '[0-9]{16}'),
+    CHECK (credit_card_cvv ~ '[0-9]{3}')
 );

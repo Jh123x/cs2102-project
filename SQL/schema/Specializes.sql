@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS Specializes cascade;
+DROP TABLE IF EXISTS Specializes CASCADE;
 CREATE TABLE Specializes (
     employee_id INTEGER,
     course_area_name TEXT,

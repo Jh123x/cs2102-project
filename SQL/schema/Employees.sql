@@ -2,22 +2,22 @@ DROP TABLE if exists Employees CASCADE;
 
 CREATE TABLE Employees (
     employee_id SERIAL PRIMARY KEY,
-    name TEXT,
-    address TEXT,
-    phone TEXT,
-    email TEXT,
-    join_date date,
-    depart_date date DEFAULT NULL,
+    employee_name TEXT,
+    employee_address TEXT,
+    employee_phone TEXT,
+    employee_email TEXT,
+    employee_join_date date,
+    employee_depart_date date DEFAULT NULL,
 
-    CHECK (depart_date > join_date),
-    CHECK(email ~ '.+@.+\..+')
+    CHECK (employee_depart_date > employee_join_date),
+    CHECK (employee_email ~ '.+@.+\..+')
 );
 
 DROP TABLE IF EXISTS PartTimeEmployees;
 CREATE TABLE PartTimeEmployees (
     employee_id INTEGER PRIMARY KEY,
-    hourly_rate DEC(64,2),
-    CHECK (hourly_rate >= 0),
+    employee_hourly_rate DEC(64,2),
+    CHECK (employee_hourly_rate >= 0),
 
     FOREIGN KEY (employee_id) REFERENCES Employees ON UPDATE CASCADE ON DELETE CASCADE
 );
@@ -25,10 +25,10 @@ CREATE TABLE PartTimeEmployees (
 DROP TABLE IF EXISTS FullTimeEmployees;
 CREATE TABLE FullTimeEmployees (
     employee_id INTEGER PRIMARY KEY,
-    monthly_salary DEC(64,2),
+    employee_monthly_salary DEC(64,2),
 
     FOREIGN KEY (employee_id) REFERENCES Employees ON UPDATE CASCADE ON DELETE CASCADE,
-    CHECK (monthly_salary >= 0)
+    CHECK (employee_monthly_salary >= 0)
 );
 
 DROP TABLE IF EXISTS Managers;
