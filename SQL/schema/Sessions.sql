@@ -7,7 +7,7 @@ CREATE TABLE Sessions (
     course_id INTEGER NOT NULL,
     launch_date DATE NOT NULL,
     room_id INTEGER REFERENCES Rooms,
-    instructor_id INTEGER REFERENCES Instructors,
+    employee_id INTEGER REFERENCES Instructors,
 
     UNIQUE(course_id, date),
     PRIMARY KEY(session_id, course_id, launch_date),

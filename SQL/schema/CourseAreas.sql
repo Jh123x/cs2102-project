@@ -1,5 +1,5 @@
 DROP TABLE IF EXISTS CourseAreas CASCADE;
 CREATE TABLE CourseAreas (
-    name TEXT PRIMARY KEY,
-    manager_id INTEGER NOT NULL REFERENCES Managers
+    course_area_name TEXT PRIMARY KEY,
+    employee_id INTEGER NOT NULL REFERENCES Managers
 );

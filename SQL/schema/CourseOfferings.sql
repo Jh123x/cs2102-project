@@ -11,7 +11,7 @@ CREATE TABLE CourseOfferings (
     /* Start and end date to be added to view */
     start_date DATE,
     end_date DATE,
-    
+
     CHECK(start_date < end_date),
     CHECK(launch_date < registration_deadline),
     CHECK(seating_capacity >= target_number_registration),

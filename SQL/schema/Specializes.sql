@@ -1,9 +1,9 @@
 DROP TABLE IF EXISTS Specializes cascade;
 CREATE TABLE Specializes (
-    instructor_id INTEGER,
+    employee_id INTEGER,
     course_area_name TEXT,
 
-    PRIMARY KEY(instructor_id, course_area_name),
-    FOREIGN KEY(instructor_id) REFERENCES Instructors,
+    PRIMARY KEY(employee_id, course_area_name),
+    FOREIGN KEY(employee_id) REFERENCES Instructors,
     FOREIGN KEY(course_area_name) REFERENCES CourseAreas
 );
