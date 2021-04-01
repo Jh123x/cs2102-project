@@ -14,7 +14,7 @@ CREATE TABLE Sessions (
     FOREIGN KEY(course_id, offering_launch_date) REFERENCES CourseOfferings(course_id, offering_launch_date) ON DELETE CASCADE,
 
     /* Check if the session is conducted between 9am - 12pm to 2pm - 6pm and between */
-    CHECK(to_char(session_date, 'Day') IN ('Monday','Tuesday', 'Wednesday','Thursday','Friday')),
+    CHECK(to_char(session_date, 'Dy') IN ('Mon','Tue', 'Wed','Thu','Fri')),
     CHECK((9 <= session_start_hour AND session_start_hour < 12) OR (14 <= session_start_hour AND session_start_hour < 18)),
     CHECK((9 < session_end_hour AND session_end_hour <= 12) OR (14 < session_end_hour AND session_end_hour <= 18)),
     CHECK(session_end_hour > session_start_hour)
