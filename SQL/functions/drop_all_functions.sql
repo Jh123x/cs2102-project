@@ -3,9 +3,9 @@
     grep -RihoP '(function|procedure) .+(?=\()' --exclude drop* | awk '{print "DROP", $1, "IF EXISTS", $2, "CASCADE;"}'
 */
 
-DROP PROCEDURE IF EXISTS add_course CASCADE;
-DROP PROCEDURE IF EXISTS add_course_offering CASCADE;
-DROP PROCEDURE IF EXISTS add_course_package CASCADE;
+DROP FUNCTION IF EXISTS add_course CASCADE;
+DROP FUNCTION IF EXISTS add_course_offering CASCADE;
+DROP FUNCTION IF EXISTS add_course_package CASCADE;
 DROP FUNCTION IF EXISTS add_customer CASCADE;
 DROP FUNCTION IF EXISTS add_employee CASCADE;
 DROP FUNCTION IF EXISTS find_instructors CASCADE;
