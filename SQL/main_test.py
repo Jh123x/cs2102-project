@@ -2,6 +2,7 @@
 import os
 import csv
 import logging
+import datetime
 import psycopg2
 import configparser
 from getpass import getpass
@@ -33,12 +34,27 @@ def get_data(csv_path: str) -> tuple:
             data.append(row)
     return tuple(data[0].keys()), data
 
+def check_date(date_string:str) -> datetime.datetime:
+    """Check if the format is correct"""
+    try:
+        return datetime.datetime.strptime(date_string, r"%d/%m/%Y")
+    except Exception as e:
+        return False
+
 def order_correctly(header, data) -> str:
     """Fix the ordering of the dict"""
     acc = []
     for head in header:
-        acc.append(data[head])
-    return f"""({', '.join(map(lambda x: x if x.isdigit() else f"'{x}'" , acc))})"""
+        d = data[head]
+        c = check_date(d)
+        if d.isdigit() and 'credit' not in head:
+            d = d
+        elif c:
+            d = f"'{c.strftime(r'%Y-%m-%d')}'"
+        else:
+            d = f"'{d}'"
+        acc.append(d)
+    return f"""({', '.join(acc)})"""
 
 def generate_query(table_name: str, header:tuple, data: dict) -> str:
     """Generate the query based on header and data"""
@@ -167,8 +183,8 @@ def load_success_data(test_path:str, cursor) -> list:
         ('Instructor_Test.csv', 'Instructors'),
         ('Admin_Test.csv', 'Administrators'),
         ('Manager_Test.csv', 'Managers'),
-        ('Full_Time_Instructors_Test.csv', 'FullTimeInstructors.csv'),
-        ('Part_Time_Instructors_Test.csv', 'PartTimeInstructors.csv'),
+        ('Full_Time_Instructors_Test.csv', 'FullTimeInstructors'),
+        ('Part_Time_Instructors_Test.csv', 'PartTimeInstructors'),
         ('Credit_Card_Test.csv', 'CreditCards'),
         ('Owns_Test.csv', 'Owns'),
         ('Course_Area_Test.csv', 'CourseAreas'),
@@ -177,12 +193,12 @@ def load_success_data(test_path:str, cursor) -> list:
         ('Course_Package_Test.csv', 'CoursePackages'),
         ('Specializes_Test.csv', 'Specializes'),
         ('Room_Test.csv', 'Rooms'),
-        ('Session_Test.csv', 'Sessions'),
-        ('Buys_Test.csv', 'Buys'),
-        ('Redeem_Test.csv', 'Redeems'),
-        ('Registers_Test.csv', 'Registers'),
-        ('Cancels_Test.csv', 'Cancels'),
-        ('Payslips_Test.csv', 'PaySlips'),
+        # ('Session_Test.csv', 'Sessions'),
+        # ('Buys_Test.csv', 'Buys'),
+        # ('Redeem_Test.csv', 'Redeems'),
+        # ('Registers_Test.csv', 'Registers'),
+        # ('Cancels_Test.csv', 'Cancels'),
+        # ('Payslips_Test.csv', 'PaySlips'),
     ]
     
     # Generate the file path
@@ -198,7 +214,7 @@ def load_success_data(test_path:str, cursor) -> list:
             try:
                 cursor.execute(q)
             except Exception as e:
-                logger.critical(f'Error with {os.path.basename(path)}: Row {index + 1}\nError: {e}\nBreaking out of other testcases')
+                logger.critical(f'Error with {os.path.basename(path)}: Row {index + 1}\nError: {e}\nQuery: {q}\nBreaking out of other testcases')
                 return
 
 
