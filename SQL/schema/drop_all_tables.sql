@@ -1,6 +1,6 @@
 /*
     Update this file using this command:
-    grep -RihoP 'table .+(?=\()' | awk '{print "DROP", $1, "IF EXISTS", $2, "CASCADE"}' | sed 's/$/;/'
+    grep -RihoP 'table .+(?=\()' --exclude drop* | awk '{print "DROP", $1, "IF EXISTS", $2, "CASCADE"}' | sed 's/$/;/'
 */
 
 DROP TABLE IF EXISTS CourseAreas CASCADE;

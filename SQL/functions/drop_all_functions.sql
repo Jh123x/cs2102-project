@@ -1,6 +1,6 @@
 /*
     Update this file using this command:
-    grep -RihoP '(function|procedure) .+(?=\()' | awk '{print "DROP", $1, "IF EXISTS", $2, "CASCADE"}' | sed 's/$/;/'
+    grep -RihoP '(function|procedure) .+(?=\()' --exclude drop* | awk '{print "DROP", $1, "IF EXISTS", $2, "CASCADE;"}'
 */
 
 DROP PROCEDURE IF EXISTS add_course CASCADE;

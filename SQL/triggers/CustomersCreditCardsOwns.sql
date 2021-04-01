@@ -3,7 +3,8 @@
     - Total Participation
 */
 
-CREATE OR REPLACE FUNCTION customers_total_participation_check() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION customers_total_participation_check()
+RETURNS TRIGGER AS $$
 BEGIN
     IF EXISTS(SELECT customer_id FROM Customers EXCEPT SELECT customer_id FROM Owns)
     THEN
@@ -28,7 +29,8 @@ FOR EACH ROW EXECUTE FUNCTION customers_total_participation_check();
     - Key Constraint
 */
 
-CREATE OR REPLACE FUNCTION credit_cards_key_constraint_check() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION credit_cards_key_constraint_check()
+RETURNS TRIGGER AS $$
 BEGIN
     IF EXISTS(SELECT number FROM Owns GROUP BY number HAVING COUNT(number) > 1)
     THEN
@@ -46,7 +48,8 @@ AFTER INSERT OR UPDATE OR DELETE ON CreditCards
 DEFERRABLE INITIALLY DEFERRED
 FOR EACH ROW EXECUTE FUNCTION credit_cards_key_constraint_check();
 
-CREATE OR REPLACE FUNCTION credit_cards_total_participation_check() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION credit_cards_total_participation_check()
+RETURNS TRIGGER AS $$
 BEGIN
     IF EXISTS(SELECT number FROM CreditCards EXCEPT SELECT number FROM Owns)
     THEN
