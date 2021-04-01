@@ -1,3 +1,9 @@
+/*
+This routine is used to find all the instructors who could be assigned to teach a course session.
+The inputs to the routine include the following: course identifier, session date, and session start hour.
+The routine returns a table of records consisting of employee identifier and name.
+*/
+
 CREATE OR REPLACE FUNCTION find_instructors(course_id INTEGER, session_date DATE, session_start_hour TIMESTAMP)
 RETURNS TABLE (employee_id INTEGER, name TEXT) AS $$
 DECLARE
@@ -20,7 +26,7 @@ BEGIN
                 WHERE s.date = session_date AND s.employee_id = e.employee_id
                 AND s.session_start_hour <= session_start_hour <= session_end_hour;)
           AND (
-                SELECT COALESCE(SUM(end_time - start_time), 0) INTO hours FROM Sessions s
+                SELECT COALESCE(SUM(end_time - start_time), 0) FROM Sessions s
                 WHERE s.employee_id = e.employee_id
                 AND EXTRACT(MONTH FROM date) == EXTRACT(MONTH FROM CURRENT_DATE);
               ) < 30;

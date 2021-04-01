@@ -15,8 +15,8 @@ CREATE TABLE Sessions (
 
     /* Check if the session is conducted between 9am - 12pm to 2pm - 6pm and between */
     CHECK(to_char(date, 'Day') IN ('Monday','Tuesday', 'Wednesday','Thursday','Friday')),
-    CHECK((9 <= start_time <= 12) OR (14 <= start_time <= 18)),
-    CHECK((9 <= end_time <= 12) OR (14 <= end_time <= 18)),
+    CHECK((9 <= start_time < 12) OR (14 <= start_time < 18)),
+    CHECK((9 <= end_time <= 12) OR (14 < end_time <= 18)),
     CHECK(end_time > start_time)
 );
 
