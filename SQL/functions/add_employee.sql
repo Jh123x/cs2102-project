@@ -59,7 +59,7 @@ BEGIN
     ELSIF (employee_category ILIKE 'Instructor') THEN
         INSERT INTO Instructors (instructor_id) VALUES (employee_id);
 
-        IF (type ILIKE 'part-time') THEN
+        IF (employee_type ILIKE 'part-time') THEN
             INSERT INTO PartTimeInstructors (instructor_id) VALUES (employee_id);
         ELSE
             INSERT INTO FullTimeInstructors (instructor_id) VALUES (employee_id);

@@ -15,7 +15,7 @@ CREATE TABLE Buys (
     credit_card_number CHAR(16) NOT NULL,
 
     CHECK(buy_num_remaining_redemptions >= 0),
-    FOREIGN KEY(customer_id, credit_card_number) REFERENCES Owns (customer_id, credit_card_number)
+    FOREIGN KEY(customer_id, credit_card_number) REFERENCES Owns (customer_id, credit_card_number) MATCH FULL
 );
 
 DROP TABLE IF EXISTS Redeems CASCADE;
@@ -26,6 +26,7 @@ CREATE TABLE Redeems (
     session_id INTEGER NOT NULL,
     offering_launch_date DATE NOT NULL,
     course_id INTEGER NOT NULL,
+    redeem_cancelled BOOLEAN NOT NULL DEFAULT FALSE,
 
     FOREIGN KEY(session_id, offering_launch_date, course_id) REFERENCES Sessions(session_id, offering_launch_date, course_id) ON UPDATE CASCADE
 );
@@ -38,6 +39,7 @@ CREATE TABLE Registers (
     session_id INTEGER NOT NULL,
     offering_launch_date DATE NOT NULL,
     course_id INTEGER NOT NULL,
+    register_cancelled BOOLEAN NOT NULL DEFAULT FALSE,
 
     FOREIGN KEY(session_id, offering_launch_date, course_id) REFERENCES Sessions(session_id, offering_launch_date, course_id) ON UPDATE CASCADE,
     FOREIGN KEY(customer_id, credit_card_number) REFERENCES Owns (customer_id, credit_card_number)
