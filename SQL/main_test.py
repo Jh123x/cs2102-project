@@ -56,14 +56,24 @@ def connect_db(host: str, port: int, user: str, password: str, dbname: str):
 
 
 # General functions
-def get_data(csv_path: str) -> tuple:
-    """Get data from csv"""
+
+def _get_data(csv_path: str, csv_obj):
+    """Main logic for get_data"""
     data = []
     with open(csv_path) as file:
-        reader = csv.DictReader(file)
+        reader = csv_obj(file)
         for row in reader:
             data.append(row)
     return tuple(data[0].keys()), data
+
+
+def get_data(csv_path: str) -> tuple:
+    """Get data from csv"""
+    return _get_data(csv_path, csv.DictReader)
+
+
+def get_function_data(csv_path: str) -> tuple:
+    return _get_data(csv_path, csv.reader)
 
 
 def check_date(date_string: str) -> datetime.datetime:
@@ -236,7 +246,7 @@ def test_data(cursor, query: str, isPass: bool = True) -> tuple:
     return p, msg
 
 
-def load_success_data(test_path: str, cursor) -> list:
+def load_schema_success_data(test_path: str, cursor) -> list:
     """Load the data"""
 
     # Generate the file path
@@ -262,7 +272,7 @@ def load_success_data(test_path: str, cursor) -> list:
                 return
 
 
-def load_fail_data(test_path: str, cursor):
+def load_schema_fail_data(test_path: str, cursor):
     """Load the fail data"""
 
     # Generate the file path
@@ -386,40 +396,27 @@ if __name__ == "__main__":
             setup_view(cursor, view_dir)
             setup_functions(cursor, function_dir)
             setup_triggers(cursor, trigger_dir)
-
             db.autocommit = False
 
             # Positive test cases for schema (Cumulative)
-            load_success_data('./test data/schema test', cursor)
+            load_schema_success_data('./test data/schema test', cursor)
             db.rollback()
 
             # Run the negative test cases for schema Data
-            load_fail_data('./test data/schema fail', cursor)
+            load_schema_fail_data('./test data/schema fail', cursor)
             db.rollback()
 
             # Other TODO below
             # Positive test cases for triggers
-
             # db.rollback()
 
             # Run the negative test cases for triggers
-
             # db.rollback()
 
             # Positive test cases for view
-
             # db.rollback()
 
             # Run the negative test cases for view
-
-            # db.rollback()
-
-            # Positive test cases for function
-
-            # db.rollback()
-
-            # Run the negative test cases for function
-
             # db.rollback()
 
             # Load Custom Test cases
@@ -428,5 +425,7 @@ if __name__ == "__main__":
 
             # Commit
             db.commit()
-
-    print("Test Completed")
+            
+            # Unittest for functions
+            BaseTest.DB = db
+            unittest.main()
