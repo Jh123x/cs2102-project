@@ -5,8 +5,10 @@ import json
 import logging
 import datetime
 import psycopg2
+import unittest
 import configparser
 from getpass import getpass
+from testfiles.testclass.basetest import BaseTest
 
 
 # Define constants
@@ -97,24 +99,30 @@ def generate_query(table_name: str, header: tuple, data: dict) -> str:
     return f"INSERT INTO {table_name}({', '.join(header)}) VALUES {values};"
 
 
+def generate_function_query(function: str, args: tuple) -> str:
+    """Generate a function for the query"""
+    return f"SELECT {function}({', '.join(args)})"
+
+
 def get_query(path: str) -> str:
     """Get the query from the file"""
     with open(path) as file:
-        return file.read()
+        res = file.read()
+    return res
 
 
 def get_files(directory: str) -> list:
-    """Get the files in the folder"""
+    """Get the files in the folder except files with drop_all_"""
     if not os.path.isdir(directory):
         raise NotADirectoryError(f"{directory} is not a directory")
-    return [x[-1] for x in os.walk(directory)][0]
+    return list(filter(lambda x: "drop_all" not in x,  [x[-1] for x in os.walk(directory)][0]))
 
 
 def execute_query(cursor, query_paths: list) -> None:
     """Read query from list of files and execute them"""
     for path in query_paths:
         query = get_query(path)
-        if not query.strip():
+        if query.strip() == "":
             logging.info(f"File {path} is empty, skipping")
             continue
         try:
@@ -365,66 +373,63 @@ if __name__ == "__main__":
 
     # Connect to the database
     with connect_db(HOST, PORT, user, password, DBNAME) as db:
-        cursor = db.cursor()
+        db.autocommit = True
+        with db.cursor() as cursor:
 
-        # Setup the sql env
-        try:
+            # Setup the sql env
             drop_triggers(cursor, trigger_dir)
             drop_functions(cursor, function_dir)
             drop_view(cursor, view_dir)
             drop_schema(cursor, schema_dir)
-        except Exception as e:
-            logging.critical(f"Error with Dropping: {e}")
-
-        try:
             setup_schema(cursor, schema_dir)
             setup_view(cursor, view_dir)
             setup_functions(cursor, function_dir)
             setup_triggers(cursor, trigger_dir)
-        except Exception as e:
-            logging.critical(f"Error with adding: {e}")
 
-        # Commit
-        db.commit()
+            db.autocommit = False
 
-        # Positive test cases for schema (Cumulative)
-        load_success_data('./test data/schema test', cursor)
-        db.rollback()
+            # Positive test cases for schema (Cumulative)
+            load_success_data('./test data/schema test', cursor)
+            db.rollback()
 
-        # Run the negative test cases for schema Data TODO
-        load_fail_data('./test data/schema fail', cursor)
-        db.rollback()
+            # Run the negative test cases for schema Data
+            load_fail_data('./test data/schema fail', cursor)
+            db.rollback()
 
-        # Other TODO below
-        # Positive test cases for triggers
+            # Other TODO below
+            # Positive test cases for triggers
 
-        db.rollback()
+            # db.rollback()
 
-        # Run the negative test cases for triggers
+            # Run the negative test cases for triggers
 
-        db.rollback()
+            # db.rollback()
 
-        # Positive test cases for view
+            # Positive test cases for view
 
-        db.rollback()
+            # db.rollback()
 
-        # Run the negative test cases for view
+            # Run the negative test cases for view
 
-        db.rollback()
+            # db.rollback()
 
-        # Positive test cases for function
+            # Positive test cases for function
 
-        db.rollback()
+            # db.rollback()
 
-        # Run the negative test cases for function
+            # Run the negative test cases for function
 
-        db.rollback()
+            # db.rollback()
 
-        # Load Custom Test cases
-        load_custom_testcases("./test data/custom test cases", cursor)
-        db.rollback()
+            # Load Custom Test cases
+            load_custom_testcases("./test data/custom test cases", cursor)
+            db.rollback()
 
-        # Commit
-        db.commit()
-        
+            # Run unittest
+            BaseTest.DB = db
+            unittest.main()
+
+            # Commit
+            db.commit()
+
     print("Test Completed")
