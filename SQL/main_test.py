@@ -9,6 +9,7 @@ import unittest
 import configparser
 from getpass import getpass
 from testfiles.testclass.basetest import BaseTest
+from testfiles.testclass.add_employee_test import AddEmployeeTest
 
 
 # Define constants
@@ -115,7 +116,7 @@ def get_files(directory: str) -> list:
     """Get the files in the folder except files with drop_all_"""
     if not os.path.isdir(directory):
         raise NotADirectoryError(f"{directory} is not a directory")
-    return list(filter(lambda x: "drop_all" not in x,  [x[-1] for x in os.walk(directory)][0]))
+    return list(filter(lambda x: "drop_all" not in x.lower(),  [x[-1] for x in os.walk(directory)][0]))
 
 
 def execute_query(cursor, query_paths: list) -> None:
@@ -424,10 +425,6 @@ if __name__ == "__main__":
             # Load Custom Test cases
             load_custom_testcases("./test data/custom test cases", cursor)
             db.rollback()
-
-            # Run unittest
-            BaseTest.DB = db
-            unittest.main()
 
             # Commit
             db.commit()
