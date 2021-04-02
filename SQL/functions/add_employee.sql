@@ -53,7 +53,7 @@ BEGIN
 
         INSERT INTO Administrators (admin_id) VALUES (employee_id);
 
-        IF (course_area_names.COUNT > 0) THEN
+        IF (array_length(course_area_names, 1) > 0) THEN
             RAISE EXCEPTION 'Admin should not have course area';
         END IF;
     ELSIF (employee_category ILIKE 'Instructor') THEN
