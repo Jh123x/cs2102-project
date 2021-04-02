@@ -1,5 +1,5 @@
 def parse_args(arg: str):
-    if '::' in arg:
+    if '::' in arg or '[' in arg:
         return arg
     return f"'{arg}'"
 
@@ -7,17 +7,11 @@ def parse_args(arg: str):
 class BaseTest(object):
     DB = None
     CURSOR = None
-
-    def setUp(self) -> None:
-        """Setup before each test case"""
-        assert self.DB is not None, "Please initialise DB to BaseTest.DB"
-        self.CURSOR = self.DB.cursor()
-        return super().setUp()
+    ERR_MSG = "Expected: %s\nActual: %s"
 
     def tearDown(self) -> None:
         """Tear down after each test case"""
         self.DB.rollback()
-        return super().tearDown()
 
     def generate_query(self, function: str, args: tuple) -> None:
         """Generate query based on arguments"""
@@ -32,8 +26,8 @@ class BaseTest(object):
         """Get the result from the previous query"""
         return self.CURSOR.fetchall()
 
-    def value_test(self, query:str, expected, message):
+    def value_test(self, query:str, expected):
         """Test value"""
         self.execute_query(query)
         actual = self.fetch_all()
-        assert expected == actual, message % actual
+        assert expected == actual, self.ERR_MSG % (expected, actual)
