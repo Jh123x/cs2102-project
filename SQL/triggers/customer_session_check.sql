@@ -12,7 +12,7 @@ BEGIN
     SELECT COUNT(*) INTO register_count FROM Registers WHERE NEW.customer_id = customer_id AND NEW.course_id = course_id;
     SELECT COUNT(*) INTO redeem_count FROM Redeems WHERE NEW.customer_id = customer_id AND NEW.course_id = course_id;
     SELECT COUNT(*) INTO cancel_count FROM Cancels WHERE NEW.customer_id = customer_id AND NEW.course_id = course_id;
-    IF (register_count + redeem_count - cancels > 0) THEN
+    IF (register_count + redeem_count - cancel_count > 0) THEN
         RAISE EXCEPTION 'Already registered for a session of this course';
     END IF;
 
