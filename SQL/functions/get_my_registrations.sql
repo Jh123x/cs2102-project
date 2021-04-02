@@ -4,7 +4,7 @@ CREATE OR REPLACE FUNCTION get_my_registrations (
 )
 RETURNS TABLE(
     course_title TEXT,
-    offering_fees DEC(64,2),
+    offering_fees DEC(64,2)
     session_date DATE,
     session_start_hour INTEGER,
     session_end_hour INTEGER,
@@ -12,14 +12,7 @@ RETURNS TABLE(
 ) AS $$
 BEGIN
     RETURN QUERY (
-        SELECT 
-            c.course_title,
-            co.offering_fees,
-            s.session_date,
-            s.session_start_hour,
-            s.session_end_hour,
-            c.course_duration
-        FROM (
+        WITH (
             SELECT Registers.session_id, Registers.offering_launch_date, Registers.course_id
             FROM Registers
             WHERE Registers.customer_id = customer_id AND Registers.register_cancelled IS NOT TRUE
@@ -27,7 +20,15 @@ BEGIN
             SELECT Redeems.session_id, Redeems.offering_launch_date, Redeems.course_id
             FROM Redeems
             WHERE Redeems.customer_id = customer_id AND Redeems.redeem_cancelled IS NOT TRUE
-        ) AS r
+        ) AS CourseRegistrations
+        SELECT
+            c.course_title,
+            co.offering_fees,
+            s.session_date,
+            s.session_start_hour,
+            s.session_end_hour,
+            c.course_duration
+        FROM CourseRegistrations
         NATURAL JOIN Sessions s
         NATURAL JOIN CourseOfferings co
         NATURAL JOIN Courses c

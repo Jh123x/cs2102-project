@@ -1,3 +1,5 @@
+BEGIN TRANSACTION;
+SET CONSTRAINTS ALL DEFERRED;
 INSERT INTO Employees(employee_id, employee_name, employee_address, employee_phone, employee_email, employee_join_date, employee_depart_date) VALUES (1, 'John ', 'Jurong', 91234567, 'john@gmail.com', '2020-12-12', '2022-05-05');
 INSERT INTO Employees(employee_id, employee_name, employee_address, employee_phone, employee_email, employee_join_date, employee_depart_date) VALUES (2, 'Jane ', 'Yishun', 92345678, 'jane@gmail.com', '2020-02-13', '2022-05-20');
 INSERT INTO Employees(employee_id, employee_name, employee_address, employee_phone, employee_email, employee_join_date, employee_depart_date) VALUES (3, 'Alice ', 'Changi', 93456789, 'alice@gmail.com', '2020-01-15', '2022-05-01');
@@ -119,15 +121,16 @@ INSERT INTO Buys(buy_date, buy_num_remaining_redemptions, package_id, customer_i
 INSERT INTO Buys(buy_date, buy_num_remaining_redemptions, package_id, customer_id, credit_card_number) VALUES ('2021-03-03 00:00:00', 4, 3, 3, '5221346498258540');
 INSERT INTO Buys(buy_date, buy_num_remaining_redemptions, package_id, customer_id, credit_card_number) VALUES ('2021-03-04 00:00:00', 5, 4, 4, '5581206674057870');
 INSERT INTO Buys(buy_date, buy_num_remaining_redemptions, package_id, customer_id, credit_card_number) VALUES ('2021-03-05 00:00:00', 6, 5, 5, '5464313917268790');
-INSERT INTO Redeems(redeem_date, customer_id, package_id, session_id, offering_launch_date, course_id ) VALUES ('2021-03-03 00:00:00', 2, 2, 2, '2021-02-03 00:00:00', 2);
-INSERT INTO Redeems(redeem_date, customer_id, package_id, session_id, offering_launch_date, course_id ) VALUES ('2021-03-04 00:00:00', 3, 3, 1, '2021-02-03 00:00:00', 2);
-INSERT INTO Redeems(redeem_date, customer_id, package_id, session_id, offering_launch_date, course_id ) VALUES ('2021-03-05 00:00:00', 4, 4, 2, '2021-02-04 00:00:00', 3);
-INSERT INTO Redeems(redeem_date, customer_id, package_id, session_id, offering_launch_date, course_id ) VALUES ('2021-03-06 00:00:00', 5, 5, 1, '2021-02-04 00:00:00', 3);
-INSERT INTO Registers(register_date, customer_id, credit_card_number, session_id, offering_launch_date, course_id) VALUES ('2021-03-08 00:00:00', 6, '2720992107020130', 2, '2021-02-05 00:00:00', 4);
-INSERT INTO Registers(register_date, customer_id, credit_card_number, session_id, offering_launch_date, course_id) VALUES ('2021-03-09 00:00:00', 7, '5329566110098690', 1, '2021-02-05 00:00:00', 4);
-INSERT INTO Registers(register_date, customer_id, credit_card_number, session_id, offering_launch_date, course_id) VALUES ('2021-03-10 00:00:00', 8, '5512067006104390', 2, '2021-02-06 00:00:00', 5);
-INSERT INTO Registers(register_date, customer_id, credit_card_number, session_id, offering_launch_date, course_id) VALUES ('2021-03-11 00:00:00', 9, '5276695735345690', 1, '2021-02-06 00:00:00', 5);
-INSERT INTO Registers(register_date, customer_id, credit_card_number, session_id, offering_launch_date, course_id) VALUES ('2021-03-12 00:00:00', 10, '5197566571366670', 2, '2021-02-06 00:00:00', 5);
+INSERT INTO Redeems(redeem_date, buy_date, session_id, offering_launch_date, course_id, redeem_cancelled) VALUES ('2021-03-03 00:00:00', '2021-03-02 00:00:00', 2, '2021-02-03 00:00:00', 2, FALSE);
+INSERT INTO Redeems(redeem_date, buy_date, session_id, offering_launch_date, course_id, redeem_cancelled) VALUES ('2021-03-04 00:00:00', '2021-03-03 00:00:00', 1, '2021-02-03 00:00:00', 2, FALSE);
+INSERT INTO Redeems(redeem_date, buy_date, session_id, offering_launch_date, course_id, redeem_cancelled) VALUES ('2021-03-05 00:00:00', '2021-03-04 00:00:00', 2, '2021-02-04 00:00:00', 3, FALSE);
+INSERT INTO Redeems(redeem_date, buy_date, session_id, offering_launch_date, course_id, redeem_cancelled) VALUES ('2021-03-06 00:00:00', '2021-03-05 00:00:00', 1, '2021-02-04 00:00:00', 3, FALSE);
+INSERT INTO Redeems(redeem_date, buy_date, session_id, offering_launch_date, course_id, redeem_cancelled) VALUES ('2021-03-07 00:00:00', '2021-03-02 00:00:00', 1, '2021-02-04 00:00:00', 3, TRUE);
+INSERT INTO Registers(register_date, customer_id, credit_card_number, session_id, offering_launch_date, course_id, register_cancelled) VALUES ('2021-03-08 00:00:00', 6, '2720992107020130', 2, '2021-02-05 00:00:00', 4, TRUE);
+INSERT INTO Registers(register_date, customer_id, credit_card_number, session_id, offering_launch_date, course_id, register_cancelled) VALUES ('2021-03-09 00:00:00', 7, '5329566110098690', 1, '2021-02-05 00:00:00', 4, FALSE);
+INSERT INTO Registers(register_date, customer_id, credit_card_number, session_id, offering_launch_date, course_id, register_cancelled) VALUES ('2021-03-10 00:00:00', 8, '5512067006104390', 2, '2021-02-06 00:00:00', 5, FALSE);
+INSERT INTO Registers(register_date, customer_id, credit_card_number, session_id, offering_launch_date, course_id, register_cancelled) VALUES ('2021-03-11 00:00:00', 9, '5276695735345690', 1, '2021-02-06 00:00:00', 5, FALSE);
+INSERT INTO Registers(register_date, customer_id, credit_card_number, session_id, offering_launch_date, course_id, register_cancelled) VALUES ('2021-03-12 00:00:00', 10, '5197566571366670', 2, '2021-02-06 00:00:00', 5, FALSE);
 INSERT INTO Cancels(cancel_date, cancel_refund_amt, cancel_package_credit, course_id, session_id, offering_launch_date, customer_id) VALUES ('2021-03-09 00:00:00', '180.9', '0', 4, 2, '2021-02-05 00:00:00', 6);
 INSERT INTO PaySlips(employee_id, payslip_date, payslip_amount, payslip_num_work_hours) VALUES (1, '2021-03-31 00:00:00', 80, 10);
 INSERT INTO PaySlips(employee_id, payslip_date, payslip_amount, payslip_num_work_days) VALUES (2, '2021-03-31 00:00:00', 1000, 10);
@@ -136,4 +139,4 @@ INSERT INTO PaySlips(employee_id, payslip_date, payslip_amount, payslip_num_work
 INSERT INTO PaySlips(employee_id, payslip_date, payslip_amount, payslip_num_work_hours) VALUES (5, '2021-03-31 00:00:00', 1000, 10);
 INSERT INTO PaySlips(employee_id, payslip_date, payslip_amount, payslip_num_work_days) VALUES (6, '2021-03-31 00:00:00', 3000, 10);
 INSERT INTO PaySlips(employee_id, payslip_date, payslip_amount, payslip_num_work_days) VALUES (7, '2021-03-31 00:00:00', 4000, 10);
-INSERT INTO PaySlips(employee_id, payslip_date, payslip_amount, payslip_num_work_hours) VALUES (1, '2020-09-12', '-100', 10);
+END;

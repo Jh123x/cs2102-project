@@ -21,8 +21,7 @@ CREATE TABLE Buys (
 DROP TABLE IF EXISTS Redeems CASCADE;
 CREATE TABLE Redeems (
     redeem_date TIMESTAMP PRIMARY KEY NOT NULL,
-    customer_id INTEGER NOT NULL,
-    package_id INTEGER NOT NULL,
+    buy_date TIMESTAMP NOT NULL REFERENCES Buys (buy_date),
     session_id INTEGER NOT NULL,
     offering_launch_date DATE NOT NULL,
     course_id INTEGER NOT NULL,
@@ -41,7 +40,7 @@ CREATE TABLE Registers (
     course_id INTEGER NOT NULL,
     register_cancelled BOOLEAN NOT NULL DEFAULT FALSE,
 
-    PRIMARY KEY(register_date, customer_id),
+    PRIMARY KEY(register_date),
     FOREIGN KEY(session_id, offering_launch_date, course_id) REFERENCES Sessions(session_id, offering_launch_date, course_id) ON UPDATE CASCADE,
     FOREIGN KEY(customer_id, credit_card_number) REFERENCES Owns (customer_id, credit_card_number)
 );
