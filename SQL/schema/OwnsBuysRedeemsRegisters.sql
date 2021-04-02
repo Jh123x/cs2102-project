@@ -15,7 +15,7 @@ CREATE TABLE Buys (
     credit_card_number CHAR(16) NOT NULL,
 
     CHECK(buy_num_remaining_redemptions >= 0),
-    FOREIGN KEY(customer_id, credit_card_number) REFERENCES Owns (customer_id, credit_card_number)
+    FOREIGN KEY(customer_id, credit_card_number) REFERENCES Owns (customer_id, credit_card_number) MATCH FULL
 );
 
 DROP TABLE IF EXISTS Redeems CASCADE;
