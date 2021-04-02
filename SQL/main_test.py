@@ -324,9 +324,8 @@ def load_custom_testcases(test_path: str, cursor) -> None:
             logger.critical(
                 f'Failed test: Test file {os.path.basename(path)}\nQuery: {q}\nError: {msg}')
 
+
 # Parsing functions
-
-
 def parse_constants(host: str, port: str, dbname: str) -> tuple:
     """Parse the constants"""
     return host, int(port), dbname
