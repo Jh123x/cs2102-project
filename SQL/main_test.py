@@ -279,7 +279,7 @@ def load_schema_fail_data(test_path: str, cursor, db):
     file_paths = zip(map_with_dir(test_path, map(
         lambda x: x[0], FILES_TEST_MAP)), map(lambda x: x[1], FILES_TEST_MAP))
 
-    #Store Success queries
+    # Store Success queries
     successes = []
 
     # Load the data in order
@@ -316,7 +316,7 @@ def load_schema_fail_data(test_path: str, cursor, db):
             # If passed continue
             if passed:
                 continue
-            
+
             # Throw an error
             logger.critical(
                 f"Fail Failure Testcase: Row {index + 1} of {os.path.basename(path)}\nQuery: {q}\nError: {msg}\nRemarks: {remarks}")
@@ -437,7 +437,7 @@ if __name__ == "__main__":
 
             # Commit
             db.commit()
-            
+
             # Unittest for functions
             # BaseTest.DB = db
             # BaseTest.CURSOR = cursor
