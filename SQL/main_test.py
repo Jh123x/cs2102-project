@@ -1,11 +1,15 @@
 #!/usr/bin/python3
 import os
 import csv
+import json
 import logging
 import datetime
 import psycopg2
+import unittest
 import configparser
 from getpass import getpass
+from testfiles.testclass.basetest import BaseTest
+from testfiles.testclass.add_employee_test import AddEmployeeTest
 
 
 # Define constants
@@ -13,33 +17,33 @@ SETTINGS_DIRECTORY = "settings.cfg"
 
 # Make the logger
 logger = logging.Logger("Logs")
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.NOTSET)
 
 FILES_TEST_MAP = [
-        ('Employee_Test.csv', "Employees"),
-        ('Customers_Test.csv', 'Customers'),
-        ('Full_Time_Employee_Test.csv', 'FullTimeEmployees'),
-        ('Part_Time_Employee_Test.csv', 'PartTimeEmployees'),
-        ('Instructor_Test.csv', 'Instructors'),
-        ('Admin_Test.csv', 'Administrators'),
-        ('Manager_Test.csv', 'Managers'),
-        ('Full_Time_Instructors_Test.csv', 'FullTimeInstructors'),
-        ('Part_Time_Instructors_Test.csv', 'PartTimeInstructors'),
-        ('Credit_Card_Test.csv', 'CreditCards'),
-        ('Owns_Test.csv', 'Owns'),
-        ('Course_Area_Test.csv', 'CourseAreas'),
-        ('Course_Test.csv', 'Courses'),
-        ('Course_Offering_Test.csv', 'CourseOfferings'),
-        ('Course_Package_Test.csv', 'CoursePackages'),
-        ('Specializes_Test.csv', 'Specializes'),
-        ('Room_Test.csv', 'Rooms'),
-        ('Session_Test.csv', 'Sessions'),
-        ('Buys_Test.csv', 'Buys'),
-        ('Redeem_Test.csv', 'Redeems'),
-        ('Registers_Test.csv', 'Registers'),
-        ('Cancels_Test.csv', 'Cancels'),
-        ('Payslips_Test.csv', 'PaySlips'),
-    ]
+    ('Employee_Test.csv', "Employees"),
+    ('Customers_Test.csv', 'Customers'),
+    ('Full_Time_Employee_Test.csv', 'FullTimeEmployees'),
+    ('Part_Time_Employee_Test.csv', 'PartTimeEmployees'),
+    ('Instructor_Test.csv', 'Instructors'),
+    ('Admin_Test.csv', 'Administrators'),
+    ('Manager_Test.csv', 'Managers'),
+    ('Full_Time_Instructors_Test.csv', 'FullTimeInstructors'),
+    ('Part_Time_Instructors_Test.csv', 'PartTimeInstructors'),
+    ('Credit_Card_Test.csv', 'CreditCards'),
+    ('Owns_Test.csv', 'Owns'),
+    ('Course_Area_Test.csv', 'CourseAreas'),
+    ('Course_Test.csv', 'Courses'),
+    ('Course_Offering_Test.csv', 'CourseOfferings'),
+    ('Course_Package_Test.csv', 'CoursePackages'),
+    ('Specializes_Test.csv', 'Specializes'),
+    ('Room_Test.csv', 'Rooms'),
+    ('Session_Test.csv', 'Sessions'),
+    ('Buys_Test.csv', 'Buys'),
+    ('Redeem_Test.csv', 'Redeems'),
+    ('Registers_Test.csv', 'Registers'),
+    ('Cancels_Test.csv', 'Cancels'),
+    ('Payslips_Test.csv', 'PaySlips'),
+]
 
 
 # DB functions
@@ -52,14 +56,24 @@ def connect_db(host: str, port: int, user: str, password: str, dbname: str):
 
 
 # General functions
-def get_data(csv_path: str) -> tuple:
-    """Get data from csv"""
+
+def _get_data(csv_path: str, csv_obj):
+    """Main logic for get_data"""
     data = []
     with open(csv_path) as file:
-        reader = csv.DictReader(file)
+        reader = csv_obj(file)
         for row in reader:
             data.append(row)
     return tuple(data[0].keys()), data
+
+
+def get_data(csv_path: str) -> tuple:
+    """Get data from csv"""
+    return _get_data(csv_path, csv.DictReader)
+
+
+def get_function_data(csv_path: str) -> tuple:
+    return _get_data(csv_path, csv.reader)
 
 
 def check_date(date_string: str) -> datetime.datetime:
@@ -96,24 +110,30 @@ def generate_query(table_name: str, header: tuple, data: dict) -> str:
     return f"INSERT INTO {table_name}({', '.join(header)}) VALUES {values};"
 
 
+def generate_function_query(function: str, args: tuple) -> str:
+    """Generate a function for the query"""
+    return f"SELECT {function}({', '.join(args)})"
+
+
 def get_query(path: str) -> str:
     """Get the query from the file"""
     with open(path) as file:
-        return file.read()
+        res = file.read()
+    return res
 
 
 def get_files(directory: str) -> list:
-    """Get the files in the folder"""
+    """Get the files in the folder except files with drop_all_"""
     if not os.path.isdir(directory):
         raise NotADirectoryError(f"{directory} is not a directory")
-    return [x[-1] for x in os.walk(directory)][0]
+    return list(filter(lambda x: "drop_all" not in x.lower(),  [x[-1] for x in os.walk(directory)][0]))
 
 
 def execute_query(cursor, query_paths: list) -> None:
     """Read query from list of files and execute them"""
     for path in query_paths:
         query = get_query(path)
-        if not query.strip():
+        if query.strip() == "":
             logging.info(f"File {path} is empty, skipping")
             continue
         try:
@@ -208,7 +228,7 @@ def setup_view(cursor, view_dir: str) -> None:
 
 
 # Test data functions
-def test_data(cursor, query: str, isPass: bool = True) -> bool:
+def test_data(cursor, query: str, isPass: bool = True) -> tuple:
     """Test the query"""
     msg = "Passed when it should fail"
     p = True
@@ -226,7 +246,7 @@ def test_data(cursor, query: str, isPass: bool = True) -> bool:
     return p, msg
 
 
-def load_success_data(test_path: str, cursor) -> list:
+def load_schema_success_data(test_path: str, cursor) -> list:
     """Load the data"""
 
     # Generate the file path
@@ -235,6 +255,11 @@ def load_success_data(test_path: str, cursor) -> list:
 
     # Load the data in order
     for path, table in file_paths:
+
+        # Skip if file does not exist
+        if not os.path.isfile(path):
+            continue
+
         header, data = get_data(path)
         for index, item in enumerate(data):
             if not "".join(item.values()):
@@ -247,7 +272,7 @@ def load_success_data(test_path: str, cursor) -> list:
                 return
 
 
-def load_fail_data(test_path: str, cursor):
+def load_schema_fail_data(test_path: str, cursor):
     """Load the fail data"""
 
     # Generate the file path
@@ -257,19 +282,25 @@ def load_fail_data(test_path: str, cursor):
     # Load the data in order
     for path, table in file_paths:
 
-        header, data = get_data(path)
+        # Skip if file does not exist
+        if not os.path.isfile(path):
+            continue
 
-        for index, all_item in enumerate(data):
+        _, data = get_data(path)
+
+        for index, item in enumerate(data):
 
             # If it is empty, skip it
-            if not "".join(all_item.values()):
+            if not "".join(item.values()):
                 continue
 
             # Unpack the values
-            item, isPass, remarks = all_item[:-2], all_item[-2], all_item[-1]
+            isPass, remarks = item['outcome'] == 'pass', item['reason']
+            del item['outcome']
+            del item['reason']
 
             # Generate and test query
-            q = generate_query(table, header, item)
+            q = generate_query(table, item.keys(), item)
             passed, msg = test_data(cursor, q, isPass)
 
             # If passed continue
@@ -280,6 +311,37 @@ def load_fail_data(test_path: str, cursor):
             logger.critical(
                 f"Fail Testcase: Row {index + 1} of {os.path.basename(path)}\nQuery: {q}\nError: {msg}\n Remarks: {remarks}")
             return
+
+
+def load_custom_testcases(test_path: str, cursor) -> None:
+    """Run all custom test cases"""
+
+    # Generate the file path
+    file_paths = map_with_dir(test_path, get_files(test_path))
+
+    # Load each path
+    for path in file_paths:
+
+        # Get the json file
+        with open(path) as file:
+            data = json.loads(file.read())
+
+        # Store vars
+        isPass = data['pass']
+        table_name = data['table_name']
+
+        # Remove excess args
+        del data['pass']
+        del data['table_name']
+
+        # Generate query
+        q = generate_query(table_name, data.keys(), data)
+
+        # Test the query
+        passed, msg = test_data(cursor, q, isPass)
+        if not passed:
+            logger.critical(
+                f'Failed test: Test file {os.path.basename(path)}\nQuery: {q}\nError: {msg}')
 
 
 # Parsing functions
@@ -322,40 +384,48 @@ if __name__ == "__main__":
 
     # Connect to the database
     with connect_db(HOST, PORT, user, password, DBNAME) as db:
-        cursor = db.cursor()
+        db.autocommit = True
+        with db.cursor() as cursor:
 
-        # Setup the sql env
-        try:
+            # Setup the sql env
             drop_triggers(cursor, trigger_dir)
             drop_functions(cursor, function_dir)
             drop_view(cursor, view_dir)
             drop_schema(cursor, schema_dir)
-        except Exception as e:
-            logging.critical(f"Error with Dropping: {e}")
-
-        try:
             setup_schema(cursor, schema_dir)
             setup_view(cursor, view_dir)
             setup_functions(cursor, function_dir)
             setup_triggers(cursor, trigger_dir)
-        except Exception as e:
-            logging.critical(f"Error with adding: {e}")
+            db.autocommit = False
 
-        
-        # Positive test cases for schema
-        load_success_data('./test data/schema test')
+            # Positive test cases for schema (Cumulative)
+            load_schema_success_data('./test data/schema test', cursor)
+            db.rollback()
 
-        # Run the negative test cases for schema Data TODO
-        # load_fail_data('./test data/schema fail')
+            # Run the negative test cases for schema Data
+            load_schema_fail_data('./test data/schema fail', cursor)
+            db.rollback()
 
-        ### Other TODO below
-        # Positive test cases for triggers
-        # Run the negative test cases for triggers
-        # Positive test cases for view
-        # Run the negative test cases for view
-        # Positive test cases for function
-        # Run the negative test cases for function
+            # Other TODO below
+            # Positive test cases for triggers
+            # db.rollback()
 
+            # Run the negative test cases for triggers
+            # db.rollback()
 
-        # Commit
-        db.commit()
+            # Positive test cases for view
+            # db.rollback()
+
+            # Run the negative test cases for view
+            # db.rollback()
+
+            # Load Custom Test cases
+            load_custom_testcases("./test data/custom test cases", cursor)
+            db.rollback()
+
+            # Commit
+            db.commit()
+            
+            # Unittest for functions
+            BaseTest.DB = db
+            unittest.main()

@@ -1,0 +1,8 @@
+{
+    "table_name": "PaySlips",
+    "pass": false,
+    "employee_id": "1",
+    "payslip_date": "2020-09-12",
+    "payslip_amount": "-100",
+    "payslip_num_work_hours": "10"
+}
