@@ -60,9 +60,12 @@ BEGIN
             e.employee_name,
             get_session_num_remaining_seats(s.session_id, offering_launch_date, course_id)
         FROM Sessions s
+        NATURAL JOIN CourseOfferings co
         NATURAL JOIN Instructors i 
         INNER JOIN Employees e ON i.instructor_id = e.employee_id
-        WHERE s.offering_launch_date = offering_launch_date_arg AND s.course_id = course_id_arg
+        WHERE s.offering_launch_date = offering_launch_date_arg
+            AND s.course_id = course_id_arg
+            AND co.offering_registration_deadline >= CURRENT_DATE
             AND get_session_num_remaining_seats(s.session_id, offering_launch_date, course_id) > 0
         ORDER BY s.session_date ASC, s.session_start_hour ASC
     );
