@@ -1,12 +1,38 @@
 DROP FUNCTION IF EXISTS get_session_num_remaining_seats CASCADE;
 CREATE OR REPLACE FUNCTION get_session_num_remaining_seats (
-    session_id INTEGER,
-    offering_launch_date DATE, 
-    course_id INTEGER
+    session_id_arg INTEGER,
+    offering_launch_date_arg DATE, 
+    course_id_arg INTEGER
 ) RETURNS INTEGER AS $$
+DECLARE
+    num_remaining_seats INTEGER;
 BEGIN
-    /* Todo: implement the logic for finding number of remaining seats for this session */
-    RETURN 1337;
+    WITH Registrations AS (
+        SELECT COUNT(r.register_date) AS num_registered
+        FROM Registers r
+        WHERE r.session_id = session_id_arg 
+            AND r.offering_launch_date = offering_launch_date_arg 
+            AND r.course_id = course_id_arg
+            AND r.register_cancelled IS NOT TRUE
+    ), Redemptions AS (
+        SELECT COUNT(r.redeem_date) AS num_redeemed
+        FROM Redeems r
+        WHERE r.session_id = session_id_arg 
+            AND r.offering_launch_date = offering_launch_date_arg 
+            AND r.course_id = course_id_arg
+            AND r.redeem_cancelled IS NOT TRUE
+    ), SessionRoom AS (
+        SELECT r.room_seating_capacity AS room_seating_capacity
+        FROM Sessions s
+        NATURAL JOIN Rooms r
+        WHERE s.session_id = session_id_arg 
+            AND s.offering_launch_date = offering_launch_date_arg 
+            AND s.course_id = course_id_arg
+    )
+    SELECT (room_seating_capacity - COALESCE(num_registered, 0) - COALESCE(num_redeemed, 0)) INTO num_remaining_seats
+    FROM Registrations, Redemptions, SessionRoom;
+
+    RETURN num_remaining_seats;
 END;
 $$ LANGUAGE PLPGSQL;
 

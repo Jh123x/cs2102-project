@@ -1,11 +1,22 @@
 DROP FUNCTION IF EXISTS get_offering_num_remaining_seats CASCADE;
 CREATE OR REPLACE FUNCTION get_offering_num_remaining_seats (
-    offering_launch_date DATE, 
-    course_id INTEGER
+    offering_launch_date_arg DATE, 
+    course_id_arg INTEGER
 ) RETURNS INTEGER AS $$
+DECLARE
+    num_remaining_seats INTEGER;
 BEGIN
-    /* Todo: implement the logic for finding number of remaining seats for this course */
-    RETURN 1337;
+    SELECT SUM(get_session_num_remaining_seats(s.session_id, s.offering_launch_date, s.course_id)) INTO num_remaining_seats
+    FROM Sessions s
+    WHERE s.offering_launch_date = offering_launch_date_arg
+        AND s.course_id = course_id_arg;
+
+    IF num_remaining_seats IS NULL
+    THEN
+        num_remaining_seats := 0;
+    END IF;
+
+    RETURN num_remaining_seats;
 END;
 $$ LANGUAGE PLPGSQL;
 
