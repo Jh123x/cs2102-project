@@ -268,16 +268,19 @@ def load_schema_success_data(test_path: str, cursor) -> list:
             passed, msg = test_data(cursor, q)
             if not passed:
                 logger.critical(
-                    f"Fail Testcase: Row {index + 1} of {os.path.basename(path)}\nQuery: {q}\nError: {msg}")
+                    f"Fail Success Testcase: Row {index + 1} of {os.path.basename(path)}\nQuery: {q}\nError: {msg}")
                 return
 
 
-def load_schema_fail_data(test_path: str, cursor):
+def load_schema_fail_data(test_path: str, cursor, db):
     """Load the fail data"""
 
     # Generate the file path
     file_paths = zip(map_with_dir(test_path, map(
         lambda x: x[0], FILES_TEST_MAP)), map(lambda x: x[1], FILES_TEST_MAP))
+
+    #Store Success queries
+    successes = []
 
     # Load the data in order
     for path, table in file_paths:
@@ -303,13 +306,20 @@ def load_schema_fail_data(test_path: str, cursor):
             q = generate_query(table, item.keys(), item)
             passed, msg = test_data(cursor, q, isPass)
 
+            if isPass:
+                successes.append(q)
+            else:
+                db.rollback()
+                for d in successes:
+                    test_data(cursor, d, True)
+
             # If passed continue
             if passed:
                 continue
-
+            
             # Throw an error
             logger.critical(
-                f"Fail Testcase: Row {index + 1} of {os.path.basename(path)}\nQuery: {q}\nError: {msg}\n Remarks: {remarks}")
+                f"Fail Failure Testcase: Row {index + 1} of {os.path.basename(path)}\nQuery: {q}\nError: {msg}\nRemarks: {remarks}")
             return
 
 
@@ -398,12 +408,14 @@ if __name__ == "__main__":
             setup_triggers(cursor, trigger_dir)
             db.autocommit = False
 
+    with connect_db(HOST, PORT, user, password, DBNAME) as db:
+        with db.cursor() as cursor:
             # Positive test cases for schema (Cumulative)
             load_schema_success_data('./test data/schema test', cursor)
             db.rollback()
 
             # Run the negative test cases for schema Data
-            load_schema_fail_data('./test data/schema fail', cursor)
+            load_schema_fail_data('./test data/schema fail', cursor, db)
             db.rollback()
 
             # Other TODO below
@@ -427,5 +439,6 @@ if __name__ == "__main__":
             db.commit()
             
             # Unittest for functions
-            BaseTest.DB = db
-            unittest.main()
+            # BaseTest.DB = db
+            # BaseTest.CURSOR = cursor
+            # unittest.main()
