@@ -4,17 +4,19 @@ DECLARE
     m_start_date DATE;
     m_end_date DATE;
 BEGIN
-    SELECT MAX(date), MIN(date) INTO m_end_date, m_start_date
+    SELECT MAX(session_date), MIN(session_date) INTO m_end_date, m_start_date
     FROM Sessions s
     WHERE NEW.session_id = s.session_id
         AND NEW.course_id = s.course_id
         AND NEW.offering_launch_date = s.offering_launch_date;
 
-    UPDATE CourseOffering c
+    UPDATE CourseOfferings c
     SET offering_start_date = m_start_date,
         offering_end_date = m_end_date
     WHERE c.course_id = OLD.course_id
         AND c.offering_launch_date = OLD.offering_launch_date;
+
+    RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
