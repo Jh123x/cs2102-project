@@ -32,6 +32,11 @@ BEGIN
     SELECT (room_seating_capacity - COALESCE(num_registered, 0) - COALESCE(num_redeemed, 0)) INTO num_remaining_seats
     FROM Registrations, Redemptions, SessionRoom;
 
+    IF num_remaining_seats IS NULL
+    THEN
+        num_remaining_seats := 0;
+    END IF;
+
     RETURN num_remaining_seats;
 END;
 $$ LANGUAGE PLPGSQL;
