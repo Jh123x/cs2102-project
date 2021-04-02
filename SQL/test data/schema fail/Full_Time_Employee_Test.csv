@@ -1,0 +1,7 @@
+employee_id,employee_monthly_salary,outcome,reason
+2,1000,pass,
+3,2000,pass,
+6,3000,pass,
+7,4000,pass,
+8,5000,pass,
+9,-6000,fail,salary is negative

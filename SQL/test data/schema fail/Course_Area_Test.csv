@@ -1,0 +1,8 @@
+course_area_name,manager_id,outcome,reason
+Security,2,pass,
+Database ,3,pass,
+Maths,3,pass,
+English,2,pass,
+Computing,3,pass,
+Dancing,6,fail,manager id invalid
+Security,2,fail,name is not unique

@@ -1,0 +1,11 @@
+room_id,room_location,room_seating_capacity,outcome,reason
+1,COM1,2,pass,
+2,COM2,3,pass,
+3,COM3,5,pass,
+4,COM4,10,pass,
+5,COM5 ,30,pass,
+6,COM6,8,pass,
+7,COM7,7,pass,
+8,COM8,35,pass,
+9,COM9,23,pass,
+9,COM10,23,fail,

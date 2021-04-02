@@ -1,0 +1,18 @@
+session_id,session_date,session_start_hour,session_end_hour,course_id,offering_launch_date,room_id,instructor_id,outcome,reason
+1,29/3/2021,10,12,1,2/2/2021,1,4,pass,
+1,29/3/2021,14,16,2,3/2/2021,2,5,pass,
+2,30/3/2021,10,12,2,3/2/2021,2,4,pass,
+1,30/3/2021,14,16,3,4/2/2021,3,1,pass,
+2,31/3/2021,10,12,3,4/2/2021,3,5,pass,
+1,31/3/2021,14,16,4,5/2/2021,4,1,pass,
+2,1/4/2021,10,12,4,5/2/2021,4,4,pass,
+1,2/4/2021,10,12,5,6/2/2021,5,5,pass,
+2,2/4/2021,14,16,5,6/2/2021,2,1,pass,
+3,2/4/2021,14,16,4,5/2/2021,4,4,pass,different course offering but same date and time for session
+2,29/3/2021,15,17,1,2/2/2021,2,5,fail ,"session collision: same course offering, same date for session"
+2,30/3/2021,12,14,1,2/2/2021,1,5,fail ,session is from 12-2pm
+2,28/3/2021,10,12,1,2/2/2021,1,4,fail ,session falls on a Sunday
+2,30/3/2021,12,10,1,2/2/2021,1,5,fail ,session end time < start time
+2,31/3/2021,16,18,3,4/2/2021,3,1,fail ,instructor have 2 consecutive session
+2,30/3/2021,18,20,1,2/2/2021,1,5,fail ,session is after 6pm
+2,31/3/2021,10,12,1,2/2/2021,3,4,fail,room is occupied
