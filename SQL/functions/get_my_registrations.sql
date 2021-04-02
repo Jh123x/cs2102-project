@@ -4,7 +4,7 @@ CREATE OR REPLACE FUNCTION get_my_registrations (
 )
 RETURNS TABLE(
     course_title TEXT,
-    offering_fees DEC(64,2)
+    offering_fees DEC(64,2),
     session_date DATE,
     session_start_hour INTEGER,
     session_end_hour INTEGER,
