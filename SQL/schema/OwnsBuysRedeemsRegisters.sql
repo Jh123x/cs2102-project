@@ -27,7 +27,7 @@ CREATE TABLE Redeems (
     offering_launch_date DATE NOT NULL,
     course_id INTEGER NOT NULL,
 
-    FOREIGN KEY(session_id, offering_launch_date, course_id) REFERENCES Sessions(session_id, offering_launch_date, course_id)
+    FOREIGN KEY(session_id, offering_launch_date, course_id) REFERENCES Sessions(session_id, offering_launch_date, course_id) ON UPDATE CASCADE
 );
 
 DROP TABLE IF EXISTS Registers CASCADE;
@@ -39,7 +39,7 @@ CREATE TABLE Registers (
     offering_launch_date DATE NOT NULL,
     course_id INTEGER NOT NULL,
 
-    FOREIGN KEY(session_id, offering_launch_date, course_id) REFERENCES Sessions(session_id, offering_launch_date, course_id),
+    FOREIGN KEY(session_id, offering_launch_date, course_id) REFERENCES Sessions(session_id, offering_launch_date, course_id) ON UPDATE CASCADE,
     FOREIGN KEY(customer_id, credit_card_number) REFERENCES Owns (customer_id, credit_card_number)
 );
 
