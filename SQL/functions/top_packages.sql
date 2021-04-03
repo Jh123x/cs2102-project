@@ -17,7 +17,7 @@ BEGIN
         PackagesSold AS
         (
             SELECT package_id, COUNT(*) as packages_num_sold
-            FROM CoursePackages LEFT OUTER JOIN Buys
+            FROM CoursePackages LEFT NATURAL OUTER JOIN Buys
             GROUP BY package_id;
         ),
         PackagesWithRank AS
