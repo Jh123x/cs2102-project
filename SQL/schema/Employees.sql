@@ -10,7 +10,8 @@ CREATE TABLE Employees (
     employee_depart_date date DEFAULT NULL,
 
     CHECK (employee_depart_date > employee_join_date),
-    CHECK (employee_email ~ '.+@.+\..+')
+    CHECK (employee_email ~ '.+@.+\..+'),
+    CHECK (employee_phone ~ '^[0-9]+$')
 );
 
 DROP TABLE IF EXISTS PartTimeEmployees CASCADE;
