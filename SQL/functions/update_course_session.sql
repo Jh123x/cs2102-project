@@ -11,6 +11,7 @@ CREATE OR REPLACE PROCEDURE update_course_session (
     new_session_id          INTEGER
 ) AS $$
 DECLARE
+    enroll_date         DATE;
     old_session_id      INTEGER;
     enrolment_table     TEXT;
     num_seats_available INTEGER;
@@ -24,11 +25,11 @@ BEGIN
         RAISE EXCEPTION 'Requested new session does not exist.';
     END IF;
 
-    SELECT e.session_id, e.table_name INTO old_session_id, enrolment_table
+    SELECT e.enroll_date, e.session_id, e.table_name INTO enroll_date, old_session_id, enrolment_table
     FROM Enrolment e
     WHERE customer_id = e.customer_id AND course_id = e.course_id AND offering_launch_date = e.offering_launch_date;
 
-    IF old_session_id IS NULL THEN
+    IF e.enroll_date IS NULL THEN
         RAISE EXCEPTION 'Customer is not registered to any session for this course offering.';
     END IF;
 
@@ -43,17 +44,11 @@ BEGIN
     IF enrolment_table = 'registers' THEN
         UPDATE Registers r
         SET r.session_id = new_session_id
-        WHERE r.customer_id = customer_id
-              AND r.course_id = course_id
-              AND r.offering_launch_date = offering_launch_date
-              AND r.session_id = old_session_id;
+        WHERE r.register_date = enroll_date;
     ELSE
         UPDATE Redeems r
         SET r.session_id = new_session_id
-        WHERE r.customer_id = customer_id
-              AND r.course_id = course_id
-              AND r.offering_launch_date = offering_launch_date
-              AND r.session_id = old_session_id;
+        WHERE r.redeem_date = enroll_date;
     END IF;
 END;
 $$ LANGUAGE plpgsql;
