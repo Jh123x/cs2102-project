@@ -1,4 +1,5 @@
 import unittest
+from psycopg2.errors import RaiseException, ForeignKeyViolation, CheckViolation
 from datetime import datetime
 from .basetest import BaseTest
 
@@ -39,16 +40,16 @@ class AddEmployeeTest(BaseTest, unittest.TestCase):
         self._add_manager()
 
         # Check if the admin is correctly added to all tables
-        expected_employees = [(4, "John", "address", '987654321', 'test@test.com',
+        expected_employees = [(7, "John", "address", '987654321', 'test@test.com',
                                datetime.strptime('2020-05-03', r'%Y-%m-%d').date(), None)]
         self.value_test('SELECT * FROM Employees', expected_employees)
 
         # Checking if the person is in the admins table (Get the id of Jane)
-        expected_manager = [(4,)]
+        expected_manager = [(7,)]
         self.value_test('SELECT * FROM Managers', expected_manager)
 
         # Checking if the person is added in full time table
-        expected_full_time = [(4, 10.5)]
+        expected_full_time = [(7, 10.5)]
         self.value_test('SELECT * FROM FullTimeEmployees', expected_full_time)
 
     def test_add_pinstructor_success(self) -> None:
@@ -65,19 +66,19 @@ class AddEmployeeTest(BaseTest, unittest.TestCase):
 
         # Check if the Employees Table is correct
         expected_employees = [
-            (5, "John", "address", '987654321', 'test@test.com',
+            (8, "John", "address", '987654321', 'test@test.com',
              datetime.strptime('2020-05-03', r'%Y-%m-%d').date(), None),
-            (6, "ivan", "address", '987654321', 'test@test.com',
+            (9, "ivan", "address", '987654321', 'test@test.com',
              datetime.strptime('2020-05-03', r'%Y-%m-%d').date(), None)
         ]
         self.value_test('SELECT * FROM Employees', expected_employees)
 
         # Check if the employee is in instructors
-        expected_instructors = [(6,)]
+        expected_instructors = [(9,)]
         self.value_test('SELECT * FROM Instructors', expected_instructors)
 
         # Check if the instructor is in part-time table
-        expected_part_time = [(6, 15.5)]
+        expected_part_time = [(9, 15.5)]
         self.value_test('SELECT * FROM PartTimeEmployees', expected_part_time)
 
     def test_add_instructor_success(self) -> None:
@@ -94,53 +95,55 @@ class AddEmployeeTest(BaseTest, unittest.TestCase):
 
         # Check if the Employees Table is correct
         expected_employees = [
-            (2, "John", "address", '987654321', 'test@test.com',
+            (3, "John", "address", '987654321', 'test@test.com',
              datetime.strptime('2020-05-03', r'%Y-%m-%d').date(), None),
-            (3, "ivan", "address", '987654321', 'test@test.com',
+            (4, "ivan", "address", '987654321', 'test@test.com',
              datetime.strptime('2020-05-03', r'%Y-%m-%d').date(), None)
         ]
         self.value_test('SELECT * FROM Employees', expected_employees)
 
         # Check if the employee is in instructors
-        expected_instructors = [(3,)]
+        expected_instructors = [(4,)]
         self.value_test('SELECT * FROM Instructors', expected_instructors)
 
         # Check if the instructor is in part-time table
-        expected_part_time = [(2, 10.5), (3, 15.5)]
+        expected_part_time = [(3, 10.5), (4, 15.5)]
         self.value_test('SELECT * FROM FullTimeEmployees', expected_part_time)
 
     def test_add_ptadmin_fail(self) -> None:
         args = ["ivan", "address", '987654321', 'test@test.com', '2020-05-03',
-                'Admin', "part-time", '15.5', "Array['Database']"]
-        ft_instructor_query = self.generate_query("add_employee", tuple(args))
-        self.execute_query(ft_instructor_query)
+                'Admin', "part-time", '15.5']
+        query = self.generate_query("add_employee", tuple(args))
+        self.check_fail_test(
+            query, "Test case is suppose to fail but it passed", (RaiseException,))
 
     def test_add_ptmanager_fail(self) -> None:
-        try:
-            args = ["ivan", "address", '987654321', 'test@test.com', '2020-05-03',
-                    'Manager', "part-time", '15.5', "Array['Database']"]
-            ft_instructor_query = self.generate_query("add_employee", tuple(args))
-            self.execute_query(ft_instructor_query)
-        except AssertionError as e:
-            pass
-        else:
-            raise AssertionError("Test case is suppose to fail but it passed")
+        """Test fails after adding parttime manage"""
+        args = ["ivan", "address", '987654321', 'test@test.com', '2020-05-03',
+                'Manager', "part-time", '15.5', "Array['Database']"]
+        query = self.generate_query("add_employee", tuple(args))
+        self.check_fail_test(
+            query, "Test case is suppose to fail but it passed", (RaiseException,))
 
     def test_add_invalid_email_fail(self) -> None:
-        pass
+        args = ["ivan", "address", '987654321', 'testtest.com', '2020-05-03',
+                'Admin', "full-time", '15.5', ]
+        query = self.generate_query("add_employee", tuple(args))
+        self.check_fail_test(
+            query, "Test case is suppose to fail but it passed", (CheckViolation,))
 
     def test_add_invalid_phone_fail(self) -> None:
         # Execute the query
-        args = ["ivan", "address", '987654321', 'test@test.com', '2020-05-03',
-                'Instructor', "full-time", '15.5', "Array['Database']"]
-        ft_instructor_query = self.generate_query("add_employee", tuple(args))
-        self.execute_query(ft_instructor_query)
+        args = ["ivan", "address", 'asfsaf987654321', 'test@test.com', '2020-05-03',
+                'Admin', "full-time", '15.5']
+        query = self.generate_query("add_employee", tuple(args))
+        self.check_fail_test(
+            query, "Test case is suppose to fail but it passed", (CheckViolation,))
 
     def test_add_course_area_with_no_manager_fail(self) -> None:
         # Execute the query
         args = ["ivan", "address", '987654321', 'test@test.com', '2020-05-03',
                 'Instructor', "full-time", '15.5', "Array['Network']"]
-        ft_instructor_query = self.generate_query("add_employee", tuple(args))
-        self.execute_query(ft_instructor_query)
-        
-
+        query = self.generate_query("add_employee", tuple(args))
+        self.check_fail_test(
+            query, "Test case is suppose to fail but it passed", (ForeignKeyViolation,))
