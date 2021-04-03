@@ -9,7 +9,6 @@ DECLARE
     session_date DATE,
     session_start_hour INTEGER,
     num_registration INTEGER;
-    num_redeems INTEGER;
 
     
 BEGIN
@@ -23,12 +22,6 @@ BEGIN
     AND reg.offering_launch_date = offering_launch_date
     AND reg.course_id = course_id;
 
-    SELECT COUNT(*) INTO num_redeems
-    FROM Redeems red 
-    WHERE red.session_id = session_id
-    AND red.offering_launch_date = offering_launch_date
-    AND red.course_id = course_id;
-
     SELECT s.session_date, s.session_start_hour INTO session_date, session_start_hour
     FROM Sessions s
     WHERE s.offering_launch_date = offering_launch_date
@@ -40,7 +33,7 @@ BEGIN
         RAISE EXCEPTION 'Session already started! Cannot update room!';
     END IF;
 
-    IF ((num_redeems + num_registration) > room_seating_capacity)
+    IF (num_registration > room_seating_capacity)
     THEN  
         RAISE EXCEPTION 'Room is too small! Cannot update room!';
     END IF;
