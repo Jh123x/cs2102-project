@@ -37,7 +37,7 @@ BEGIN
             WHERE r.buy_date = cp_buy_date AND s.session_date >= CURRENT_DATE + 7
         )
         THEN
-            /* Aggregate all sessions redeemd using course package sorted in ascending order of session date and start hour */
+            /* Aggregate all sessions redeemed using course package sorted in ascending order of session date and start hour */
             SELECT COALESCE(json_agg(session_information), '[]'::JSON) INTO redeemed_sessions
             FROM (
                 SELECT c.course_title, s.session_date, s.session_start_hour
