@@ -17,14 +17,16 @@ the output will consist of one record for each of the following three months:
 CREATE OR REPLACE FUNCTION view_summary_report (
       N INTEGER
 )
-RETURNS TABLE (mm INTEGER,
-               yyyy INTEGER,
-               salary_paid DEC(64, 2),
-               packages_sold INTEGER,
-               reg_fees_via_ccard DEC(64, 2),
-               refunded_fees DEC(64, 2),
-               regs_via_redeem INTEGER,
-               AS $$
+RETURNS TABLE (
+    mm                  INTEGER,
+    yyyy                INTEGER,
+    salary_paid         DEC(64, 2),
+    packages_sold       INTEGER,
+    reg_fees_via_ccard  DEC(64, 2),
+    refunded_fees       DEC(64, 2),
+    regs_via_redeem     INTEGER
+)
+AS $$
 DECLARE
     mm_count INTEGER;
     cur_date DATE:
