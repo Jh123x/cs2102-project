@@ -7,7 +7,6 @@ RETURNS TABLE (package_id INTEGER,
                package_sale_start_date DATE,
                package_sale_end_date DATE,
                packages_num_sold INTEGER)
-               ORDER BY packages_num_sold DESC, package_price DESC
                AS $$
 DECLARE
 
@@ -17,8 +16,9 @@ BEGIN
         PackagesSold AS
         (
             SELECT package_id, COUNT(*) as packages_num_sold
-            FROM CoursePackages LEFT NATURAL OUTER JOIN Buys
-            GROUP BY package_id;
+            FROM CoursePackages c LEFT OUTER JOIN Buys b
+            ON c.package_id = b.package_id
+            GROUP BY package_id
         ),
         /* use rank because according to requirements:
             "In the event that there are multiple packages that tie for the top Nth position,
@@ -34,6 +34,7 @@ BEGIN
     SELECT package_id, package_num_free_registrations, package_price, package_sale_start_date,
            package_sale_end_date, packages_num_sold
     FROM PackagesWithRank
-    WHERE package_rank <= N;
+    WHERE package_rank <= N
+    ORDER BY packages_num_sold DESC, package_price DESC;
 END;
 $$ LANGUAGE plpgsql;
