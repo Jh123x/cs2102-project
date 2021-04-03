@@ -45,4 +45,16 @@ CREATE TABLE Registers (
     FOREIGN KEY(customer_id, credit_card_number) REFERENCES Owns (customer_id, credit_card_number)
 );
 
+DROP VIEW IF EXISTS Enrolment;
+CREATE VIEW Enrolment AS
+SELECT session_id, course_id, offering_launch_date, customer_id, 'registers' as table_name
+FROM Registers
+UNION
+SELECT course_id, offering_launch_date, session_id, customer_id, 'redeems' as table_name
+FROM Redeems NATURAL JOIN Buys;
 
+DROP VIEW IF EXISTS EnrolmentCount;
+CREATE VIEW EnrolmentCount AS
+SELECT session_id, course_id, offering_launch_date, COUNT(*) AS num_enrolled
+FROM Sessions NATURAL LEFT OUTER JOIN Enrolment
+GROUP BY session_id, course_id, offering_launch_date;
