@@ -5,9 +5,10 @@ The routine returns a table of records consisting of employee identifier and nam
 */
 
 CREATE OR REPLACE FUNCTION find_instructors (
-      course_id INTEGER,
-      session_date DATE,
-      session_start_hour INTEGER
+    offering_launch_date INTEGER,
+    course_id INTEGER,
+    session_date DATE,
+    session_start_hour INTEGER
 )
 RETURNS TABLE (employee_id INTEGER, employee_name TEXT) AS $$
 DECLARE
@@ -18,7 +19,7 @@ BEGIN
     * - must be specialized in that area
     * - can only teach one session at any hour
     * - cannot teach two consecutuve sessions (i.e. must have at least one hour of break between any two course sessions)
-    *   - cannot teach a course that ends at session_start_hour)
+    * - cannot teach a course that ends at session_start_hour)
     * - part time instructor must not teach more than 30 hours for each month
     */
 
@@ -30,7 +31,9 @@ BEGIN
         AND NOT EXISTS (
             SELECT 1
             FROM Sessions s
-            WHERE s.session_date = session_date 
+            WHERE s.session_date = session_date
+                AND s.offering_launch_date = offering_launch_date
+                AND s.course_id = course_id
                 AND s.instructor_id = e.employee_id
                 AND (s.session_start_hour <= session_start_hour AND session_start_hour <= session_end_hour)
         )
