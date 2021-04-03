@@ -49,9 +49,11 @@ DROP VIEW IF EXISTS Enrolment;
 CREATE VIEW Enrolment AS
 SELECT session_id, course_id, offering_launch_date, customer_id, 'registers' as table_name
 FROM Registers
+WHERE register_cancelled = FALSE
 UNION
 SELECT course_id, offering_launch_date, session_id, customer_id, 'redeems' as table_name
-FROM Redeems NATURAL JOIN Buys;
+FROM Redeems NATURAL JOIN Buys
+WHERE register_cancelled = FALSE;
 
 DROP VIEW IF EXISTS EnrolmentCount;
 CREATE VIEW EnrolmentCount AS
