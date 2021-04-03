@@ -20,14 +20,14 @@ RETURNS TABLE (
     total_teaching_hours INTEGER,
     day DATE,
     available_hours TIMESTAMP[]
-) ORDER BY employee_id ASC, day ASC AS $$
+) AS $$
 DECLARE
     curs CURSOR FOR (
         SELECT e.employee_id, e.employee_name
         FROM Employees e
         NATURAL JOIN Specializes s
         NATURAL JOIN Courses c
-    );
+    ) ORDER BY employee_id ASC;
     r RECORD;
     cur_date DATE;
     hour INTEGER;
