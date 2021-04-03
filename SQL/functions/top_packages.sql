@@ -12,11 +12,11 @@ DECLARE
 
 BEGIN
     WITH
-        /* not sure if should include packages that nobody bought, just assume to include for now */
+        /* excluded packages that are not sold */
         PackagesSold AS
         (
             SELECT package_id, COUNT(*) as packages_num_sold
-            FROM CoursePackages c NATURAL LEFT OUTER JOIN Buys b
+            FROM CoursePackages c NATURAL JOIN Buys b
             GROUP BY package_id
         ),
         /* use rank because according to requirements:
