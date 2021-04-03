@@ -38,6 +38,9 @@ BEGIN
 
         SELECT EXTRACT(MONTH FROM cur_date) into mm), EXTRACT(YEAR FROM cur_date) into yyyy;
 
+        /* DATE_TRUNC gives the first day of the month */
+        /* the year is preserved in the result, so no need to do DATE_TRUNC('year', ...) */
+
         SELECT SUM(payslip_amount) into salary_paid
         FROM PaySlips
         WHERE DATE_TRUNC('month', payslip_date) = DATE_TRUNC('month', cur_date);
