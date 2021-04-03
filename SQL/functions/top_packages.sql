@@ -20,6 +20,10 @@ BEGIN
             FROM CoursePackages LEFT NATURAL OUTER JOIN Buys
             GROUP BY package_id;
         ),
+        /* use rank because according to requirements:
+            "In the event that there are multiple packages that tie for the top Nth position,
+            all these packages should be included in the output records"
+        */
         PackagesWithRank AS
         (
             SELECT package_id, package_num_free_registrations, package_price, package_sale_start_date,
