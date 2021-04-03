@@ -20,7 +20,7 @@ RETURNS TABLE (
     total_teaching_hours INTEGER,
     day DATE,
     available_hours TIMESTAMP[]
-) AS $$
+) ORDER BY employee_id ASC, day ASC AS $$
 DECLARE
     curs CURSOR FOR (
         SELECT e.employee_id, e.employee_name
@@ -31,8 +31,8 @@ DECLARE
     r RECORD;
     cur_date DATE;
     hour INTEGER;
-    arr INTEGER[] := ARRAY[9,10,11,14,15,16,17];
-    
+    work_hours INTEGER[] := ARRAY[9,10,11,14,15,16,17];
+
 BEGIN
     OPEN curs;
     LOOP
@@ -43,14 +43,18 @@ BEGIN
         LOOP
             EXIT WHEN cur_date > end_date;
 
+            day := cur_date;
             employee_id := r.employee_id;
             name := r.name;
+
+            /* requirement: total number of teaching hours that the instructor has been assigned for this month */
+            /* assuming that this month refers to the day in this row */
             SELECT COALESCE(SUM(end_time - start_time), 0) INTO total_teaching_hours FROM Sessions s
                     WHERE s.instructor_id = r.employee_id
-                    AND EXTRACT(MONTH FROM date) == EXTRACT(MONTH FROM CURRENT_DATE);
+                    AND EXTRACT(MONTH FROM s.session_date) == EXTRACT(MONTH FROM cur_date);
             available_hours := '{}';
 
-            FOREACH hour IN ARRAY arr LOOP
+            FOREACH hour IN ARRAY work_hours LOOP
                 IF new_instructor_employee_id IN
                     (SELECT employee_id FROM find_instructors(course_id, cur_date, hour)) THEN
                     available_hours := array_append(available_hours, hour);
@@ -61,7 +65,7 @@ BEGIN
                 RETURN NEXT;
             END IF;
 
-            cur_date := cur_date + integer '1';
+            cur_date := cur_date + interval '1 day';
         END LOOP;
     END LOOP;
     CLOSE curs;
