@@ -53,7 +53,7 @@ WHERE register_cancelled = FALSE
 UNION
 SELECT redeem_date AS enroll_date, session_id, course_id, offering_launch_date, customer_id, 'redeems' AS table_name
 FROM Redeems NATURAL JOIN Buys
-WHERE register_cancelled = FALSE;
+WHERE redeem_cancelled = FALSE;
 
 DROP VIEW IF EXISTS EnrolmentCount;
 CREATE VIEW EnrolmentCount AS

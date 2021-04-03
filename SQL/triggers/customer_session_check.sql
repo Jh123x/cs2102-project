@@ -15,7 +15,7 @@ BEGIN
     WHERE c.course_id = NEW.course_id AND c.offering_launch_date = NEW.offering_launch_date;
 
     IF CURRENT_DATE > registration_deadline THEN
-        RAISE EXCEPTION 'Registration deadline for this session is over.'
+        RAISE EXCEPTION 'Registration deadline for this session is over.';
     END IF;
 
     SELECT COUNT(*) INTO register_count FROM Registers WHERE NEW.customer_id = customer_id AND NEW.course_id = course_id;

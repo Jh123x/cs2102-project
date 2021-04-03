@@ -24,7 +24,7 @@ BEGIN
         RAISE EXCEPTION 'Requested new session does not exist.';
     END IF;
 
-    SELECT e.session_id INTO old_session_id, e.table_name INTO enrolment_table
+    SELECT e.session_id, e.table_name INTO old_session_id, enrolment_table
     FROM Enrolment e
     WHERE customer_id = e.customer_id AND course_id = e.course_id AND offering_launch_date = e.offering_launch_date;
 
