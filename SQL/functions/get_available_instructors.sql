@@ -19,7 +19,7 @@ RETURNS TABLE (
     name TEXT,
     total_teaching_hours INTEGER,
     day DATE,
-    available_hours TIMESTAMP[]
+    available_hours INTEGER[]
 ) AS $$
 DECLARE
     curs CURSOR FOR (
@@ -55,7 +55,7 @@ BEGIN
             available_hours := '{}';
 
             FOREACH hour IN ARRAY work_hours LOOP
-                IF new_instructor_employee_id IN
+                IF employee_id IN
                     (SELECT employee_id FROM find_instructors(course_id, cur_date, hour)) THEN
                     available_hours := array_append(available_hours, hour);
                 END IF;

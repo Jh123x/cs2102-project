@@ -21,7 +21,7 @@ BEGIN
         RAISE EXCEPTION 'Employee is still Admin/Managing/Teaching';
     END IF;
 
-    /* DELETE FROM Employees e WHERE e.employee_id = employee_id; */
+    /* Leave it to insert/update CHECK() to ensure departure_date is >= join_date*/
     UPDATE Employees
     SET employee_depart_date = departure_date
     WHERE e.employee_id = employee_id;
