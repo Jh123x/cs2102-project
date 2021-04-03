@@ -33,7 +33,7 @@ RETURNS TABLE (
     num_course_offerings        INTEGER,
     net_registration_fees       DEC(64, 2),
     top_course_offering_titles  TEXT[]
-) ORDER BY manager_name ASC
+)
 AS $$
 DECLARE
 BEGIN
@@ -116,6 +116,7 @@ BEGIN
         NATURAL JOIN ManagerNumCourseAreas
         NATURAL JOIN ManagerNumCourseOfferings
         NATURAL JOIN ManagerNetRegistrationFees
-        NATURAL JOIN ManagerTopCourseOfferingTitles;
+        NATURAL JOIN ManagerTopCourseOfferingTitles
+    ORDER BY manager_name ASC;
 END;
 $$ LANGUAGE plpgsql;
