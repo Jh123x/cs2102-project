@@ -29,14 +29,15 @@ RETURNS TABLE (
 AS $$
 DECLARE
     mm_count INTEGER;
-    cur_date DATE:
+    cur_date DATE;
 BEGIN
     mm_count := 0;
     cur_date := CURRENT_DATE;
     LOOP
         EXIT WHEN mm_count = N;
 
-        SELECT EXTRACT(MONTH FROM cur_date) into mm), EXTRACT(YEAR FROM cur_date) into yyyy;
+        SELECT EXTRACT(MONTH FROM cur_date) into mm;
+        SELECT EXTRACT(YEAR FROM cur_date) into yyyy;
 
         /* DATE_TRUNC gives the first day of the month */
         /* the year is preserved in the result, so no need to do DATE_TRUNC('year', ...) */

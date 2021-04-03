@@ -42,53 +42,53 @@ BEGIN
         ManagerNames AS (
             SELECT manager_id, employee_name
             FROM Managers m JOIN Employees e
-            WHERE m.manager_id = e.employee_id;
+            ON m.manager_id = e.employee_id
         ),
         /* course areas */
         ManagerNumCourseAreas AS (
             SELECT manager_id, COUNT(*) as num_course_areas
             FROM Managers NATURAL LEFT OUTER JOIN CourseAreas
-            GROUP BY manager_id;
+            GROUP BY manager_id
         ),
 
         /* course offerings */
         ManagerCourseOfferings AS (
             SELECT manager_id, course_id, offering_launch_date
-            FROM CourseOfferings NATURAL JOIN Courses NATURAL JOIN CourseAreas;
+            FROM CourseOfferings NATURAL JOIN Courses NATURAL JOIN CourseAreas
         ),
         ManagerNumCourseOfferings AS (
             SELECT manager_id, COUNT(*) AS num_course_offerings
             FROM Managers NATURAL LEFT OUTER JOIN ManagerCourseOfferings
-            GROUP BY manager_id;
+            GROUP BY manager_id
         ),
 
         /* registration fees */
         CourseOfferingCreditCardRegistrationFees AS (
             SELECT offering_launch_date, course_id, SUM(offering_fees) AS total_registration_fees
             FROM Registers NATURAL JOIN Sessions NATURAL RIGHT OUTER JOIN CourseOfferings
-            GROUP BY offering_launch_date, course_id;
+            GROUP BY offering_launch_date, course_id
         ),
         CourseOfferingCreditCardRefundFees AS (
             SELECT offering_launch_date, course_id, SUM(cancel_refund_amt) AS total_refunded_fees
             FROM Cancels NATURAL JOIN Sessions NATURAL RIGHT OUTER JOIN CourseOfferings
-            GROUP BY offering_launch_date, course_id;
+            GROUP BY offering_launch_date, course_id
         ),
         RedemptionRegistrationFees AS (
             SELECT redeem_date, FLOOR(package_price / package_num_free_registrations) AS redemption_fees
-            FROM Redeems NATURAL JOIN Buys NATURAL JOIN CoursePackages;
+            FROM Redeems NATURAL JOIN Buys NATURAL JOIN CoursePackages
         ),
         CourseOfferingRedemptionRegistrationFees AS (
             SELECT offering_launch_date, course_id, SUM(redemption_fees) AS total_redemption_fees
             FROM Redeems NATURAL JOIN RedemptionRegistrationFees NATURAL JOIN Sessions NATURAL RIGHT OUTER JOIN CourseOfferings
             WHERE NOT redeem_cancelled
-            GROUP BY offering_launch_date, course_id;
+            GROUP BY offering_launch_date, course_id
         ),
         CourseOfferingNetRegistrationFees AS (
             SELECT offering_launch_date, course_id, total_registration_fees - total_refunded_fees + total_redemption_fees AS net_registration_fees
             FROM CourseOfferings
                 NATURAL JOIN CourseOfferingNetRegistrationFees
                 NATURAL JOIN CourseOfferingCreditCardRefundFees
-                NATURAL JOIN CourseOfferingRedemptionRegistrationFees;
+                NATURAL JOIN CourseOfferingRedemptionRegistrationFees
         ),
         ManagerNetRegistrationFees AS (
             SELECT manager_id, SUM(net_registration_fees) AS net_registration_fees
@@ -100,13 +100,13 @@ BEGIN
         ManagerCourseOfferingRankedByFees AS (
             SELECT manager_id, course_id, offering_launch_date,
                 RANK() OVER (PARTITION BY manager_id ORDER BY net_registration_fees DESC) AS course_offering_rank
-            FROM ManagerCourseOfferings NATURAL JOIN CourseOfferingNetRegistrationFees;
+            FROM ManagerCourseOfferings NATURAL JOIN CourseOfferingNetRegistrationFees
         ),
         ManagerTopCourseOfferingTitles AS (
             SELECT manager_id, ARRAY_AGG(course_title) top_course_offering_titles
             FROM Managers NATURAL LEFT OUTER JOIN (ManagerCourseOfferingRankedByFees NATURAL JOIN Courses)
             WHERE course_offering_rank = 1
-            GROUP BY manager_id;
+            GROUP BY manager_id
         )
 
     /* oh yea everything come together */
