@@ -58,9 +58,8 @@ class ZBuyCoursePackageTest(BaseTest, unittest.TestCase):
         args = (str(self.customer_id), str(self.package_id))
         query = self.generate_query('buy_course_package', args)
         self.check_fail_test(
-            query, "Buying the same package 2 times should result in a fail", (UniqueViolation,))
+            query, "Buying the same package 2 times should result in a fail", (RaiseException,))
 
-    @expectedFailure
     def test_buy_different_package_while_1_active(self):
         """Test if the customer can buy a different package when there is currently one active"""
         # Create another course_package
