@@ -21,12 +21,13 @@ class BaseTest(object):
         return f"""SELECT {function}({", ".join(map(parse_args, args))})"""
 
     def generate_procedure(self, procedure: str, args:tuple) -> None:
-        return f"""EXEC {procedure}({", ".join(map(parse_args, args))})"""
+        return f"""CALL {procedure}({", ".join(map(parse_args, args))})"""
 
     def execute_query(self, query: str) -> list:
         """Execute query and return the result at the cursor"""
         self.CURSOR.execute(query)
-        return [desc[0] for desc in self.CURSOR.description]
+        res = self.CURSOR.description
+        return [desc[0] for desc in res] if res else None
 
     def fetch_all(self):
         """Get the result from the previous query"""
