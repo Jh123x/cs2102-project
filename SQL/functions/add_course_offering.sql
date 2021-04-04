@@ -68,9 +68,9 @@ BEGIN
     
     
     num_sessions := SELECT COUNT(*) FROM unnest(sessions_arr);
-    offering_start_date := sessions_arr[1][1]
-    offering_end_date := sessions_arr[1][1]
-    session_id := 1
+    offering_start_date := sessions_arr[1][1];
+    offering_end_date := sessions_arr[1][1];
+    session_id := 1;
     FOREACH r SLICE 1 in ARRAY sessions_arr
     LOOP
         IF (r[1] <= offering_start_date) THEN
@@ -82,7 +82,7 @@ BEGIN
         instructor_id := SELECT employee_id FROM get_available_instructors(course_id,offering_start_date,offering_end_date) LIMIT 1;
         add_session(course_id,offering_launch_date,session_id,r[1],r[2],instructor_id,r[3]);
         
-    END LOOP
+    END LOOP;
 
 END;
 $$ LANGUAGE plpgsql;
