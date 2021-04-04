@@ -19,17 +19,17 @@ DECLARE
     r_credit_card_cvv               CHAR(3);
     r_credit_card_number            CHAR(16);
 BEGIN
-    SELECT credit_card_number INTO r_credit_card_number 
-    FROM Owns 
+    SELECT credit_card_number INTO r_credit_card_number
+    FROM Owns o
     WHERE o.customer_id = r_customer_id 
     AND o.own_from_date >= ALL(
-        SELECT own_from_date 
-        FROM Owns 
+        SELECT own_from_date
+        FROM Owns
         WHERE customer_id = r_customer_id
     );
     
     IF r_credit_card_number IS NULL THEN
-        RAISE EXCEPTION 'This credit card does not belong to this customer.';
+        RAISE EXCEPTION 'There is no credit card found';
     END IF;
 
     SELECT credit_card_cvv INTO r_credit_card_cvv FROM CreditCards WHERE credit_card_number = r_credit_card_number;
