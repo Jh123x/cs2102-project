@@ -17,11 +17,10 @@ CREATE OR REPLACE PROCEDURE remove_session(
     session_id              INTEGER
 ) AS $$
 DECLARE
-    session_date            DATE
-    session_start_hour      DATE
-    room_seating_capacity   INTEGER
-
-    enrolment_count         INTEGER
+    session_date            DATE;
+    session_start_hour      DATE;
+    room_seating_capacity   INTEGER;
+    enrolment_count         INTEGER;
 BEGIN
     SELECT s.session_date, s.session_start_hour, r.room_seating_capacity
         INTO session_date, session_start_hour, room_seating_capacity
