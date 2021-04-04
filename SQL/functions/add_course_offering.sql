@@ -35,21 +35,17 @@ BEGIN
     /*Checking the conditions of course offering*/
     IF (offering_start_date > offering_end_date) THEN
         RAISE EXCEPTION 'Offering end date cannot be earlier than start date';
-    END IF ;
 
-    IF (offering_launch_date > offering_registration_deadline) THEN
+    ELSIF (offering_launch_date > offering_registration_deadline) THEN
         RAISE EXCEPTION 'Offering registration date cannot be earlier than launch date';
-    END IF ;
     
-    IF (offering_seating_capacity < offering_num_target_registration) THEN
+    ELSIF (offering_seating_capacity < offering_num_target_registration) THEN
         RAISE EXCEPTION 'Offering seating capacity cannot be less than number of target registration';
-    END IF ;
 
-    IF (offering_num_target_registration < 0) THEN
+    ELSIF (offering_num_target_registration < 0) THEN
         RAISE EXCEPTION 'Offering target registration should be more than or equal to 0';
-    END IF ;
     
-    IF (offering_start_date < offering_registration_deadline + INTEGER '10' ) THEN
+    ELSIF (offering_start_date < offering_registration_deadline + INTEGER '10' ) THEN
         RAISE EXCEPTION 'Offering start date should be at least 10 days after the registration deadline ';
     END IF ;
 
