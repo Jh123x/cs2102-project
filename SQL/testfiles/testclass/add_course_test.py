@@ -1,6 +1,6 @@
 import unittest
+from . import BaseTest
 from psycopg2.errors import UniqueViolation
-from .basetest import BaseTest
 
 
 class CAddCourseTest(BaseTest, unittest.TestCase):
@@ -28,5 +28,5 @@ class CAddCourseTest(BaseTest, unittest.TestCase):
         assert len(val) == 1, "The initial adding is incorrect"
 
         # Add it again
-        val = self.check_fail_test(q, "Should have a unique violation", (UniqueViolation,))
-
+        val = self.check_fail_test(
+            q, "Should have a unique violation", (UniqueViolation,))

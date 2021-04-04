@@ -8,9 +8,7 @@ import psycopg2
 import unittest
 import configparser
 from getpass import getpass
-from testfiles.testclass.basetest import BaseTest
-from testfiles.testclass.add_employee_test import AddEmployeeTest
-from testfiles.testclass.remove_employee_test import RemoveEmployeeTest
+from testfiles.testclass import *
 
 
 # Define constants

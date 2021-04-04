@@ -1,7 +1,7 @@
 import unittest
-from psycopg2.errors import RaiseException, ForeignKeyViolation, CheckViolation
+from . import BaseTest
 from datetime import datetime
-from .basetest import BaseTest
+from psycopg2.errors import RaiseException, ForeignKeyViolation, CheckViolation
 
 
 class AAddEmployeeTest(BaseTest, unittest.TestCase):
