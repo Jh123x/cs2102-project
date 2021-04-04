@@ -4,11 +4,12 @@
 */
 
 DROP FUNCTION IF EXISTS add_course_offering CASCADE;
+DROP TYPE IF EXISTS session_information;
 CREATE TYPE session_information AS(
     session_date DATE, 
     session_start_hour INTEGER,
     room_id INTEGER
-)
+);
 CREATE OR REPLACE FUNCTION add_course_offering (
     offering_launch_date DATE,
     offering_fees NUMERIC,
@@ -21,7 +22,7 @@ CREATE OR REPLACE FUNCTION add_course_offering (
 )
 RETURNS VOID AS $$
 DECLARE
-    offering_start_date DATE；
+    offering_start_date DATE;
     offering_end_date DATE;
     num_duplicate INTEGER;
 
@@ -29,23 +30,25 @@ BEGIN
     /*still trying to fix the array to reference and compare*/
     SELECT session_date INTO offering_start_date
     FROM session_information si
-    WHERE s.course_id = course_id AND s.offering_launch_date = offering_launch_date
-    WHERE s.session_date <= ALL (
+    WHERE s.course_id = course_id
+    AND s.offering_launch_date = offering_launch_date
+    AND s.session_date <= ALL (
         SELECT s1.session_date 
         FROM Sessions s1
         WHERE s1.course_id = course_id
         AND s1.offering_launch_date = offering_launch_date
-    )
+    );
 
     SELECT s.session_date INTO offering_end_date
     FROM Sessions s
-    WHERE s.course_id = course_id AND s.offering_launch_date = offering_launch_date
-    WHERE s.session_date >= ALL (
+    WHERE s.course_id = course_id
+    AND s.offering_launch_date = offering_launch_date
+    AND s.session_date >= ALL (
         SELECT s1.session_date 
         FROM Sessions s1
         WHERE s1.course_id = course_id
         AND s1.offering_launch_date = offering_launch_date
-    )
+    );
 
     /*Checking the conditions of course offering*/
     IF (offering_start_date > offering_end_date) THEN
@@ -80,7 +83,7 @@ BEGIN
     INSERT INTO CourseOfferings
     (offering_launch_date, offering_fees, offering_registration_deadline, offering_num_target_registration, offering_seating_capacity, course_id, admin_id, offering_start_date, offering_end_date)
     VALUES
-    (offering_launch_date, offering_fees, offering_registration_deadline, offering_num_target_registration, offering_seating_capacity, course_id, admin_id, offering_start_date, offering_end_date)
+    (offering_launch_date, offering_fees, offering_registration_deadline, offering_num_target_registration, offering_seating_capacity, course_id, admin_id, offering_start_date, offering_end_date);
     
 
 END;

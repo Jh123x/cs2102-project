@@ -6,8 +6,8 @@ CREATE OR REPLACE PROCEDURE update_room(
 ) AS $$
 DECLARE
     room_seating_capacity INTEGER;
-    session_date DATE,
-    session_start_hour INTEGER,
+    session_date DATE;
+    session_start_hour INTEGER;
     num_registration INTEGER;
 
     
