@@ -4,12 +4,13 @@ The inputs to the routine include the following: customer identifier, course off
 If the update request is valid and there is an available seat in the new session,
     the routine will process the request with the necessary updates.
 */
-CREATE OR REPLACE PROCEDURE update_course_session (
+CREATE OR REPLACE FUNCTION update_course_session (
     customer_id             INTEGER,
     course_id               INTEGER,
     offering_launch_date    DATE,
     new_session_id          INTEGER
-) AS $$
+) RETURNS VOID
+AS $$
 DECLARE
     enroll_date         DATE;
     old_session_id      INTEGER;

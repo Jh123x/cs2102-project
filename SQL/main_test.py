@@ -8,8 +8,7 @@ import psycopg2
 import unittest
 import configparser
 from getpass import getpass
-from testfiles.testclass.basetest import BaseTest
-from testfiles.testclass.add_employee_test import AddEmployeeTest
+from testfiles.testclass import *
 
 
 # Define constants
@@ -410,13 +409,13 @@ if __name__ == "__main__":
 
     with connect_db(HOST, PORT, user, password, DBNAME) as db:
         with db.cursor() as cursor:
-            # Positive test cases for schema (Cumulative)
-            load_schema_success_data('./test data/schema test', cursor)
-            db.rollback()
+            # # Positive test cases for schema (Cumulative)
+            # load_schema_success_data('./test data/schema test', cursor)
+            # db.rollback()
 
-            # Run the negative test cases for schema Data
-            load_schema_fail_data('./test data/schema fail', cursor, db)
-            db.rollback()
+            # # Run the negative test cases for schema Data
+            # load_schema_fail_data('./test data/schema fail', cursor, db)
+            # db.rollback()
 
             # Other TODO below
             # Positive test cases for triggers
@@ -439,6 +438,6 @@ if __name__ == "__main__":
             db.commit()
 
             # Unittest for functions
-            # BaseTest.DB = db
-            # BaseTest.CURSOR = cursor
-            # unittest.main()
+            BaseTest.DB = db
+            BaseTest.CURSOR = cursor
+            unittest.main()

@@ -8,7 +8,7 @@ The routine returns a table of records consisting of the following information:
     and an array of the hours that the room is available on the specified day.
 The output is sorted in ascending order of room identifier and day, and the array entries are sorted in ascending order of hour.
 */
-
+DROP FUNCTION get_available_rooms;
 CREATE OR REPLACE FUNCTION get_available_rooms (
     start_date DATE,
     end_date DATE

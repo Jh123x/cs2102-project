@@ -1,13 +1,14 @@
-CREATE OR REPLACE PROCEDURE update_room(
+CREATE OR REPLACE FUNCTION update_room(
     offering_launch_date DATE,
     course_id INTEGER,
     session_id INTEGER,
     room_id INTEGER
-) AS $$
+) RETURNS VOID
+AS $$
 DECLARE
     room_seating_capacity INTEGER;
-    session_date DATE,
-    session_start_hour INTEGER,
+    session_date DATE;
+    session_start_hour INTEGER;
     num_registration INTEGER;
 
     
