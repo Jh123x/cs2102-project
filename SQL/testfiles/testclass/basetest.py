@@ -16,18 +16,25 @@ class BaseTest(object):
         """Tear down after each test case"""
         self.DB.rollback()
 
+    def _parse_args(self, args: tuple):
+        """Parse the arguments into a string"""
+        return ", ".join(map(parse_args, args))
+
     def generate_query(self, function: str, args: tuple) -> None:
         """Generate query based on arguments"""
-        return f"""SELECT {function}({", ".join(map(parse_args, args))})"""
+        return f"""SELECT {function}({self._parse_args(args)})"""
 
     def generate_procedure(self, procedure: str, args:tuple) -> None:
-        return f"""CALL {procedure}({", ".join(map(parse_args, args))})"""
+        return f"""CALL {procedure}({self._parse_args(args)})"""
 
     def execute_query(self, query: str) -> list:
         """Execute query and return the result at the cursor"""
         self.CURSOR.execute(query)
-        res = self.CURSOR.description
-        return [desc[0] for desc in res] if res else None
+        try:
+            res = self.fetch_all()
+        except Exception:
+            return None
+        return res
 
     def fetch_all(self):
         """Get the result from the previous query"""
