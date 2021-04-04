@@ -1,6 +1,7 @@
 import unittest
-from unittest.case import expectedFailure
 from . import BaseTest
+from unittest.case import expectedFailure
+from psycopg2.errors import RaiseException
 
 
 class FindInstructorsTest(BaseTest, unittest.TestCase):
@@ -32,7 +33,7 @@ class FindInstructorsTest(BaseTest, unittest.TestCase):
         assert len(res) > 0, "Instructor not added successfully"
         return res[0][0]
 
-    def _add_course(self, name:str, area:str):
+    def _add_course(self, name: str, area: str):
         """Add a course to the table
             course title, course description, course area, and duration
         """
@@ -42,10 +43,27 @@ class FindInstructorsTest(BaseTest, unittest.TestCase):
         assert len(res) == 1, "Course is not added successfully"
         return res[0][0]
 
-    def _add_course_offering(self):
-        """Add course offering which will allocated sessions to the instructors"""
-        pass
+    def make_not_free(self, inst_id: int) -> int:
+        """Add course offering which will allocated sessions to the instructors
+            returns the Session_id
+        """
 
+        # Add a course offering followed by a session
+        query = f'SELECT course_area_name FROM Specializes WHERE instructor_id = {inst_id}'
+        res = self.execute_query(query)[0][0]
+
+        # Check cat for offering
+        if 'Network' == res:
+            offering = self.net_course_offering
+        elif 'Database' == res:
+            offering = self.db_course_offering
+        else:
+            raise ValueError(f'Wrong Category {res}')
+
+        self.rid += 1
+        query = f"INSERT INTO Sessions VALUES (1, '{self.session_date}', {self.session_time}, 12, {offering[5]}, '2025-05-21', {self.rid}, {inst_id})"
+        self.execute_query(query)
+        return 1
 
     def setUp(self) -> None:
         """Add Some personnels to the table to the table during setup"""
@@ -62,7 +80,24 @@ class FindInstructorsTest(BaseTest, unittest.TestCase):
         self.course_id1 = self._add_course('Network', 'Network')
 
         # Add course_offering
-        # self.offering1 = self.
+        self.db_course_offering = self.execute_query(
+            f"INSERT INTO CourseOfferings VALUES('2025-05-21', '10.5', '2025-05-25', '20', '20', {self.course_id}, {self.admin_id}, '2025-06-04', '2025-07-31') RETURNING *"
+        )[0]
+        self.net_course_offering = self.execute_query(
+            f"INSERT INTO CourseOfferings VALUES('2025-05-21', '10.5', '2025-05-25', '20', '20', {self.course_id1}, {self.admin_id}, '2025-06-04', '2025-07-31') RETURNING *"
+        )[0]
+
+        # Add 2 room
+        self.rid = 0
+        query = f"INSERT INTO Rooms VALUES('1', 'Room1', '20')"
+        res = self.execute_query(query)
+
+        query = f"INSERT INTO Rooms VALUES('2', 'Room2', '20')"
+        res = self.execute_query(query)
+
+        # Add session date and time
+        self.session_date = '2025-06-10'
+        self.session_time = '9'
 
         # Add Instructors
         self.instructor_ids = {}
@@ -77,47 +112,67 @@ class FindInstructorsTest(BaseTest, unittest.TestCase):
             )
         return super().setUp()
 
-    @expectedFailure
     def test_find_free_instructor(self):
         """Find only free instructors from the free / not free ones"""
         # Make one instructor not free TODO
-
+        self.make_not_free(self.instructor_ids[0])
 
         # Check the number of free instructors
-        args = (str(self.course_id), '2020-04-21', '9')
+        args = (str(self.course_id), self.session_date, self.session_time)
         query = self.generate_query('find_instructors', args)
         res = self.execute_query(query)
-        assert len(res) == 3, "Not all the instructors are found correctly"
+        assert len(
+            res) == 3, f"Not all the instructors are found correctly {res}"
 
-    @expectedFailure
+        # Check if the output is correct
+        expected = [('(28,Instructor1)',), ('(30,Instructor3)',),
+                    ('(31,Instructor4)',)]
+        assert res == expected
+
     def test_find_no_free_instructor(self):
         """There are no free instructors"""
-        # Make all the instructors not free TODO
+        # Remove all the instructors except 1
+        for id in tuple(self.instructor_ids.values())[1:]:
+            q = f'''DELETE FROM Employees WHERE employee_id = {id};\
+                DELETE FROM Specializes WHERE instructor_id = {id};\
+                DELETE FROM Instructors WHERE instructor_id = {id};'''
+            self.execute_query(q)
 
+        # Make the instructor not free
+        self.make_not_free(self.instructor_ids[0])
 
         # Find the instructors
-        args = (str(self.course_id), '2020-04-21', '9')
+        args = (str(self.course_id), self.session_date, self.session_time)
         query = self.generate_query('find_instructors', args)
         res = self.execute_query(query)
-        assert len(res) == 0, "Not all the instructors are found correctly"
+        assert len(
+            res) == 0, f"Not all the instructors are found correctly {res}"
+        assert res == [], f'The data struct is not correct'
 
-    @expectedFailure
     def test_find_one_instructor(self):
         """There is only 1 free instructors"""
         # Make all the other instructors not free TODO
+        for id in tuple(self.instructor_ids.values())[2:]:
+            q = f'''DELETE FROM Employees WHERE employee_id = {id};\
+                DELETE FROM Specializes WHERE instructor_id = {id};\
+                DELETE FROM Instructors WHERE instructor_id = {id};'''
+            self.execute_query(q)
 
+        # Make the first instructor not free
+        self.make_not_free(self.instructor_ids[0])
 
-        args = (str(self.course_id), '2020-04-21', '9')
+        args = (str(self.course_id), self.session_date, self.session_time)
         query = self.generate_query('find_instructors', args)
         res = self.execute_query(query)
         assert len(res) == 1, "Not all the instructors are found correctly"
-
 
     def test_find_all_instructors(self):
         """All instructors are free"""
         args = (str(self.course_id), '2020-04-21', '9')
         query = self.generate_query('find_instructors', args)
         res = self.execute_query(query)
-        expected = [('(19,Instructor0)',), ('(20,Instructor1)',), ('(22,Instructor3)',), ('(23,Instructor4)',)]
-        assert len(res) == 4, f"Not all the instructors are found correctly. {res}"
+        expected = [('(19,Instructor0)',), ('(20,Instructor1)',),
+                    ('(22,Instructor3)',), ('(23,Instructor4)',)]
+        assert len(
+            res) == 4, f"Not all the instructors are found correctly. {res}"
         assert res == expected, f"Expected: {expected}\nActual: {res}"
