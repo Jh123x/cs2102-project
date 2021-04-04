@@ -10,6 +10,7 @@ import configparser
 from getpass import getpass
 from testfiles.testclass.basetest import BaseTest
 from testfiles.testclass.add_employee_test import AddEmployeeTest
+from testfiles.testclass.remove_employee_test import RemoveEmployeeTest
 
 
 # Define constants
