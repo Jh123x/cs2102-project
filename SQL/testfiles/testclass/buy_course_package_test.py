@@ -80,17 +80,13 @@ class ZBuyCoursePackageTest(BaseTest, unittest.TestCase):
         query = f'SELECT * FROM Buys WHERE package_id = {package_id}'
         res = self.execute_query(query)
         assert len(res) == 1, "Incorrect number of bought packages reported"
-        expected = [(today, 0, package_id, self.customer_id,'1234123412341234')]
+        expected = [
+            (today, 0, package_id, self.customer_id, '1234123412341234')]
         assert res == expected, f"The package added is incorrect {res}: {expected}"
 
         # Buy it again
         query = self.generate_query('buy_course_package', args)
         self.execute_query(query)
-
-        # Check if it is in buys
-        
-
-        
 
     def test_buy_different_package_while_1_active(self):
         """Test if the customer can buy a different package when there is currently one active"""
@@ -111,7 +107,7 @@ class ZBuyCoursePackageTest(BaseTest, unittest.TestCase):
 
     def test_buy_different_package_while_no_active(self):
         """Test if buying a package while there are no active packages will succeed"""
-        #Constants
+        # Constants
         today = datetime.datetime.combine(
             datetime.datetime.now().date(), datetime.time(0))
 
@@ -136,13 +132,17 @@ class ZBuyCoursePackageTest(BaseTest, unittest.TestCase):
         query = f'SELECT * FROM Buys WHERE package_id = {package_id2}'
         res = self.execute_query(query)
         assert len(res) == 1, "Incorrect number of bought packages reported"
-        purchase_date = datetime.datetime.combine(datetime.datetime.strptime('2020-04-04', '%Y-%m-%d').date(), datetime.time(0))
-        expected = [(purchase_date, 0, package_id2, self.customer_id, '1234123412341234')]
+        purchase_date = datetime.datetime.combine(datetime.datetime.strptime(
+            '2020-04-04', '%Y-%m-%d').date(), datetime.time(0))
+        expected = [(purchase_date, 0, package_id2,
+                     self.customer_id, '1234123412341234')]
         assert res == expected, f"The package added is incorrect {res}: {expected}"
 
         # Check if new package is in the buys table
         query = f'SELECT * FROM Buys WHERE package_id = {self.package_id}'
         res = self.execute_query(query)
-        assert len(res) == 1, f"Incorrect number of bought packages reported {res}"
-        expected = [(today, 10, self.package_id, self.customer_id,'1234123412341234')]
+        assert len(
+            res) == 1, f"Incorrect number of bought packages reported {res}"
+        expected = [(today, 10, self.package_id,
+                     self.customer_id, '1234123412341234')]
         assert res == expected, f"The package added is incorrect {res} : {expected}"
