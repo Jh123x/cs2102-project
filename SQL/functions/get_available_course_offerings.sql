@@ -1,6 +1,6 @@
 DROP FUNCTION IF EXISTS get_offering_num_remaining_seats CASCADE;
 CREATE OR REPLACE FUNCTION get_offering_num_remaining_seats (
-    offering_launch_date_arg DATE, 
+    offering_launch_date_arg DATE,
     course_id_arg INTEGER
 ) RETURNS INTEGER AS $$
 DECLARE

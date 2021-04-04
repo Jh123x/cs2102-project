@@ -14,7 +14,7 @@ DECLARE
     room_avail INTEGER;
     offering_end_date DATE;
     offering_start_date DATE;
-    temp INTEGER
+    temp INTEGER;
 BEGIN
     SELECT s.room_id INTO original_room_id
     FROM Sessions s
@@ -24,6 +24,7 @@ BEGIN
 
     IF (original_room_id = room_id) THEN
         RAISE EXCEPTION 'Same room';
+    END IF;
     
     SELECT o.offering_start_date, o.offering_end_date INTO offering_start_date, offering_end_date
     FROM CourseOfferings
@@ -35,6 +36,7 @@ BEGIN
 
     IF (temp <> room_id) THEN 
         RAISE EXCEPTION 'Room is in use';
+    END IF;
 
     SELECT r.room_seating_capacity INTO room_seating_capacity
     FROM Rooms r

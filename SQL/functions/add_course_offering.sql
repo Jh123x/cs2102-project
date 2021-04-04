@@ -6,7 +6,7 @@
 DROP FUNCTION IF EXISTS add_course_offering CASCADE;
 DROP TYPE IF EXISTS session_information;
 CREATE TYPE session_information AS(
-    session_date DATE, 
+    session_date DATE,
     session_start_hour INTEGER,
     room_id INTEGER
 );
@@ -25,10 +25,11 @@ DECLARE
     offering_start_date DATE;
     offering_end_date DATE;
     num_duplicate INTEGER;
-    num_sessions INTEGER
+    num_sessions INTEGER;
     offering_start_record RECORD;
     instructor_id INTEGER;
     session_id INTEGER;
+    r session_information;
 BEGIN
 
     /*Checking the conditions of course offering*/
@@ -67,7 +68,7 @@ BEGIN
     (offering_launch_date, offering_fees, offering_registration_deadline, offering_num_target_registration, offering_seating_capacity, course_id, admin_id, offering_start_date, offering_end_date);
     
     
-    num_sessions := SELECT COUNT(*) FROM unnest(sessions_arr);
+    SELECT COUNT(*) INTO num_sessions FROM unnest(sessions_arr);
     offering_start_date := sessions_arr[1][1];
     offering_end_date := sessions_arr[1][1];
     session_id := 1;
@@ -79,8 +80,8 @@ BEGIN
         IF (r[1] >= offering_end_date) THEN
             offering_end_date := r[1];
         END IF;
-        instructor_id := SELECT employee_id FROM get_available_instructors(course_id,offering_start_date,offering_end_date) LIMIT 1;
-        add_session(course_id,offering_launch_date,session_id,r[1],r[2],instructor_id,r[3]);
+        SELECT employee_id INTO instructor_id FROM get_available_instructors(course_id,offering_start_date,offering_end_date) LIMIT 1;
+        SELECT add_session(course_id,offering_launch_date,session_id,r[1],r[2],instructor_id,r[3]);
         session_id := session_id + 1;
     END LOOP;
 
