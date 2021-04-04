@@ -1,7 +1,8 @@
-CREATE OR REPLACE PROCEDURE remove_employee(
+CREATE OR REPLACE FUNCTION remove_employee(
     r_employee_id INTEGER,
     departure_date DATE
-) AS $$
+) RETURNS VOID
+AS $$
 DECLARE
     isAdmin_count INTEGER;
     isManaging_count INTEGER;

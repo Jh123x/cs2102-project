@@ -5,11 +5,11 @@ If the purchase transaction is valid, the routine will process the purchase with
 
 Design decision: Add credit card number as input parameter because a customer can have multiple credit cards.
 */
-CREATE OR REPLACE PROCEDURE buy_course_package (
+CREATE OR REPLACE FUNCTION buy_course_package (
     customer_id         INTEGER,
     credit_card_number  CHAR(16),
     package_id          INTEGER
-)
+) RETURNS VOID
 /* Question: Anything we need to return? */
 AS $$
 DECLARE

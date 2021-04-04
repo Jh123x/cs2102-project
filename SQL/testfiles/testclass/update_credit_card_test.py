@@ -22,11 +22,8 @@ class EUpdateCreditCardTest(BaseTest, unittest.TestCase):
         """Update credit card for a person"""
         id = self._add_customer("Invoker", '1234123412341234')
         args = (str(id), '1234123412341235', '125', '2020-04-25')
-        query = self.generate_procedure('update_credit_card', args)
-        res = self.execute_query(query)
-
-        # There is no output from a procedure
-        assert res is None
+        query = self.generate_query('update_credit_card', args)
+        self.execute_query(query)
 
         # Check if the credit card is updated in the table
         query = f'SELECT * FROM CreditCards'
@@ -65,7 +62,7 @@ class EUpdateCreditCardTest(BaseTest, unittest.TestCase):
 
         # Update one to the number of the next
         args = (str(id1), '1234123412341235', '123', '2020-04-25')
-        query = self.generate_procedure('update_credit_card', args)
+        query = self.generate_query('update_credit_card', args)
         self.check_fail_test(
             query, "Cannot update the card of another person", (IntegrityError,))
 
@@ -79,5 +76,5 @@ class EUpdateCreditCardTest(BaseTest, unittest.TestCase):
         assert len(res) == 1, "The customer are not added correctly"
 
         args = (str(id1), "1234123412341234", '123', '2020-04-20')
-        query = self.generate_procedure('update_credit_card', args)
+        query = self.generate_query('update_credit_card', args)
         self.check_fail_test(query, "Cannot update to the same card", (UniqueViolation,))

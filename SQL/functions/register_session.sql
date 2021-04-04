@@ -1,10 +1,11 @@
-CREATE OR REPLACE PROCEDURE register_session(
+CREATE OR REPLACE FUNCTION register_session(
     offering_launch_date DATE,
     course_id INTEGER,
     session_id INTEGER,
     customer_id INTEGER,
     payment_method TEXT
-) AS $$
+) RETURNS VOID
+AS $$
 DECLARE
     credit_card_number CHAR(16);
     credit_card_expiry_date DATE;

@@ -6,7 +6,6 @@ CREATE TABLE Customers (
     customer_name TEXT NOT NULL,
     customer_email TEXT NOT NULL,
 
-    UNIQUE(customer_phone, customer_address, customer_name, customer_email),
     CHECK(customer_email ~ '.+@.+\..+'),
     CHECK(customer_phone > 0)
 );

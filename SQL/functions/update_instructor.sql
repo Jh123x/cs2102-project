@@ -5,12 +5,13 @@ The inputs to the routine include the following:
 If the course session has not yet started and the update request is valid,
     the routine will process the request with the necessary updates.
 */
-CREATE OR REPLACE PROCEDURE update_instructor (
+CREATE OR REPLACE FUNCTION update_instructor (
     offering_launch_date INTEGER,
     course_id INTEGER,
     session_id INTEGER,
     new_instructor_employee_id INTEGER
-) AS $$
+) RETURNS VOID
+AS $$
 DECLARE
     session_date DATE;
     session_start_hour INTEGER;

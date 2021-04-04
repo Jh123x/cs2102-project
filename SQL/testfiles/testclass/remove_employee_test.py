@@ -16,11 +16,8 @@ class BRemoveEmployeeTest(BaseTest, unittest.TestCase):
         assert len(out) == 1, out
 
         args = ('12', '2020-12-21')
-        query = self.generate_procedure('remove_employee', args)
-        res = self.execute_query(query)
-
-        # Nothing should be returned at the cursor
-        assert res == None
+        query = self.generate_query('remove_employee', args)
+        self.execute_query(query)
 
         # Check if there are any employees left
         expected = (12, "John", "address", '987654321', 'test@test.com', datetime.datetime.strptime(
@@ -32,7 +29,7 @@ class BRemoveEmployeeTest(BaseTest, unittest.TestCase):
 
         # Remove someone who is not in the list
         args = ['-3', '2020-04-21']
-        query = self.generate_procedure('remove_employee', tuple(args))
+        query = self.generate_query('remove_employee', tuple(args))
         self.check_fail_test(
             query, "Test is suppose to fail", (RaiseException,))
 
@@ -46,7 +43,7 @@ class BRemoveEmployeeTest(BaseTest, unittest.TestCase):
         assert len(out) == 1, out
 
         args = ('13', '2020-12-21')
-        query = self.generate_procedure('remove_employee', args)
+        query = self.generate_query('remove_employee', args)
         res = self.check_fail_test(
             query, "Not suppose to be able to remove a manager that is managing", (RaiseException,))
 

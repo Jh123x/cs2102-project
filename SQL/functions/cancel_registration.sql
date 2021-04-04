@@ -3,11 +3,12 @@ This routine is used when a customer requests to cancel a registered course sess
 The inputs to the routine include the following: customer identifier, and course offering identifier.
 If the cancellation request is valid, the routine will process the request with the necessary updates.
 */
-CREATE OR REPLACE PROCEDURE cancel_registration (
+CREATE OR REPLACE FUNCTION cancel_registration (
     customer_id             INTEGER,
     course_id               INTEGER,
     offering_launch_date    DATE
-) AS $$
+) RETURNS VOID
+AS $$
 DECLARE
     enroll_date         DATE;
     session_id          INTEGER;

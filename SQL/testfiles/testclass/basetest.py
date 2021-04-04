@@ -24,9 +24,6 @@ class BaseTest(object):
         """Generate query based on arguments"""
         return f"""SELECT {function}({self._parse_args(args)})"""
 
-    def generate_procedure(self, procedure: str, args:tuple) -> None:
-        return f"""CALL {procedure}({self._parse_args(args)})"""
-
     def execute_query(self, query: str) -> list:
         """Execute query and return the result at the cursor"""
         self.CURSOR.execute(query)

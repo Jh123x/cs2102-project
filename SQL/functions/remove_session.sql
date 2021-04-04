@@ -11,11 +11,12 @@ The request must not be performed if there is at least one registration for the 
 Note that the resultant seating capacity of the course offering
     could fall below the course offering’s target number of registrations, which is allowed.
 */
-CREATE OR REPLACE PROCEDURE remove_session(
+CREATE OR REPLACE FUNCTION remove_session(
     course_id               INTEGER,
     offering_launch_date    INTEGER,
     session_id              INTEGER
-) AS $$
+) RETURNS VOID
+AS $$
 DECLARE
     session_date            DATE;
     session_start_hour      DATE;
