@@ -10,9 +10,32 @@ DECLARE
     session_date DATE;
     session_start_hour INTEGER;
     num_registration INTEGER;
-
-    
+    original_room_id INTEGER;
+    room_avail INTEGER;
+    offering_end_date DATE;
+    offering_start_date DATE;
+    temp INTEGER
 BEGIN
+    SELECT s.room_id INTO original_room_id
+    FROM Sessions s
+    WHERE s.course_id = course_id
+    AND s.session_id = session_id
+    AND s.offering_launch_date = offering_launch_date;
+
+    IF (original_room_id = room_id) THEN
+        RAISE EXCEPTION 'Same room';
+    
+    SELECT o.offering_start_date, o.offering_end_date INTO offering_start_date, offering_end_date
+    FROM CourseOfferings
+    WHERE o.course_id = course_id;
+
+    SELECT r.room_id INTO temp
+    FROM get_available_rooms(offering_start_date,offering_end_date) r
+    WHERE room_id = r.room_id;
+
+    IF (temp <> room_id) THEN 
+        RAISE EXCEPTION 'Room is in use';
+
     SELECT r.room_seating_capacity INTO room_seating_capacity
     FROM Rooms r
     WHERE room_id = r.room_id;
