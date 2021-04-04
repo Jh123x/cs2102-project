@@ -17,3 +17,12 @@
         ascending order of customer identifier and
         course offering's registration deadline.
 */
+CREATE OR REPLACE FUNCTION promote_courses()
+RETURNS TABLE(customer_id INTEGER, customer_name TEXT,
+course_area TEXT, course_id INTEGER, course_title TEXT, offering_launch_date DATE,
+registration_deadline DATE, fees DEC(64,2))
+AS $$
+BEGIN
+
+END;
+$$ LANGUAGE plpgsql;
