@@ -5,10 +5,9 @@ The routine returns a table of records consisting of employee identifier and nam
 */
 
 CREATE OR REPLACE FUNCTION find_instructors (
-    offering_launch_date INTEGER,
-    course_id INTEGER,
-    session_date DATE,
-    session_start_hour INTEGER
+    r_course_id INTEGER,
+    r_session_date DATE,
+    r_session_start_hour INTEGER
 )
 RETURNS TABLE (employee_id INTEGER, employee_name TEXT) AS $$
 DECLARE
@@ -22,26 +21,30 @@ BEGIN
     * - cannot teach a course that ends at session_start_hour)
     * - part time instructor must not teach more than 30 hours for each month
     */
-
-    SELECT e.employee_id, e.employee_name
+    RETURN QUERY
+    SELECT DISTINCT e.employee_id, e.employee_name
     FROM Employees e
-    NATURAL JOIN Specializes s
-    NATURAL JOIN Courses c
-    WHERE c.course_id = course_id
-        AND NOT EXISTS (
+    JOIN Instructors i
+    ON i.instructor_id = e.employee_id
+    NATURAL JOIN Specializes sp
+    WHERE NOT EXISTS (
             SELECT 1
             FROM Sessions s
-            WHERE s.session_date = session_date
-                AND s.offering_launch_date = offering_launch_date
-                AND s.course_id = course_id
+            WHERE s.session_date = r_session_date
+                AND s.course_id = r_course_id
                 AND s.instructor_id = e.employee_id
-                AND (s.session_start_hour <= session_start_hour AND session_start_hour <= session_end_hour)
+                AND (s.session_start_hour <= r_session_start_hour AND r_session_start_hour <= session_end_hour)
         )
         AND (
             SELECT COALESCE(SUM(session_end_hour - session_start_hour), 0)
             FROM Sessions s
             WHERE s.instructor_id = e.employee_id
-                AND EXTRACT(MONTH FROM session_date) = EXTRACT(MONTH FROM CURRENT_DATE)
-        ) < 30;
+                AND EXTRACT(MONTH FROM r_session_date) = EXTRACT(MONTH FROM CURRENT_DATE)
+        ) < 30
+        AND sp.course_area_name = (
+            SELECT course_area_name
+            FROM Courses
+            WHERE r_course_id = course_id
+        );
 END;
 $$ LANGUAGE plpgsql;
