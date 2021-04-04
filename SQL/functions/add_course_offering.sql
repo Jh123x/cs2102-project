@@ -81,7 +81,7 @@ BEGIN
         END IF;
         instructor_id := SELECT employee_id FROM get_available_instructors(course_id,offering_start_date,offering_end_date) LIMIT 1;
         add_session(course_id,offering_launch_date,session_id,r[1],r[2],instructor_id,r[3]);
-        
+        session_id := session_id + 1;
     END LOOP;
 
 END;
