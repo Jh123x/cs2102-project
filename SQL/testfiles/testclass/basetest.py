@@ -1,3 +1,6 @@
+import psycopg2.errors
+
+
 def parse_args(arg: str):
     if '::' in arg or '[' in arg:
         return arg
@@ -17,6 +20,9 @@ class BaseTest(object):
         """Generate query based on arguments"""
         return f"""SELECT {function}({", ".join(map(parse_args, args))})"""
 
+    def generate_procedure(self, procedure: str, args:tuple) -> None:
+        return f"""EXEC {procedure}({", ".join(map(parse_args, args))})"""
+
     def execute_query(self, query: str) -> list:
         """Execute query and return the result at the cursor"""
         self.CURSOR.execute(query)
@@ -30,4 +36,14 @@ class BaseTest(object):
         """Test value"""
         self.execute_query(query)
         actual = self.fetch_all()
-        assert expected == actual, self.ERR_MSG % (expected, actual)
+        for v, e in zip(actual, expected):
+            assert v == e, self.ERR_MSG % (e, v)
+
+    def check_fail_test(self, query: str, msg: str, expected_error: tuple) -> None:
+        """Check test cases which are suppose to fail"""
+        try:
+            self.execute_query(query)
+        except expected_error:
+            pass
+        else:
+            raise AssertionError(msg)

@@ -439,6 +439,6 @@ if __name__ == "__main__":
             db.commit()
 
             # Unittest for functions
-            # BaseTest.DB = db
-            # BaseTest.CURSOR = cursor
-            # unittest.main()
+            BaseTest.DB = db
+            BaseTest.CURSOR = cursor
+            unittest.main()
