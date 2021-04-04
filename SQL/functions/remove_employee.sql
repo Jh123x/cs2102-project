@@ -6,6 +6,7 @@ DECLARE
     isAdmin_count INTEGER;
     isManaging_count INTEGER;
     isTeaching_count INTEGER;
+    isExists_count INTEGER;
 BEGIN
     /* The below conditions needs changing; need to check if it's managing a course offering/session AFTER departure date */
     /* Check if they are still handling admin tasks */
@@ -17,8 +18,17 @@ BEGIN
     /* Check if they are manager managing some area */
     SELECT COUNT(*) INTO isTeaching_count FROM Sessions s WHERE s.instructor_id = r_employee_id;
 
-    IF (isAdmin_count + isManaging_count + isTeaching_count > 0) THEN
-        RAISE EXCEPTION 'Employee is still Admin/Managing/Teaching';
+    /*Check if the employee exists*/
+    SELECT COUNT(*) into isExists_count FROM Employees e where e.employee_id = r_employee_id;
+
+    IF (isAdmin_count > 0) THEN
+        RAISE EXCEPTION 'Employee is still Admin for a CourseOffering';
+    ELSIF (isManaging_count > 0) THEN
+        RAISE EXCEPTION 'Employee is still managing a CourseArea';
+    ELSIF (isTeaching_count > 0) THEN
+        RAISE EXCEPTION 'Employee is still teaching a Session';
+    ELSIF (isExists_count <= 0) THEN
+        RAISE EXCEPTION 'Employee does not exist';
     END IF;
 
     /* Leave it to insert/update CHECK() to ensure departure_date is >= join_date*/
