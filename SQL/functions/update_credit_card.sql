@@ -1,3 +1,9 @@
+/*
+    4. update_credit_card: This routine is used when a customer requests to change his/her credit card details.
+    The inputs to the routine include
+        the customer identifier and
+        his/her new credit card details (credit card number, expiry date, CVV code).
+*/
 CREATE OR REPLACE FUNCTION update_credit_card (
     customer_id INTEGER,
     credit_card_number CHAR(16),

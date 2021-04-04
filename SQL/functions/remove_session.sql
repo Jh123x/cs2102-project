@@ -1,15 +1,11 @@
 /*
- This routine is used to remove a course session.
- The inputs to the routine include the following:
-    course offering identifier
-    session number
-
-If the course session has not yet started and the request is valid,
-    the routine will process the request with the necessary updates.
-The request must not be performed if there is at least one registration for the session.
-
-Note that the resultant seating capacity of the course offering
-    could fall below the course offering’s target number of registrations, which is allowed.
+    23. remove_session: This routine is used to remove a course session.
+    The inputs to the routine include the following:
+        course offering identifier and
+        session number.
+    If the course session has not yet started and the request is valid, the routine will process the request with the necessary updates.
+    The request must not be performed if there is at least one registration for the session.
+    Note that the resultant seating capacity of the course offering could fall below the course offering's target number of registrations, which is allowed.
 */
 CREATE OR REPLACE FUNCTION remove_session(
     course_id               INTEGER,

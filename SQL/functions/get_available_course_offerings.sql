@@ -1,3 +1,17 @@
+/*
+    15. get_available_course_offerings: This routine is used to retrieve all the available course offerings that could be registered.
+    The routine returns a table of records with the following information for each course offering:
+        course title,
+        course area,
+        start date,
+        end date,
+        registration deadline,
+        course fees, and
+        the number of remaining seats.
+    The output is sorted in
+        ascending order of registration deadline and
+        course title.
+*/
 DROP FUNCTION IF EXISTS get_offering_num_remaining_seats CASCADE;
 CREATE OR REPLACE FUNCTION get_offering_num_remaining_seats (
     offering_launch_date_arg DATE,

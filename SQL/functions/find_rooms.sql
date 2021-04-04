@@ -1,5 +1,13 @@
-/*Find all rooms that can be used for a session*/
-/*Query: Find all the rooms where there does not exists another sessions that is at the same time slot*/
+/*
+    8. find_rooms: This routine is used to find all the rooms that could be used for a course session.
+    The inputs to the routine include the following:
+        session date,
+        session start hour, and
+        session duration.
+    The routine returns a table of room identifiers.
+
+    Query: Find all the rooms where there does not exists another sessions that is at the same time slot
+*/
 CREATE OR REPLACE FUNCTION find_rooms(
     session_date DATE,
     session_start_hour INTEGER,

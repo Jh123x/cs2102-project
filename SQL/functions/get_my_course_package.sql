@@ -1,3 +1,17 @@
+/*
+    14. get_my_course_package: This routine is used when a customer requests to view his/her active/partially active course package.
+    The input to the routine is a customer identifier.
+    The routine returns the following information as a JSON value:
+        package name,
+        purchase date,
+        price of package,
+        number of free sessions included in the package,
+        number of sessions that have not been redeemed, and
+        information for each redeemed session (course name, session date, session start hour).
+    The redeemed session information is sorted in
+        ascending order of session date and
+        start hour.
+*/
 DROP FUNCTION IF EXISTS get_my_course_package CASCADE;
 CREATE OR REPLACE FUNCTION get_my_course_package (
     customer_id_arg INTEGER

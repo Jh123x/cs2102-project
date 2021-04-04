@@ -1,3 +1,14 @@
+/*
+    24. add_session: This routine is used to add a new session to a course offering.
+    The inputs to the routine include the following:
+        course offering identifier,
+        new session number,
+        new session day,
+        new session start hour,
+        instructor identifier for new session, and
+        room identifier for new session.
+    If the course offering's registration deadline has not passed and the the addition request is valid, the routine will process the request with the necessary updates.
+*/
 DROP FUNCTION IF EXISTS add_session CASCADE;
 CREATE OR REPLACE FUNCTION add_session (
     course_id INTEGER,

@@ -1,3 +1,16 @@
+/*
+    28. popular_courses: This routine is used to find the popular courses offered this year (i.e., start date is within this year).
+    A course is popular if the course has at least two offerings this year, and for every pair of offerings of the course this year, the offering with the later start date has a higher number of registrations than that of the offering with the earlier start date.
+    The routine returns a table of records consisting of the following information for each popular course:
+        course identifier,
+        course title,
+        course area,
+        number of offerings this year, and
+        number of registrations for the latest offering this year.
+    The output is sorted in
+        descending order of the number of registrations for the latest offering this year followed by in
+        ascending order of course identifier.
+*/
 DROP FUNCTION IF EXISTS get_offering_num_enrolled CASCADE;
 CREATE OR REPLACE FUNCTION get_offering_num_enrolled (
     offering_launch_date_arg DATE,
@@ -30,7 +43,6 @@ RETURNS TABLE(
     num_course_offerings INTEGER,
     num_latest_registrations INTEGER
 ) AS $$
-
 BEGIN
     RETURN QUERY (
         SELECT

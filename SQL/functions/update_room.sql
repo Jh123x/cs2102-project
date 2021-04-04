@@ -1,3 +1,12 @@
+/*
+    22. update_room: This routine is used to change the room for a course session.
+    The inputs to the routine include the following:
+        course offering identifier,
+        session number, and
+        identifier of the new room.
+    If the course session has not yet started and the update request is valid, the routine will process the request with the necessary updates.
+    Note that update request should not be performed if the number of registrations for the session exceeds the seating capacity of the new room.
+*/
 CREATE OR REPLACE FUNCTION update_room(
     offering_launch_date DATE,
     course_id INTEGER,

@@ -1,8 +1,10 @@
 /*
-This routine is used when a customer requests to change a registered course session to another session.
-The inputs to the routine include the following: customer identifier, course offering identifier, and new session number.
-If the update request is valid and there is an available seat in the new session,
-    the routine will process the request with the necessary updates.
+    19. update_course_session: This routine is used when a customer requests to change a registered course session to another session.
+    The inputs to the routine include the following:
+        customer identifier,
+        course offering identifier,
+        and new session number.
+    If the update request is valid and there is an available seat in the new session, the routine will process the request with the necessary updates.
 */
 CREATE OR REPLACE FUNCTION update_course_session (
     customer_id             INTEGER,

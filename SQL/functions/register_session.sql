@@ -1,3 +1,12 @@
+/*
+    17. register_session: This routine is used when a customer requests to register for a session in a course offering.
+    The inputs to the routine include the following:
+        customer identifier,
+        course offering identifier,
+        session number, and
+        payment method (credit card or redemption from active package).
+    If the registration transaction is valid, this routine will process the registration with the necessary updates (e.g., payment/redemption).
+*/
 CREATE OR REPLACE FUNCTION register_session(
     offering_launch_date DATE,
     course_id INTEGER,

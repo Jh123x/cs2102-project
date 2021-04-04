@@ -1,12 +1,20 @@
 /*
-This routine is used to retrieve the availability information of instructors who could be assigned to teach a specified course.
-The inputs to the routine include the following: course identifier, start date, and end date.
-The routine returns a table of records consisting of the following information:
-    employee identifier, name, total number of teaching hours that the instructor has been assigned for this month,
-    day (which is within the input date range [start date, end date]),
-    and an array of the available hours for the instructor on the specified day.
-The output is sorted in ascending order of employee identifier and day,
-    and the array entries are sorted in ascending order of hour.
+    7. get_available_instructors: This routine is used to retrieve the availability information of instructors who could be assigned to teach a specified course.
+    The inputs to the routine include the following:
+        course identifier,
+        start date, and
+        end date.
+    The routine returns a table of records consisting of the following information:
+        employee identifier,
+        name,
+        total number of teaching hours that the instructor has been assigned for this month,
+        day (which is within the input date range [start date, end date]), and
+        an array of the available hours for the instructor on the specified day.
+    The output is sorted in
+        ascending order of employee identifier and
+        day, and
+        the array entries are sorted in
+            ascending order of hour.
 */
 
 CREATE OR REPLACE FUNCTION get_available_instructors (

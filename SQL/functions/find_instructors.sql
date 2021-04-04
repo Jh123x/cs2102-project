@@ -1,9 +1,13 @@
 /*
-This routine is used to find all the instructors who could be assigned to teach a course session.
-The inputs to the routine include the following: course identifier, session date, and session start hour.
-The routine returns a table of records consisting of employee identifier and name.
+    6. find_instructors: This routine is used to find all the instructors who could be assigned to teach a course session.
+    The inputs to the routine include the following:
+        course identifier,
+        session date, and
+        session start hour.
+    The routine returns a table of records consisting of
+        employee identifier and
+        name.
 */
-
 CREATE OR REPLACE FUNCTION find_instructors (
     r_course_id INTEGER,
     r_session_date DATE,

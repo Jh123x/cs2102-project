@@ -1,3 +1,17 @@
+/*
+    18. get_my_registrations: This routine is used when a customer requests to view his/her active course registrations (i.e, registrations for course sessions that have not ended).
+    The input to the routine is a customer identifier.
+    The routine returns a table of records with the following information for each active registration session:
+        course name,
+        course fees,
+        session date,
+        session start hour,
+        session duration, and
+        instructor name.
+    The output is sorted in
+        ascending order of session date and
+        session start hour.
+*/
 DROP FUNCTION IF EXISTS get_my_registrations CASCADE;
 CREATE OR REPLACE FUNCTION get_my_registrations (
     customer_id INTEGER
