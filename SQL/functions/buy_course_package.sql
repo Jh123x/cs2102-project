@@ -18,7 +18,7 @@ DECLARE
     r_credit_card_number            CHAR(16);
 BEGIN
     /* Select last owned credit card of customer */
-    SELECT credit_card_number,  INTO r_credit_card_number
+    SELECT credit_card_number INTO r_credit_card_number
     FROM Owns o
     WHERE o.customer_id = r_customer_id
     ORDER BY o.own_from_date DESC
