@@ -4,7 +4,7 @@ from datetime import datetime
 from .basetest import BaseTest
 
 
-class AddEmployeeTest(BaseTest, unittest.TestCase):
+class AAddEmployeeTest(BaseTest, unittest.TestCase):
 
     def test_add_admin_success(self) -> None:
         """Test if the full time employee is added correctly"""

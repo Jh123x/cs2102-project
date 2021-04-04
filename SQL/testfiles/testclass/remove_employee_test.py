@@ -12,6 +12,7 @@ class RemoveEmployeeTest(BaseTest, unittest.TestCase):
                 '2020-05-03', role, "full-time", '10.5', str(course_areas)]
         manager_query = self.generate_query("add_employee", tuple(args))
         self.execute_query(manager_query)
+class BRemoveEmployeeTest(BaseTest, unittest.TestCase):
 
     def test_remove_manager(self) -> None:
         """Remove the manager"""
