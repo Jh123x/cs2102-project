@@ -20,6 +20,11 @@ class BaseTest(object):
         """Parse the arguments into a string"""
         return ", ".join(map(parse_args, args))
 
+    def process_arr_args(self, arr_args: tuple):
+        """Transform the args into sql array"""
+        res = map(lambda x: f"'{x}'", arr_args)
+        return f'ARRAY[{", ".join(res)}]'
+
     def generate_query(self, function: str, args: tuple) -> None:
         """Generate query based on arguments"""
         return f"""SELECT {function}({self._parse_args(args)})"""
