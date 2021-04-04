@@ -4,14 +4,6 @@ from .basetest import BaseTest
 from psycopg2.errors import RaiseException
 
 
-class RemoveEmployeeTest(BaseTest, unittest.TestCase):
-
-    def _add_person(self, role: str, course_areas: list = 'ARRAY[]::TEXT[]') -> None:
-        """Add a manager into the table"""
-        args = ["John", "address", '987654321', 'test@test.com',
-                '2020-05-03', role, "full-time", '10.5', str(course_areas)]
-        manager_query = self.generate_query("add_employee", tuple(args))
-        self.execute_query(manager_query)
 class BRemoveEmployeeTest(BaseTest, unittest.TestCase):
 
     def test_remove_manager(self) -> None:
@@ -20,7 +12,7 @@ class BRemoveEmployeeTest(BaseTest, unittest.TestCase):
         self._add_person("Manager")
 
         # Check if the manager is added
-        out = self.execute_query('SELECT * FROM Employees WHERE employee_id = 12')
+        out = self.execute_query('SELECT * FROM Employees')
         assert len(out) == 1, out
 
         args = ('12', '2020-12-21')
@@ -32,7 +24,7 @@ class BRemoveEmployeeTest(BaseTest, unittest.TestCase):
 
         # Check if there are any employees left
         expected = (12, "John", "address", '987654321', 'test@test.com', datetime.datetime.strptime("2020-05-03", "%Y-%m-%d"), datetime.datetime.strptime("2020-12-21", "%Y-%m-%d"))
-        self.value_test('SELECT * FROM Employees WHERE employee_id = 12', expected)
+        self.value_test('SELECT * FROM Employees', expected)
 
 
     def test_remove_non_existent(self) -> None:

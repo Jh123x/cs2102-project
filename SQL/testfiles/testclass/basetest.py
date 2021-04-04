@@ -55,3 +55,10 @@ class BaseTest(object):
             pass
         else:
             raise AssertionError(msg)
+
+    def _add_person(self, role: str, course_areas: list = 'ARRAY[]::TEXT[]') -> None:
+        """Add a manager into the table"""
+        args = ["John", "address", '987654321', 'test@test.com',
+                '2020-05-03', role, "full-time", '10.5', str(course_areas)]
+        manager_query = self.generate_query("add_employee", tuple(args))
+        self.execute_query(manager_query)
