@@ -6,13 +6,14 @@ CREATE OR REPLACE PROCEDURE register_session(
     payment_method TEXT
 ) AS $$
 DECLARE
-    credit_card_number CHAR(16),
-    credit_card_expiry_date DATE,
-    buy_date DATE,
-    package_name TEXT,
-    package_id INTEGER,
-    package_num_free_registrations INTEGER,
-    num_duplicate INTEGER
+    credit_card_number CHAR(16);
+    credit_card_expiry_date DATE;
+    buy_date DATE;
+    package_name TEXT;
+    package_id INTEGER;
+    package_num_free_registrations INTEGER;
+    num_duplicate INTEGER;
+    buy_num_remaining_redemptions INTEGER;
 
 BEGIN
     SELECT o.credit_card_number, o.credit_card_expiry_date INTO credit_card_number, credit_card_expiry_date
@@ -25,7 +26,6 @@ BEGIN
         AND b.buy_num_remaining_redemptions >= 1
         ORDER BY buy_num_remaining_redemptions ASC
         LIMIT 1;
-
     END IF;
 
     IF (package_id = NULL AND payment_method = 'Redemption') THEN
@@ -42,8 +42,8 @@ BEGIN
         RAISE EXCEPTION 'Session has been redeemed!';
     END IF;
 
-    INSERT INTO (register_date,customer_id,credit_card_number,session_id,offering_launch_date,course_id,register_cancelled)
-    VALUES (CURRENT_DATE, customer_id,credit_card_number,session_id,offering_launch_date,course_id,);
+    INSERT INTO Sessions(register_date, customer_id, credit_card_number, session_id, offering_launch_date, course_id, register_cancelled)
+    VALUES (CURRENT_DATE, customer_id, credit_card_number, session_id, offering_launch_date, course_id);
 
     IF (package_id <> NULL) THEN
         UPDATE Buys b
@@ -52,9 +52,8 @@ BEGIN
         AND b.package_id = package_id
         AND b.buy_date = buy_date;
 
-        INSERT INTO (redeem_date,customer_id,package_id	session_id,offering_launch_date,course_id ,redeeem_cancelled)
-        VALUES(CURRENT_DATE, customer_id,package_id,session_id,offering_launch_date,course_id,);
-)
-
+        INSERT INTO Redeems
+        VALUES(CURRENT_DATE, customer_id,package_id,session_id,offering_launch_date,course_id);
+    END IF;
 END;
 $$ LANGUAGE plpgsql;
