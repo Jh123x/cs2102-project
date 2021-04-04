@@ -6,7 +6,7 @@ DECLARE
     redeem_count            INTEGER;
     cancel_count            INTEGER;
 BEGIN
-    IF (TG_OP = 'UPDATE' AND NEW.customer_id = OLD.customer_id AND NEW.course_id = OLD.course_id) THEN
+    IF (TG_OP = 'UPDATE' AND NEW.course_id = OLD.course_id) THEN
         RETURN NEW;
     END IF;
 
