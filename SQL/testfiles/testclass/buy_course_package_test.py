@@ -49,7 +49,7 @@ class ZBuyCoursePackageTest(BaseTest, unittest.TestCase):
         assert res == [(today, 10, self.package_id, self.customer_id,
                         '1234123412341234')], "The package added is incorrect"
 
-    def test_buy_same_package_2_times_fail(self):
+    def test_buy_same_package_2_times_more_than_0_redemp_val_fail(self):
         """Buy the same pacakge 2 times"""
         # Buy a package
         self.test_buy_success()
@@ -58,7 +58,39 @@ class ZBuyCoursePackageTest(BaseTest, unittest.TestCase):
         args = (str(self.customer_id), str(self.package_id))
         query = self.generate_query('buy_course_package', args)
         self.check_fail_test(
-            query, "Buying the same package 2 times should result in a fail", (RaiseException,))
+            query, "Buying the same package 2 where each time has > 0 redemption times should result in a fail", (RaiseException,))
+
+    def test_buy_same_package_2_times_equal_0_redemp_val_fail(self):
+        """Buy the same package 2 times but they have 0 value each"""
+        # Const
+        today = datetime.datetime.combine(
+            datetime.datetime.now().date(), datetime.time(0))
+
+        # Create another course_package
+        args = ('Best Package 2', '0', '2020-04-20', '2023-04-20', '200')
+        query = self.generate_query('add_course_package', args)
+        package_id = self.execute_query(query)[0][0]
+
+        # Buy the package 1 time
+        args = (str(self.customer_id), str(package_id))
+        query = self.generate_query('buy_course_package', args)
+        self.execute_query(query)
+
+        # Check if the package is in buys
+        query = f'SELECT * FROM Buys WHERE package_id = {package_id}'
+        res = self.execute_query(query)
+        assert len(res) == 1, "Incorrect number of bought packages reported"
+        expected = [(today, 0, package_id, self.customer_id,'1234123412341234')]
+        assert res == expected, f"The package added is incorrect {res}: {expected}"
+
+        # Buy it again
+        query = self.generate_query('buy_course_package', args)
+        self.execute_query(query)
+
+        # Check if it is in buys
+        
+
+        
 
     def test_buy_different_package_while_1_active(self):
         """Test if the customer can buy a different package when there is currently one active"""
