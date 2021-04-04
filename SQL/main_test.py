@@ -271,7 +271,7 @@ def load_success_data(test_path: str, cursor) -> list:
                 return
 
 
-def load_schema_fail_data(test_path: str, cursor, db):
+def load_fail_data(test_path: str, cursor, db):
     """Load the fail data"""
 
     # Generate the file path
@@ -409,19 +409,16 @@ if __name__ == "__main__":
 
     with connect_db(HOST, PORT, user, password, DBNAME) as db:
         with db.cursor() as cursor:
-            # Positive test cases for schema (Cumulative)
-            load_success_data('./test data/schema test', cursor)
-            db.rollback()
-
-            # Run the negative test cases for schema Data
-            load_schema_fail_data('./test data/schema fail', cursor, db)
-            db.rollback()
-
-            # Other TODO below
-            # Run the negative test cases for triggers
+            # # Positive test cases for schema (Cumulative)
+            # load_success_data('./test data/schema test', cursor)
             # db.rollback()
 
-            # Run the negative test cases for view
+            # # Run the negative test cases for schema Data
+            # load_fail_data('./test data/schema fail', cursor, db)
+            # db.rollback()
+
+            # Run the negative test cases for triggers
+            # load_fail_data('./test data/trigger fail', cursor, db)
             # db.rollback()
 
             # Load Custom Test cases
