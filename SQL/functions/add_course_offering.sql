@@ -24,29 +24,12 @@ DECLARE
     offering_start_date DATE；
     offering_end_date DATE;
     num_duplicate INTEGER;
-
+    num_sessions INTEGER
+    offering_start_record RECORD;
+    instructor_id INTEGER;
+    session_id INTEGER;
 BEGIN
-    /*still trying to fix the array to reference and compare*/
-    SELECT session_date INTO offering_start_date
-    FROM session_information si
-    WHERE s.course_id = course_id AND s.offering_launch_date = offering_launch_date
-    WHERE s.session_date <= ALL (
-        SELECT s1.session_date 
-        FROM Sessions s1
-        WHERE s1.course_id = course_id
-        AND s1.offering_launch_date = offering_launch_date
-    )
-
-    SELECT s.session_date INTO offering_end_date
-    FROM Sessions s
-    WHERE s.course_id = course_id AND s.offering_launch_date = offering_launch_date
-    WHERE s.session_date >= ALL (
-        SELECT s1.session_date 
-        FROM Sessions s1
-        WHERE s1.course_id = course_id
-        AND s1.offering_launch_date = offering_launch_date
-    )
-
+    
     /*Checking the conditions of course offering*/
     IF (offering_start_date > offering_end_date) THEN
         RAISE EXCEPTION 'Offering end date cannot be earlier than start date';
@@ -82,6 +65,23 @@ BEGIN
     VALUES
     (offering_launch_date, offering_fees, offering_registration_deadline, offering_num_target_registration, offering_seating_capacity, course_id, admin_id, offering_start_date, offering_end_date)
     
+    
+    num_sessions := SELECT COUNT(*) FROM unnest(sessions_arr);
+    offering_start_date := sessions_arr[1][1]
+    offering_end_date := sessions_arr[1][1]
+    session_id := 1
+    FOREACH r SLICE 1 in ARRAY sessions_arr
+    LOOP
+        IF (r[1] <= offering_start_date) THEN
+            offering_start_date := r[1];
+        END IF;
+        IF (r[1] >= offering_end_date) THEN
+            offering_end_date := r[1];
+        END IF;
+        instructor_id := SELECT employee_id FROM get_available_instructors(course_id,offering_start_date,offering_end_date) LIMIT 1;
+        add_session(course_id,offering_launch_date,session_id,r[1],r[2],instructor_id,r[3]);
+        
+    END LOOP
 
 END;
 $$ LANGUAGE plpgsql;
