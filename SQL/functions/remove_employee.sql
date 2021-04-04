@@ -8,43 +8,51 @@
         (2) the employee is an instructor who is teaching some course session that starts after the employee's departure date; or
         (3) the employee is a manager who is managing some area.
 */
-CREATE OR REPLACE FUNCTION remove_employee(
-    r_employee_id INTEGER,
-    departure_date DATE
+
+
+DROP FUNCTION IF EXISTS is_active_admin CASCADE;
+CREATE OR REPLACE FUNCTION is_active_admin (admin_id_arg INTEGER)
+RETURNS BOOLEAN AS $$
+BEGIN
+    RETURN EXISTS(SELECT * FROM CourseOfferings co WHERE co.admin_id = admin_id_arg);
+END;
+$$ LANGUAGE PLPGSQL;
+
+DROP FUNCTION IF EXISTS is_active_manager CASCADE;
+CREATE OR REPLACE FUNCTION is_active_manager (manager_id_arg INTEGER)
+RETURNS BOOLEAN AS $$
+BEGIN
+    RETURN EXISTS(SELECT * FROM CourseAreas ca WHERE ca.manager_id = manager_id_arg);
+END;
+$$ LANGUAGE PLPGSQL;
+
+DROP FUNCTION IF EXISTS remove_employee;
+CREATE OR REPLACE FUNCTION remove_employee (
+    employee_id_arg INTEGER,
+    employee_depart_date_arg DATE
 ) RETURNS VOID
 AS $$
-DECLARE
-    isAdmin_count INTEGER;
-    isManaging_count INTEGER;
-    isTeaching_count INTEGER;
-    isExists_count INTEGER;
 BEGIN
     /* The below conditions needs changing; need to check if it's managing a course offering/session AFTER departure date */
+    IF employee_id_arg NOT IN (SELECT employee_id FROM Employees)
+    THEN
+        RAISE EXCEPTION 'Employee identifier % does not exist', employee_id_arg;
     /* Check if they are still handling admin tasks */
-    SELECT COUNT(*) INTO isAdmin_count FROM CourseOfferings c WHERE c.admin_id = r_employee_id;
-
-    /* Check if they are still teaching some course */
-    SELECT COUNT(*) INTO isManaging_count FROM CourseAreas c WHERE c.manager_id = r_employee_id;
-
+    ELSIF is_active_admin(employee_id_arg) IS TRUE
+    THEN
+        RAISE EXCEPTION 'Employee is still an administrator for a course offering.';
     /* Check if they are manager managing some area */
-    SELECT COUNT(*) INTO isTeaching_count FROM Sessions s WHERE s.instructor_id = r_employee_id;
-
-    /*Check if the employee exists*/
-    SELECT COUNT(*) into isExists_count FROM Employees e where e.employee_id = r_employee_id;
-
-    IF (isAdmin_count > 0) THEN
-        RAISE EXCEPTION 'Employee is still Admin for a CourseOffering';
-    ELSIF (isManaging_count > 0) THEN
-        RAISE EXCEPTION 'Employee is still managing a CourseArea';
-    ELSIF (isTeaching_count > 0) THEN
-        RAISE EXCEPTION 'Employee is still teaching a Session';
-    ELSIF (isExists_count <= 0) THEN
-        RAISE EXCEPTION 'Employee does not exist';
+    ELSIF is_active_manager(employee_id_arg) IS TRUE
+    THEN
+        RAISE EXCEPTION 'Employee is still managing a course area.';
+    /* Check if they are still teaching some course past employee's departure date */
+    ELSIF EXISTS(SELECT * FROM Sessions s WHERE s.instructor_id = employee_id_arg AND s.session_date >= employee_depart_date_arg)
+        RAISE EXCEPTION 'Employee is still teaching a session after departure date.';
     END IF;
 
-    /* Leave it to insert/update CHECK() to ensure departure_date is >= join_date*/
+    /* Leave it to insert/update CHECK() to ensure employee_depart_date_arg is >= join_date */
     UPDATE Employees e
-    SET employee_depart_date = departure_date
-    WHERE e.employee_id = r_employee_id;
+    SET employee_depart_date = employee_depart_date_arg
+    WHERE e.employee_id = employee_id_arg;
 END;
 $$ LANGUAGE plpgsql;
