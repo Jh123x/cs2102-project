@@ -10,7 +10,7 @@ SELECT b.customer_id,
         FROM Redeems r JOIN Sessions s 
         ON r.session_id = s.session_id 
         AND r.course_id = s.course_id 
-        WHERE r.customer_id = b.customer_id 
+        -- WHERE r.customer_id = b.customer_id 
         AND s.session_date > CURRENT_DATE
         ) > 0 THEN 'Partially Active'
       ELSE 'Inactive'
