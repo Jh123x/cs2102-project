@@ -1,3 +1,13 @@
+/*
+    2. remove_employee: This routine is used to update an employee's departed date a non-null value.
+    The inputs to the routine is
+        an employee identifier and
+        a departure date.
+    The update operation is rejected if any one of the following conditions hold:
+        (1) the employee is an administrator who is handling some course offering where its registration deadline is after the employee's departure date;
+        (2) the employee is an instructor who is teaching some course session that starts after the employee's departure date; or
+        (3) the employee is a manager who is managing some area.
+*/
 CREATE OR REPLACE FUNCTION remove_employee(
     r_employee_id INTEGER,
     departure_date DATE

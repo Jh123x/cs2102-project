@@ -1,3 +1,20 @@
+/*
+    25. pay_salary: This routine is used at the end of the month to pay salaries to employees.
+    The routine inserts the new salary payment records and
+        returns a table of records
+        (sorted in ascending order of employee identifier)
+        with the following information for each employee who is paid for the month:
+            employee identifier,
+            name,
+            status (either part-time or full-time),
+            number of work days for the month,
+            number of work hours for the month,
+            hourly rate,
+            monthly salary, and
+            salary amount paid.
+    For a part-time employees, the values for number of work days for the month and monthly salary should be null.
+    For a full-time employees, the values for number of work hours for the month and hourly rate should be null.
+*/
 CREATE OR REPLACE FUNCTION pay_salary()
 RETURNS TABLE (employee_id INTEGER, name TEXT, status TEXT,
     num_work_days INTEGER, num_work_hours INTEGER,

@@ -1,8 +1,20 @@
 /*
-    Todo: need to also accept information for each session (session date, session start hour, and room identifier)
-    If the input course offering information is valid, the routine will assign instructors for the sessions. If a valid instructor assignment exists
-*/
+    10. add_course_offering: This routine is used to add a new offering of an existing course.
+    The inputs to the routine include the following:
+        course offering identifier,
+        course identifier,
+        course fees,
+        launch date,
+        registration deadline,
+        administrator's identifier,and
+        information for each session (session date, session start hour, and room identifier).
+    If the input course offering information is valid, the routine will assign instructors for the sessions.
+    If a valid instructor assignment exists, the routine will perform the necessary updates to add the course offering;
+        otherwise, the routine will abort the course offering addition.
+    Note that the seating capacity of the course offering must be at least equal to the course offering's target number of registrations.
 
+    Todo: need to also accept information for each session (session date, session start hour, and room identifier)
+*/
 DROP FUNCTION IF EXISTS add_course_offering CASCADE;
 DROP TYPE IF EXISTS session_information;
 CREATE TYPE session_information AS(

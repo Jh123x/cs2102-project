@@ -1,12 +1,15 @@
 /*
-This routine is used to retrieve the availability information of rooms for a specific duration.
-The inputs to the routine include a start date and an end date.
-The routine returns a table of records consisting of the following information:
-    room identifier,
-    room capacity,
-    day (which is within the input date range [start date, end date]),
-    and an array of the hours that the room is available on the specified day.
-The output is sorted in ascending order of room identifier and day, and the array entries are sorted in ascending order of hour.
+    9. get_available_rooms: This routine is used to retrieve the availability information of rooms for a specific duration.
+    The inputs to the routine include
+        a start date and
+        an end date.
+    The routine returns a table of records consisting of the following information:
+        room identifier,
+        room capacity,
+        day (which is within the input date range [start date, end date]),
+        and an array of the hours that the room is available on the specified day.
+    The output is sorted in ascending order of room identifier and day,
+        and the array entries are sorted in ascending order of hour.
 */
 DROP FUNCTION IF EXISTS get_available_rooms;
 CREATE OR REPLACE FUNCTION get_available_rooms (

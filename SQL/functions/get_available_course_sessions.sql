@@ -1,3 +1,15 @@
+/*
+    16. get_available_course_sessions: This routine is used to retrieve all the available sessions for a course offering that could be registered.
+    The input to the routine is a course offering identifier.
+    The routine returns a table of records with the following information for each available session:
+        session date,
+        session start hour,
+        instructor name, and
+        number of remaining seats for that session.
+    The output is sorted in
+        ascending order of session date and
+        start hour.
+*/
 DROP FUNCTION IF EXISTS get_session_num_remaining_seats CASCADE;
 CREATE OR REPLACE FUNCTION get_session_num_remaining_seats (
     session_id_arg INTEGER,

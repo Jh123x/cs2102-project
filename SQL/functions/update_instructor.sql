@@ -1,9 +1,10 @@
 /*
-This routine is used to change the instructor for a course session.
-The inputs to the routine include the following:
-    course offering identifier, session number, and identifier of the new instructor.
-If the course session has not yet started and the update request is valid,
-    the routine will process the request with the necessary updates.
+    21. update_instructor: This routine is used to change the instructor for a course session.
+    The inputs to the routine include the following:
+        course offering identifier,
+        session number, and
+        identifier of the new instructor.
+    If the course session has not yet started and the update request is valid, the routine will process the request with the necessary updates.
 */
 CREATE OR REPLACE FUNCTION update_instructor (
     offering_launch_date INTEGER,

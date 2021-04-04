@@ -1,21 +1,18 @@
 /*
-This routine is used to view a monthly summary report of the company’s sales and expenses for a specified number of months.
-The input to the routine is a number of months (say N) and the routine returns a table of records
-consisting of the following information for each of the last N months (starting from the current month):
-    month and year,
-    total salary paid for the month,
-    total amount of sales of course packages for the month,
-    total registration fees paid via credit card payment for the month,
-    total amount of refunded registration fees (due to cancellations) for the month,
-    total number of course registrations via course package redemptions for the month.
-
-For example, if the number of specified months is 3 and the current month is January 2021,
-the output will consist of one record for each of the following three months:
-    January 2021, December 2020, and November 2020.
+    29. view_summary_report: This routine is used to view a monthly summary report of the company's sales and expenses for a specified number of months.
+    The input to the routine is a number of months (say N) and
+    the routine returns a table of records consisting of the following information for each of the last N months (starting from the current month):
+        month and year,
+        total salary paid for the month,
+        total amount of sales of course packages for the month,
+        total registration fees paid via credit card payment for the month,
+        total amount of refunded registration fees (due to cancellations) for the month, and
+        total number of course registrations via course package redemptions for the month.
+    For example, if the number of specified months is 3 and the current month is January 2021, the output will consist of one record for each of the following three months: January 2021, December 2020, and November 2020.
 */
 
 CREATE OR REPLACE FUNCTION view_summary_report (
-      N INTEGER
+    N INTEGER
 )
 RETURNS TABLE (
     mm                  INTEGER,

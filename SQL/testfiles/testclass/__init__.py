@@ -7,3 +7,4 @@ from .add_customer_test import DAddCustomerTest
 from .update_credit_card_test import EUpdateCreditCardTest
 from .find_instructors_test import FindInstructorsTest
 from .add_course_offering_test import GAddCourseOfferingTest
+from .buy_course_package_test import ZBuyCoursePackageTest
