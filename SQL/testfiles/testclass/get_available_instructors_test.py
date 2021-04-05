@@ -6,7 +6,6 @@ from . import BaseTest
 class IGetAvailableInstrutors(BaseTest, unittest.TestCase):
     def setUp(self):
         """Add an additional attribute to add the date today"""
-        self.today = datetime.datetime.now().date()
         # Add Manager
         self.manager_id = self._add_manager("Manager1", ("Database",))
         self.manager_id1 = self._add_manager("Manager2", ("Network",))
@@ -29,10 +28,10 @@ class IGetAvailableInstrutors(BaseTest, unittest.TestCase):
         # Add 2 room
         self.rid = 0
         query = f"INSERT INTO Rooms VALUES('1', 'Room1', '20')"
-        res = self.execute_query(query)
+        self.execute_query(query)
 
         query = f"INSERT INTO Rooms VALUES('2', 'Room2', '20')"
-        res = self.execute_query(query)
+        self.execute_query(query)
 
         # Add session date and time
         self.session_date = "2025-06-10"
@@ -48,6 +47,12 @@ class IGetAvailableInstrutors(BaseTest, unittest.TestCase):
             self.instructor_ids[index] = self._add_instructor(
                 f"Instructor{index}", t, spec
             )
+
+        # Sanity Check
+        query = "SELECT * FROM Employees"
+        res = self.execute_query(query)
+        assert len(res) == 8, f"Incorrect number of employees {res}"
+
         return super().setUp()
 
     def _add_admin(self, name: str):
@@ -139,16 +144,15 @@ class IGetAvailableInstrutors(BaseTest, unittest.TestCase):
 
     def test_get_available_instructors_success(self) -> None:
         """Test get available instructructors if they can get all the instructors"""
-        pass
+        date = "2021-03-04"
+        args = (str(self.course_id), date, "2021-03-04")
+        query = self.generate_query("get_available_instructors", args)
+        res = self.execute_query(query)
+        assert len(res) == 4, f"The number of instructors is not correct {res}"
 
     def test_get_none_available_instructor_success(self) -> None:
         """Get behavior when there is only 1 available instructor"""
-        # Insert no instructors
-        args = (
-            "1",
-            self.today.strftime("%Y-%m-%d"),
-            (self.today + datetime.timedelta(days=1)).strftime("%Y-%m-%d"),
-        )
+        args = ("1", "2020-04-04", "2020-04-06")
         query = self.generate_query("get_available_instructors", args)
         res = self.execute_query(query)
         assert len(res) == 0
