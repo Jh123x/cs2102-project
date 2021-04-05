@@ -4,7 +4,7 @@ RETURNS TRIGGER AS $$
 DECLARE
     num_remaining_redemptions INTEGER;
 BEGIN
-    SELECT SUM(buy_num_remaining_redemptions) INTO num_remaining_redemptions
+    SELECT COALESCE(SUM(buy_num_remaining_redemptions),0) INTO num_remaining_redemptions
     FROM Buys
     WHERE NEW.buy_date = buy_date;
 
