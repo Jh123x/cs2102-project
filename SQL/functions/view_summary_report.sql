@@ -15,52 +15,58 @@ CREATE OR REPLACE FUNCTION view_summary_report (
     N INTEGER
 )
 RETURNS TABLE (
-    mm                  INTEGER,
-    yyyy                INTEGER,
-    salary_paid         DEC(64, 2),
-    packages_sold       INTEGER,
-    reg_fees_via_ccard  DEC(64, 2),
-    refunded_fees       DEC(64, 2),
-    regs_via_redeem     INTEGER
+    mm                       INTEGER,
+    yyyy                     INTEGER,
+    salary_paid              DEC(64, 2),
+    course_package_sales     DEC(64, 2),
+    reg_fees_via_credit_card DEC(64, 2),
+    reg_fees_refunded        DEC(64, 2),
+    course_reg_redeemed      INTEGER
 )
 AS $$
 DECLARE
     mm_count INTEGER;
     cur_date DATE;
 BEGIN
+    IF N <= 0 THEN
+        RAISE EXCEPTION 'Monthly summary report can only be generated if the number of months supplied is more than 0.';
+    END IF;
+
     mm_count := 0;
     cur_date := CURRENT_DATE;
     LOOP
         EXIT WHEN mm_count = N;
 
-        SELECT EXTRACT(MONTH FROM cur_date) into mm;
-        SELECT EXTRACT(YEAR FROM cur_date) into yyyy;
+        SELECT EXTRACT(MONTH FROM cur_date) INTO mm;
+        SELECT EXTRACT(YEAR FROM cur_date) INTO yyyy;
 
-        /* DATE_TRUNC gives the first day of the month */
+        /* DATE_TRUNC('month', ...) gives the first day of the month e.g. 2020-04-01 (1st Apr) */
         /* the year is preserved in the result, so no need to do DATE_TRUNC('year', ...) */
 
-        SELECT SUM(payslip_amount) into salary_paid
-        FROM PaySlips
-        WHERE DATE_TRUNC('month', payslip_date) = DATE_TRUNC('month', cur_date);
+        SELECT COALESCE(SUM(p.payslip_amount), 0.00) INTO salary_paid
+        FROM PaySlips p
+        WHERE DATE_TRUNC('month', p.payslip_date) = DATE_TRUNC('month', cur_date);
 
-        SELECT COUNT(*) into packages_sold
-        FROM Buys
-        WHERE DATE_TRUNC('month', buy_date) = DATE_TRUNC('month', cur_date);
+        SELECT COALESCE(SUM(cp.package_price), 0.00) INTO course_package_sales
+        FROM Buys b
+        NATURAL JOIN CoursePackages cp
+        WHERE DATE_TRUNC('month', b.buy_date) = DATE_TRUNC('month', cur_date);
 
-        SELECT SUM(offering_fees) into reg_fees_via_ccard
-        FROM Registers NATURAL JOIN CourseOfferings
-        WHERE DATE_TRUNC('month', cancel_date) = DATE_TRUNC('month', cur_date);
+        SELECT COALESCE(SUM(co.offering_fees), 0.00) INTO reg_fees_via_credit_card
+        FROM Registers r
+        NATURAL JOIN CourseOfferings co
+        WHERE DATE_TRUNC('month', r.register_date) = DATE_TRUNC('month', cur_date);
 
-        SELECT SUM(cancel_refund_amt) into refunded_fees
-        FROM Cancels
-        WHERE DATE_TRUNC('month', cancel_date) = DATE_TRUNC('month', cur_date);
+        SELECT COALESCE(SUM(c.cancel_refund_amt), 0.00) INTO reg_fees_refunded
+        FROM Cancels c
+        WHERE DATE_TRUNC('month', c.cancel_date) = DATE_TRUNC('month', cur_date);
 
-        SELECT COUNT(*) into regs_via_redeem
-        FROM Redeems
-        WHERE DATE_TRUNC('month', cancel_date) = DATE_TRUNC('month', cur_date);
+        SELECT COUNT(*) INTO course_reg_redeemed
+        FROM Redeems r
+        WHERE DATE_TRUNC('month', r.redeem_date) = DATE_TRUNC('month', cur_date);
 
         mm_count := mm_count + 1;
-        cur_date := cur_date - interval '1 month';
+        cur_date := cur_date - INTERVAL '1 month';
 
         RETURN NEXT;
     END LOOP;
