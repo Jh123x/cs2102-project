@@ -65,7 +65,7 @@ BEGIN
     VALUES
     (offering_launch_date, offering_fees, offering_registration_deadline, offering_num_target_registration, offering_seating_capacity, course_id, admin_id, offering_start_date, offering_end_date);
     
-    
+    /*Need to include sessions that does not have instructor = course offering should not be created*/
     SELECT COUNT(*) INTO num_sessions FROM unnest(sessions_arr);
     offering_start_date := sessions_arr[1][1];
     offering_end_date := sessions_arr[1][1];
