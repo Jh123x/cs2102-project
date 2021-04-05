@@ -118,9 +118,12 @@ BEGIN
     THEN
         RAISE NOTICE 'Customer % has not purchased any course packages.', customer_id_arg;
         course_package_details := row_to_json(row());
-    /* Customer must have either active or partially active course package */
-    ELSIF customer_has_active_ish_course_package(customer_id_arg) IS TRUE
+    ELSIF customer_has_active_ish_course_package(customer_id_arg) IS NOT TRUE
     THEN
+        RAISE NOTICE 'Customer % has no active or partially active course packages.', customer_id_arg;
+        course_package_details := row_to_json(row());
+    ELSE
+        /* Customer must have either active or partially active course package */
         SELECT cp.buy_date, cp.package_name, cp.package_price, cp.package_num_free_registrations, cp.buy_num_remaining_redemptions
         INTO cp_buy_date, package_name, package_price, package_num_free_registrations, buy_num_remaining_redemptions
         FROM get_customer_active_ish_course_package(customer_id_arg) AS cp;
@@ -147,9 +150,6 @@ BEGIN
             'buy_num_remaining_redemptions', buy_num_remaining_redemptions,
             'redeemed_sessions', redeemed_sessions
         ) INTO course_package_details;
-    ELSE
-        RAISE NOTICE 'Customer % has no active or partially active course packages.', customer_id_arg;
-        course_package_details := row_to_json(row());
     END IF;
     RETURN NEXT;
 END;
