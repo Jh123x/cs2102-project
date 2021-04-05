@@ -39,7 +39,7 @@ AS $$
 BEGIN
     RETURN QUERY (
         /* Try to find the last 3 sessions registered for each customer */
-        With LastThreeSessionsRegistered AS (
+        WITH LastThreeSessionsRegistered AS (
             SELECT r.customer_id, r.register_date AS enrol_date, c.course_area_name
             FROM Registers r
             NATURAL JOIN Sessions s
