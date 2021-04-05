@@ -1,5 +1,6 @@
-redeem_date,session_id,offering_launch_date,course_id ,redeem_cancelled,outcome,reason
-2021-08-03 00:00:00,2,3/2/2021,2,False,pass,
-2021-08-04 00:00:00,1,3/2/2021,2,False,pass,
-2021-08-05 00:00:00,2,4/2/2021,3,False,pass,
-2021-08-06 00:00:00,1,4/2/2021,3,False,pass,
+redeem_date,buy_date,session_id,offering_launch_date,course_id ,redeem_cancelled,outcome,reason
+2021-08-03 00:00:00,2021-03-01 00:00:00,2,3/2/2021,2,False,pass,
+2021-08-04 00:00:00,2021-03-02 00:00:00,1,3/2/2021,2,False,pass,
+2021-08-05 00:00:00,2021-03-03 00:00:00,2,4/2/2021,3,False,pass,
+2021-08-06 00:00:00,2021-03-04 00:00:00,1,4/2/2021,3,False,pass,
+,,,,,,,

@@ -36,7 +36,6 @@ RETURNS VOID AS $$
 DECLARE
     offering_start_date DATE;
     offering_end_date DATE;
-    num_duplicate INTEGER;
     num_sessions INTEGER;
     offering_start_record RECORD;
     instructor_id INTEGER;
@@ -61,15 +60,6 @@ BEGIN
         RAISE EXCEPTION 'Offering start date should be at least 10 days after the registration deadline ';
     END IF ;
 
-    SELECT COUNT(*) INTO num_duplicate
-    FROM CourseOfferings co
-    WHERE co.offering_launch_date = offering_launch_date
-    AND co.course_id = course_id;
-
-    IF (num_duplicate > 0) THEN
-        RAISE EXCEPTION 'Course offering has been launched! ';
-    END IF ;
-    
     INSERT INTO CourseOfferings
     (offering_launch_date, offering_fees, offering_registration_deadline, offering_num_target_registration, offering_seating_capacity, course_id, admin_id, offering_start_date, offering_end_date)
     VALUES
