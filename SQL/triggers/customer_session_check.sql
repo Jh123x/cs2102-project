@@ -5,8 +5,9 @@ DECLARE
     register_count          INTEGER;
     redeem_count            INTEGER;
     cancel_count            INTEGER;
-    new_cust_id INTEGER;
-    old_cust_id INTEGER;
+    new_cust_id             INTEGER;
+    old_cust_id             INTEGER;
+    curr_date               DATE;
 BEGIN
 
     /*Join the tables to obtain the customer for redeems*/
@@ -23,9 +24,11 @@ BEGIN
         ON r.buy_date = b.buy_date
         WHERE NEW.buy_date = b.buy_date
         LIMIT 1;
+        curr_date := NEW.redeem_date;
     ELSE
         new_cust_id := NEW.customer_id;
         old_cust_id := OLD.customer_id;
+        curr_date := NEW.register_date;
     END IF;
     IF (TG_OP = 'UPDATE' AND new_cust_id = old_cust_id AND NEW.course_id = OLD.course_id) THEN
         RETURN NEW;
@@ -35,7 +38,7 @@ BEGIN
     FROM CourseOfferings c
     WHERE c.course_id = NEW.course_id AND c.offering_launch_date = NEW.offering_launch_date;
 
-    IF CURRENT_DATE > registration_deadline THEN
+    IF curr_date > registration_deadline THEN
         RAISE EXCEPTION 'Registration deadline for this session is over.';
     END IF;
 
