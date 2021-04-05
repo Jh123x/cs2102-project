@@ -49,11 +49,11 @@ DROP VIEW IF EXISTS Enrolment;
 CREATE VIEW Enrolment AS
 SELECT register_date AS enroll_date, session_id, course_id, offering_launch_date, customer_id, 'registers' AS table_name
 FROM Registers
-WHERE register_cancelled = FALSE
+WHERE register_cancelled IS NOT TRUE
 UNION
 SELECT redeem_date AS enroll_date, session_id, course_id, offering_launch_date, customer_id, 'redeems' AS table_name
 FROM Redeems NATURAL JOIN Buys
-WHERE redeem_cancelled = FALSE;
+WHERE redeem_cancelled IS NOT TRUE;
 
 DROP VIEW IF EXISTS EnrolmentCount;
 CREATE VIEW EnrolmentCount AS

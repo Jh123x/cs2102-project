@@ -33,6 +33,10 @@ DECLARE
     hour INTEGER;
     work_hours INTEGER[] := ARRAY[9,10,11,14,15,16,17];
 BEGIN
+    IF end_date < start_date THEN
+        RAISE EXCEPTION 'Start date cannot be later than end date.';
+    END IF;
+
     OPEN curs;
     LOOP
         FETCH curs INTO r;
@@ -45,10 +49,11 @@ BEGIN
             day := cur_date;
             room_id := r.room_id;
             room_seating_capacity := r.room_seating_capacity;
+            available_hours := '{}'; /* need to reset to empty array for each room-day pair */
 
             FOREACH hour IN ARRAY work_hours LOOP
-                IF room_id IN
-                    (SELECT rid FROM find_rooms(cur_date, hour, 1)) THEN
+                IF room_id IN (SELECT rid FROM find_rooms(cur_date, hour, 1))
+                THEN
                     available_hours := array_append(available_hours, hour);
                 END IF;
             END LOOP;
@@ -57,7 +62,7 @@ BEGIN
                 RETURN NEXT;
             END IF;
 
-            cur_date := cur_date + interval '1 day';
+            cur_date := cur_date + INTERVAL '1 day';
         END LOOP;
     END LOOP;
     CLOSE curs;
