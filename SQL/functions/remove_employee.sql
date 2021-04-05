@@ -46,7 +46,7 @@ BEGIN
     THEN
         RAISE EXCEPTION 'Employee is still managing a course area.';
     /* Check if they are still teaching some course past employee's departure date */
-    ELSIF EXISTS(SELECT * FROM Sessions s WHERE s.instructor_id = employee_id_arg AND s.session_date >= employee_depart_date_arg)
+    ELSIF EXISTS(SELECT * FROM Sessions s WHERE s.instructor_id = employee_id_arg AND s.session_date >= employee_depart_date_arg) THEN
         RAISE EXCEPTION 'Employee is still teaching a session after departure date.';
     END IF;
 
