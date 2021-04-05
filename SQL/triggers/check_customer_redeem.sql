@@ -6,7 +6,7 @@ DECLARE
 BEGIN
     SELECT SUM(buy_num_remaining_redemptions) INTO num_remaining_redemptions
     FROM Buys
-    WHERE NEW.customer_id = customer_id;
+    WHERE NEW.buy_date = buy_date;
 
     IF (num_remaining_redemptions <= 0) THEN
         RAISE EXCEPTION 'There are no redemptions left for this customer';
