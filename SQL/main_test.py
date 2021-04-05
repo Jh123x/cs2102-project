@@ -419,8 +419,6 @@ if __name__ == "__main__":
             setup_triggers(cursor, trigger_dir)
             db.autocommit = False
 
-    with connect_db(HOST, PORT, user, password, DBNAME) as db:
-        with db.cursor() as cursor:
             # Positive test cases for schema (Cumulative)
             load_success_data("./test data/schema test", cursor)
             db.rollback()
