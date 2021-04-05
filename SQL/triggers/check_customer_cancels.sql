@@ -27,6 +27,11 @@ BEGIN
         WHERE r.customer_id = NEW.customer_id
         AND r.course_id = NEW.course_id
         AND r.offering_launch_date = NEW.offering_launch_date
+    ) AND NOT EXISTS(
+        SELECT 1 FROM Redeems r
+        WHERE r.course_id = NEW.course_id
+        AND r.offering_launch_date = NEW.offering_launch_date
+        AND r.session_id = NEW.session_id
     )) THEN 
         RAISE EXCEPTION 'Customer did not register for the course';
     END IF;
