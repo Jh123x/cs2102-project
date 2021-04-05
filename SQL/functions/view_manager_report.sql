@@ -24,9 +24,7 @@
         the output is to be sorted by ascending order of manager name.
 */
 DROP FUNCTION IF EXISTS view_manager_report CASCADE;
-CREATE OR REPLACE FUNCTION view_manager_report (
-      N INTEGER
-)
+CREATE OR REPLACE FUNCTION view_manager_report()
 RETURNS TABLE (
     manager_name                TEXT,
     num_course_areas            INTEGER,
@@ -35,7 +33,6 @@ RETURNS TABLE (
     top_course_offering_titles  TEXT[]
 )
 AS $$
-DECLARE
 BEGIN
     WITH
         /* names */
@@ -52,6 +49,7 @@ BEGIN
         ),
 
         /* course offerings */
+        /* Todo: ManagerCourseOfferings and ManagerNumCourseOfferings should be restricted to course offerings that ends in the current year. */
         ManagerCourseOfferings AS (
             SELECT manager_id, course_id, offering_launch_date
             FROM CourseOfferings NATURAL JOIN Courses NATURAL JOIN CourseAreas
