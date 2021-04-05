@@ -12,7 +12,7 @@ CREATE TABLE CourseOfferings (
     offering_start_date DATE NOT NULL,
     offering_end_date DATE NOT NULL,
 
-    CHECK(offering_start_date < offering_end_date),
+    CHECK(offering_start_date <= offering_end_date),
     CHECK(offering_launch_date < offering_registration_deadline),
     CHECK(offering_seating_capacity >= offering_num_target_registration),
     CHECK(offering_num_target_registration >= 0),
