@@ -21,7 +21,7 @@ CREATE TABLE Buys (
 DROP TABLE IF EXISTS Redeems CASCADE;
 CREATE TABLE Redeems (
     redeem_date TIMESTAMP PRIMARY KEY NOT NULL,
-    buy_date TIMESTAMP NOT NULL REFERENCES Buys (buy_date),
+    buy_date TIMESTAMP NOT NULL REFERENCES Buys,
     session_id INTEGER NOT NULL,
     offering_launch_date DATE NOT NULL,
     course_id INTEGER NOT NULL,
