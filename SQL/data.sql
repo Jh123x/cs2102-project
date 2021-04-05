@@ -1,3 +1,5 @@
+SET TIMEZONE=8;
+
 BEGIN TRANSACTION;
 SET CONSTRAINTS ALL DEFERRED;
 INSERT INTO Employees(employee_id, employee_name, employee_address, employee_phone, employee_email, employee_join_date, employee_depart_date) VALUES (1, 'John ', 'Jurong', 91234567, 'john@gmail.com', '2020-12-12', '2022-05-05');

@@ -24,7 +24,7 @@
         We further impose a constraint on the results returned:
         Courses that are currently/previously enrolled (i.e. having some course offering session redeemed or registered that is not cancelled) by a customer should not be promoted to the same customer. This is because it does not make sense to promote to a customer a course he/she has previously attended/is going to attend (if the course session has not started despite signing up > 6 months ago).
 */
-DROP FUNCTION IF EXISTS promote_courses();
+DROP FUNCTION IF EXISTS promote_courses;
 CREATE OR REPLACE FUNCTION promote_courses()
 RETURNS TABLE(
     customer_id INTEGER,
