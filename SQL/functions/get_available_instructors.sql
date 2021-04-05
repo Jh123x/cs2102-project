@@ -30,8 +30,9 @@ RETURNS TABLE (
     available_hours INTEGER[]
 ) AS $$
 DECLARE
+    /*Remove duplicates in the query as it has alot of duplicates*/
     curs CURSOR FOR (
-        SELECT e.employee_id, e.employee_name
+        SELECT DISTINCT e.employee_id, e.employee_name
         FROM Employees e
         NATURAL JOIN Specializes s
         NATURAL JOIN Courses c
