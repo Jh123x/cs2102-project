@@ -56,6 +56,9 @@ BEGIN
     missing_instructor := FALSE;
     r_capacity := 0;
 
+    IF (num_sessions < 1) THEN
+        RAISE EXCEPTION 'There needs to to be atleast 1 sessions';
+    END IF;
 
     /*Checking the conditions of course offering*/
     IF (launch_date > registration_deadline) THEN
