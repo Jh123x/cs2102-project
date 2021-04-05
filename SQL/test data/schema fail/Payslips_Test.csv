@@ -7,4 +7,3 @@ employee_id,payslip_date,payslip_amount,payslip_num_work_hours,payslip_num_work_
 6,28/3/2021,3000,,10,pass,
 7,31/3/2021,4000,,10,pass,
 8,31/3/2021,-5000,,10,fail,amount is < 0
-6,31/3/2021,3000,,10,fail,paid before
