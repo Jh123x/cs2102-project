@@ -432,6 +432,7 @@ if __name__ == "__main__":
             # Run the negative test cases for triggers
             # load_fail_data('./test data/trigger fail', cursor, db)
             # db.rollback()
+            # print('Trigger failure test complete')
 
             # Load Custom Test cases
             load_custom_testcases("./test data/custom test cases", cursor)
