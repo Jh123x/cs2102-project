@@ -23,15 +23,16 @@ CREATE OR REPLACE FUNCTION get_available_instructors (
     end_date DATE
 )
 RETURNS TABLE (
-    employee_id INTEGER,
+    r_employee_id INTEGER,
     name TEXT,
     total_teaching_hours INTEGER,
     day DATE,
     available_hours INTEGER[]
 ) AS $$
 DECLARE
+    /*Remove duplicates in the query as it has alot of duplicates*/
     curs CURSOR FOR (
-        SELECT e.employee_id, e.employee_name
+        SELECT DISTINCT e.employee_id, e.employee_name
         FROM Employees e
         NATURAL JOIN Specializes s
         NATURAL JOIN Courses c
@@ -52,18 +53,18 @@ BEGIN
             EXIT WHEN cur_date > end_date;
 
             day := cur_date;
-            employee_id := r.employee_id;
-            name := r.name;
+            r_employee_id := r.employee_id;
+            name := r.employee_name;
 
             /* requirement: total number of teaching hours that the instructor has been assigned for this month */
             /* assuming that this month refers to the day in this row */
-            SELECT COALESCE(SUM(end_time - start_time), 0) INTO total_teaching_hours FROM Sessions s
+            SELECT COALESCE(SUM(s.session_end_hour - s.session_start_hour), 0) INTO total_teaching_hours FROM Sessions s
                     WHERE s.instructor_id = r.employee_id
-                    AND EXTRACT(MONTH FROM s.session_date) == EXTRACT(MONTH FROM cur_date);
+                    AND EXTRACT(MONTH FROM s.session_date) = EXTRACT(MONTH FROM cur_date);
             available_hours := '{}';
 
             FOREACH hour IN ARRAY work_hours LOOP
-                IF employee_id IN
+                IF r_employee_id IN
                     (SELECT employee_id FROM find_instructors(course_id, cur_date, hour)) THEN
                     available_hours := array_append(available_hours, hour);
                 END IF;

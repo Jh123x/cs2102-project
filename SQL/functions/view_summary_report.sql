@@ -61,6 +61,8 @@ BEGIN
 
         mm_count := mm_count + 1;
         cur_date := cur_date - interval '1 month';
+
+        RETURN NEXT;
     END LOOP;
 END;
 $$ LANGUAGE plpgsql;

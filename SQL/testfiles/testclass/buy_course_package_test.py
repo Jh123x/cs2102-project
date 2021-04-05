@@ -60,7 +60,7 @@ class ZBuyCoursePackageTest(BaseTest, unittest.TestCase):
         self.check_fail_test(
             query, "Buying the same package 2 where each time has > 0 redemption times should result in a fail", (RaiseException,))
 
-    def test_buy_same_package_2_times_equal_0_redemp_val_fail(self):
+    def test_buy_same_package_2_times_equal_0_redemp_val_same_day_fail(self):
         """Buy the same package 2 times but they have 0 value each"""
         # Const
         today = datetime.datetime.combine(
@@ -86,7 +86,7 @@ class ZBuyCoursePackageTest(BaseTest, unittest.TestCase):
 
         # Buy it again
         query = self.generate_query('buy_course_package', args)
-        self.execute_query(query)
+        self.check_fail_test(query, "Cannot buy 2 packages on the same day", UniqueViolation)
 
     def test_buy_different_package_while_1_active(self):
         """Test if the customer can buy a different package when there is currently one active"""

@@ -19,29 +19,29 @@ logger = logging.Logger("Logs")
 logger.setLevel(logging.NOTSET)
 
 FILES_TEST_MAP = [
-    ('Employee_Test.csv', "Employees"),
-    ('Customers_Test.csv', 'Customers'),
-    ('Full_Time_Employee_Test.csv', 'FullTimeEmployees'),
-    ('Part_Time_Employee_Test.csv', 'PartTimeEmployees'),
-    ('Instructor_Test.csv', 'Instructors'),
-    ('Admin_Test.csv', 'Administrators'),
-    ('Manager_Test.csv', 'Managers'),
-    ('Full_Time_Instructors_Test.csv', 'FullTimeInstructors'),
-    ('Part_Time_Instructors_Test.csv', 'PartTimeInstructors'),
-    ('Credit_Card_Test.csv', 'CreditCards'),
-    ('Owns_Test.csv', 'Owns'),
-    ('Course_Area_Test.csv', 'CourseAreas'),
-    ('Course_Test.csv', 'Courses'),
-    ('Course_Offering_Test.csv', 'CourseOfferings'),
-    ('Course_Package_Test.csv', 'CoursePackages'),
-    ('Specializes_Test.csv', 'Specializes'),
-    ('Room_Test.csv', 'Rooms'),
-    ('Session_Test.csv', 'Sessions'),
-    ('Buys_Test.csv', 'Buys'),
-    ('Redeem_Test.csv', 'Redeems'),
-    ('Registers_Test.csv', 'Registers'),
-    ('Cancels_Test.csv', 'Cancels'),
-    ('Payslips_Test.csv', 'PaySlips'),
+    ("Employee_Test.csv", "Employees"),
+    ("Customers_Test.csv", "Customers"),
+    ("Full_Time_Employee_Test.csv", "FullTimeEmployees"),
+    ("Part_Time_Employee_Test.csv", "PartTimeEmployees"),
+    ("Instructor_Test.csv", "Instructors"),
+    ("Admin_Test.csv", "Administrators"),
+    ("Manager_Test.csv", "Managers"),
+    ("Full_Time_Instructors_Test.csv", "FullTimeInstructors"),
+    ("Part_Time_Instructors_Test.csv", "PartTimeInstructors"),
+    ("Credit_Card_Test.csv", "CreditCards"),
+    ("Owns_Test.csv", "Owns"),
+    ("Course_Area_Test.csv", "CourseAreas"),
+    ("Course_Test.csv", "Courses"),
+    ("Course_Offering_Test.csv", "CourseOfferings"),
+    ("Course_Package_Test.csv", "CoursePackages"),
+    ("Specializes_Test.csv", "Specializes"),
+    ("Room_Test.csv", "Rooms"),
+    ("Session_Test.csv", "Sessions"),
+    ("Buys_Test.csv", "Buys"),
+    ("Redeem_Test.csv", "Redeems"),
+    ("Registers_Test.csv", "Registers"),
+    ("Cancels_Test.csv", "Cancels"),
+    ("Payslips_Test.csv", "PaySlips"),
 ]
 
 
@@ -55,6 +55,7 @@ def connect_db(host: str, port: int, user: str, password: str, dbname: str):
 
 
 # General functions
+
 
 def _get_data(csv_path: str, csv_obj):
     """Main logic for get_data"""
@@ -90,11 +91,11 @@ def order_correctly(header, data) -> str:
     for head in header:
         d = data[head]
         c = check_date(d)
-        if d.isdigit() and 'credit' not in head:
+        if d.isdigit() and "credit" not in head:
             d = d
         elif c:
             d = f"'{c.strftime(r'%Y-%m-%d')}'"
-        elif '_num_work_' in head and not d.strip():
+        elif "_num_work_" in head and not d.strip():
             continue
         else:
             d = f"'{d}'"
@@ -125,7 +126,12 @@ def get_files(directory: str) -> list:
     """Get the files in the folder except files with drop_all_"""
     if not os.path.isdir(directory):
         raise NotADirectoryError(f"{directory} is not a directory")
-    return list(filter(lambda x: "drop_all" not in x.lower(),  [x[-1] for x in os.walk(directory)][0]))
+    return list(
+        filter(
+            lambda x: "drop_all" not in x.lower(),
+            [x[-1] for x in os.walk(directory)][0],
+        )
+    )
 
 
 def execute_query(cursor, query_paths: list) -> None:
@@ -172,8 +178,9 @@ def setup_schema(cursor, schema_dir: str) -> None:
     ]
 
     # Run the query
-    execute_query(cursor, map_with_dir(
-        schema_dir, map(lambda x: f"{x}.sql", filenames)))
+    execute_query(
+        cursor, map_with_dir(schema_dir, map(lambda x: f"{x}.sql", filenames))
+    )
     logger.debug("Schema added")
 
 
@@ -197,8 +204,7 @@ def setup_triggers(cursor, trigger_dir: str) -> None:
 def drop_functions(cursor, function_dir: str) -> None:
     """Remove the functions"""
     logger.debug("Dropping functions")
-    execute_query(cursor, map_with_dir(
-        function_dir, ["drop_all_functions.sql"]))
+    execute_query(cursor, map_with_dir(function_dir, ["drop_all_functions.sql"]))
     logger.debug("Functions dropped")
 
 
@@ -249,8 +255,10 @@ def load_success_data(test_path: str, cursor) -> list:
     """Load the data"""
 
     # Generate the file path
-    file_paths = zip(map_with_dir(test_path, map(
-        lambda x: x[0], FILES_TEST_MAP)), map(lambda x: x[1], FILES_TEST_MAP))
+    file_paths = zip(
+        map_with_dir(test_path, map(lambda x: x[0], FILES_TEST_MAP)),
+        map(lambda x: x[1], FILES_TEST_MAP),
+    )
 
     # Load the data in order
     for path, table in file_paths:
@@ -267,7 +275,8 @@ def load_success_data(test_path: str, cursor) -> list:
             passed, msg = test_data(cursor, q)
             if not passed:
                 logger.critical(
-                    f"Fail Success Testcase: Row {index + 1} of {os.path.basename(path)}\nQuery: {q}\nError: {msg}")
+                    f"Fail Success Testcase: Row {index + 1} of {os.path.basename(path)}\nQuery: {q}\nError: {msg}"
+                )
                 return
 
 
@@ -275,8 +284,10 @@ def load_fail_data(test_path: str, cursor, db):
     """Load the fail data"""
 
     # Generate the file path
-    file_paths = zip(map_with_dir(test_path, map(
-        lambda x: x[0], FILES_TEST_MAP)), map(lambda x: x[1], FILES_TEST_MAP))
+    file_paths = zip(
+        map_with_dir(test_path, map(lambda x: x[0], FILES_TEST_MAP)),
+        map(lambda x: x[1], FILES_TEST_MAP),
+    )
 
     # Store Success queries
     successes = []
@@ -297,9 +308,9 @@ def load_fail_data(test_path: str, cursor, db):
                 continue
 
             # Unpack the values
-            isPass, remarks = item['outcome'] == 'pass', item['reason']
-            del item['outcome']
-            del item['reason']
+            isPass, remarks = item["outcome"] == "pass", item["reason"]
+            del item["outcome"]
+            del item["reason"]
 
             # Generate and test query
             q = generate_query(table, item.keys(), item)
@@ -318,7 +329,8 @@ def load_fail_data(test_path: str, cursor, db):
 
             # Throw an error
             logger.critical(
-                f"Fail Failure Testcase: Row {index + 1} of {os.path.basename(path)}\nQuery: {q}\nError: {msg}\nRemarks: {remarks}")
+                f"Fail Failure Testcase: Row {index + 1} of {os.path.basename(path)}\nQuery: {q}\nError: {msg}\nRemarks: {remarks}"
+            )
             return
 
 
@@ -336,12 +348,12 @@ def load_custom_testcases(test_path: str, cursor) -> None:
             data = json.loads(file.read())
 
         # Store vars
-        isPass = data['pass']
-        table_name = data['table_name']
+        isPass = data["pass"]
+        table_name = data["table_name"]
 
         # Remove excess args
-        del data['pass']
-        del data['table_name']
+        del data["pass"]
+        del data["table_name"]
 
         # Generate query
         q = generate_query(table_name, data.keys(), data)
@@ -350,7 +362,8 @@ def load_custom_testcases(test_path: str, cursor) -> None:
         passed, msg = test_data(cursor, q, isPass)
         if not passed:
             logger.critical(
-                f'Failed test: Test file {os.path.basename(path)}\nQuery: {q}\nError: {msg}')
+                f"Failed test: Test file {os.path.basename(path)}\nQuery: {q}\nError: {msg}"
+            )
 
 
 # Parsing functions
@@ -379,8 +392,7 @@ if __name__ == "__main__":
     const = parser["CONSTANTS"]
     HOST, PORT, DBNAME = parse_constants(**parser["CONSTANTS"])
     user, password = parse_credentials(**parser["CREDENTIALS"])
-    schema_dir, function_dir, trigger_dir, view_dir = parse_dir(
-        **parser["DIRECTORIES"])
+    schema_dir, function_dir, trigger_dir, view_dir = parse_dir(**parser["DIRECTORIES"])
 
     # Check if username exists
     if not user:
@@ -410,12 +422,12 @@ if __name__ == "__main__":
     with connect_db(HOST, PORT, user, password, DBNAME) as db:
         with db.cursor() as cursor:
             # # Positive test cases for schema (Cumulative)
-            load_success_data('./test data/schema test', cursor)
-            db.rollback()
+            # load_success_data('./test data/schema test', cursor)
+            # db.rollback()
 
-            # # Run the negative test cases for schema Data
-            load_fail_data('./test data/schema fail', cursor, db)
-            db.rollback()
+            # # # Run the negative test cases for schema Data
+            # load_fail_data('./test data/schema fail', cursor, db)
+            # db.rollback()
 
             # Run the negative test cases for triggers
             # load_fail_data('./test data/trigger fail', cursor, db)
