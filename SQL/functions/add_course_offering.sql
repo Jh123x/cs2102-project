@@ -30,8 +30,6 @@ CREATE OR REPLACE FUNCTION add_course_offering (
     fees NUMERIC,
     sessions_arr session_information ARRAY,
     registration_deadline DATE,
-    num_target_registration INTEGER,
-    seating_capacity INTEGER,
     off_course_id INTEGER,
     off_admin_id INTEGER
 )
@@ -46,7 +44,18 @@ DECLARE
     session_id INTEGER;
     missing_instructor BOOLEAN;
     new_course_offering RECORD;
+    r_capacity INTEGER;
+    temp INTEGER;
 BEGIN
+    /*Extracting the start date and end date*/
+    SELECT MIN(session_date) INTO off_start_date FROM unnest(sessions_arr);
+    SELECT MAX(session_date) INTO off_end_date FROM unnest(sessions_arr);
+
+    SELECT COUNT(*) INTO num_sessions FROM unnest(sessions_arr);
+    SELECT cu.course_duration INTO course_duration FROM Courses cu WHERE off_course_id = cu.course_id;
+    missing_instructor := FALSE;
+    r_capacity := 0;
+
 
     /*Checking the conditions of course offering*/
     IF (launch_date > registration_deadline) THEN
@@ -62,9 +71,6 @@ BEGIN
     
     END IF ;
     
-    SELECT MIN(session_date) INTO off_start_date FROM unnest(sessions_arr);
-    SELECT MAX(session_date) INTO off_end_date FROM unnest(sessions_arr);
-    
     IF (off_start_date > off_end_date) THEN
         RAISE EXCEPTION 'Offering end date cannot be earlier than start date';
 
@@ -72,41 +78,42 @@ BEGIN
 
     IF (off_start_date < registration_deadline + INTEGER '10' ) THEN
         RAISE EXCEPTION 'Offering start date should be at least 10 days after the registration deadline ';
-    END IF;
-    
-    RAISE NOTICE 'Taking the session 1 date(%)', off_start_date;
-    SELECT COUNT(*) INTO num_sessions FROM unnest(sessions_arr);
-    RAISE NOTICE 'Taking the number of sessions(%)', num_sessions;
-    
-    missing_instructor := FALSE;
+    END IF;    
 
+    /*Check if there is instructor for each session and check for session constraints*/
     FOR counter in 1..num_sessions 
         
     LOOP
-        RAISE NOTICE 'counter: %', counter;
+
         SELECT r_employee_id INTO instructor_id FROM get_available_instructors(off_course_id,sessions_arr[counter].session_date,sessions_arr[counter].session_date) LIMIT 1;
         IF (instructor_id = NULL) THEN
             missing_instructor := TRUE;
         END IF;
         session_end_hour := sessions_arr[counter].session_start_hour + course_duration;
-        IF ((session_start_hour < 12 AND session_end_hour > 12) OR session_start_hour > 18 OR session_end_hour > 18 OR session_start_hour < 9)THEN
+        IF ((sessions_arr[counter].session_start_hour >= 9 AND sessions_arr[counter].session_start_hour < 12 AND session_end_hour > 12) OR sessions_arr[counter].session_start_hour > 18 OR session_end_hour > 18 OR sessions_arr[counter].session_start_hour < 9)THEN
             RAISE EXCEPTION 'Session time is out of range';
         END IF;
         IF(to_char(sessions_arr[counter].session_date, 'Dy') = 'Sat' OR to_char(sessions_arr[counter].session_date, 'Dy') = 'Sun') THEN
             RAISE EXCEPTION 'Can only have class from Mon - Fri';
         END IF;
-        RAISE NOTICE 'instructor missing: %', missing_instructor;
+        IF sessions_arr[counter].room_id NOT IN (SELECT rid FROM find_rooms(sessions_arr[counter].session_date,sessions_arr[counter].session_start_hour, course_duration)) THEN
+            RAISE EXCEPTION 'Room in use';
+        END IF;
+        SELECT room_seating_capacity INTO temp FROM Rooms WHERE room_id = sessions_arr[counter].room_id;
+        r_capacity := r_capacity + temp;
+       
+        
     END LOOP;
 
     IF (missing_instructor = TRUE) THEN
         RAISE EXCEPTION 'Offering does not have enough instructors for sessions';
     END IF;
 
-    
+    /*Inserting into course offering*/
     INSERT INTO CourseOfferings
     (offering_launch_date, offering_fees, offering_registration_deadline, offering_num_target_registration, offering_seating_capacity, course_id, admin_id, offering_start_date, offering_end_date)
     VALUES
-    (launch_date, fees, registration_deadline, num_target_registration, seating_capacity, off_course_id, off_admin_id, off_start_date, off_end_date)
+    (launch_date, fees, registration_deadline, r_capacity, r_capacity, off_course_id, off_admin_id, off_start_date, off_end_date)
     RETURNING * INTO new_course_offering;
     offering_launch_date := new_course_offering.offering_launch_date;
     offering_fees := new_course_offering.offering_fees;
@@ -120,7 +127,7 @@ BEGIN
 
     RETURN NEXT;
 
-    SELECT cu.course_duration INTO course_duration FROM Courses cu WHERE off_course_id = cu.course_id;
+    /*Inserting Sessions*/
     FOR counter in 1..num_sessions 
         
     LOOP
