@@ -11,8 +11,8 @@
 */
 DROP FUNCTION IF EXISTS add_session CASCADE;
 CREATE OR REPLACE FUNCTION add_session (
-    course_id INTEGER,
-    offering_launch_date DATE,
+    session_course_id INTEGER,
+    session_offering_launch_date DATE,
     session_number INTEGER,
     session_date DATE,
     session_start_hour INTEGER,
@@ -23,26 +23,26 @@ CREATE OR REPLACE FUNCTION add_session (
 RETURNS TABLE (session_id INTEGER) AS $$
 DECLARE
     new_package RECORD;
-    offering_registration_deadline DATE;
+    session_offering_registration_deadline DATE;
 BEGIN
     session_id := session_number;
 
     IF EXISTS(
         SELECT s.session_id FROM Sessions s
-        WHERE s.course_id = course_id
-            AND s.offering_launch_date = offering_launch_date
+        WHERE s.course_id = session_course_id
+            AND s.offering_launch_date = session_offering_launch_date
             AND s.session_id = session_number
     )
     THEN
         RAISE EXCEPTION 'Session ID already exists for course offering.';
     END IF;
 
-    SELECT offering_registration_deadline INTO offering_registration_deadline
+    SELECT offering_registration_deadline INTO session_offering_registration_deadline
     FROM CourseOfferings co
-    WHERE co.offering_launch_date = offering_launch_date
-        AND co.course_id = course_id;
+    WHERE co.offering_launch_date = session_offering_launch_date
+        AND co.course_id = session_course_id;
 
-    IF (CURRENT_DATE > offering_registration_deadline)
+    IF (CURRENT_DATE > session_offering_registration_deadline)
     THEN
         RAISE EXCEPTION 'Course registration deadline already passed.';
     END IF;
@@ -53,7 +53,7 @@ BEGIN
     INSERT INTO Sessions
     (session_id, session_date, session_start_hour, session_end_hour, course_id, offering_launch_date, room_id, instructor_id)
     VALUES
-    (session_id, session_date, session_start_hour, session_end_hour, course_id, offering_launch_date, room_id, instructor_id);
+    (session_id, session_date, session_start_hour, session_end_hour, session_course_id, session_offering_launch_date, room_id, instructor_id);
     RETURN NEXT;
 END;
 $$ LANGUAGE plpgsql;

@@ -421,13 +421,13 @@ if __name__ == "__main__":
 
     with connect_db(HOST, PORT, user, password, DBNAME) as db:
         with db.cursor() as cursor:
-            # # Positive test cases for schema (Cumulative)
-            # load_success_data('./test data/schema test', cursor)
-            # db.rollback()
+            # Positive test cases for schema (Cumulative)
+            load_success_data('./test data/schema test', cursor)
+            db.rollback()
 
-            # # # Run the negative test cases for schema Data
-            # load_fail_data('./test data/schema fail', cursor, db)
-            # db.rollback()
+            # # Run the negative test cases for schema Data
+            load_fail_data('./test data/schema fail', cursor, db)
+            db.rollback()
 
             # Run the negative test cases for triggers
             # load_fail_data('./test data/trigger fail', cursor, db)

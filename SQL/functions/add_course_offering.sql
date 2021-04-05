@@ -15,73 +15,119 @@
 
     Todo: need to also accept information for each session (session date, session start hour, and room identifier)
 */
-DROP FUNCTION IF EXISTS add_course_offering CASCADE;
+
 DROP TYPE IF EXISTS session_information;
 CREATE TYPE session_information AS(
     session_date DATE,
     session_start_hour INTEGER,
     room_id INTEGER
 );
+
+
+DROP FUNCTION IF EXISTS add_course_offering CASCADE;
 CREATE OR REPLACE FUNCTION add_course_offering (
-    offering_launch_date DATE,
-    offering_fees NUMERIC,
-    sessions_arr session_information[],
-    offering_registration_deadline DATE,
-    offering_num_target_registration INTEGER,
-    offering_seating_capacity INTEGER,
-    course_id INTEGER,
-    admin_id INTEGER
+    launch_date DATE,
+    fees NUMERIC,
+    sessions_arr session_information ARRAY,
+    registration_deadline DATE,
+    num_target_registration INTEGER,
+    seating_capacity INTEGER,
+    off_course_id INTEGER,
+    off_admin_id INTEGER
 )
-RETURNS VOID AS $$
+RETURNS TABLE(offering_launch_date DATE, offering_fees NUMERIC, offering_registration_deadline DATE, offering_num_target_registration INTEGER, offering_seating_capacity INTEGER, course_id INTEGER, admin_id INTEGER, offering_start_date DATE, offering_end_date DATE) AS $$
 DECLARE
-    offering_start_date DATE;
-    offering_end_date DATE;
+    off_start_date DATE;
+    off_end_date DATE;
+    session_end_hour INTEGER;
     num_sessions INTEGER;
-    offering_start_record RECORD;
+    course_duration INTEGER;
     instructor_id INTEGER;
     session_id INTEGER;
-    r session_information;
+    missing_instructor BOOLEAN;
+    new_course_offering RECORD;
 BEGIN
 
     /*Checking the conditions of course offering*/
-    IF (offering_start_date > offering_end_date) THEN
-        RAISE EXCEPTION 'Offering end date cannot be earlier than start date';
-
-    ELSIF (offering_launch_date > offering_registration_deadline) THEN
+    IF (launch_date > registration_deadline) THEN
         RAISE EXCEPTION 'Offering registration date cannot be earlier than launch date';
+    END IF ;
     
-    ELSIF (offering_seating_capacity < offering_num_target_registration) THEN
+    IF (seating_capacity < num_target_registration) THEN
         RAISE EXCEPTION 'Offering seating capacity cannot be less than number of target registration';
-
-    ELSIF (offering_num_target_registration < 0) THEN
+    END IF ;
+    
+    IF (num_target_registration < 0) THEN
         RAISE EXCEPTION 'Offering target registration should be more than or equal to 0';
     
-    ELSIF (offering_start_date < offering_registration_deadline + INTEGER '10' ) THEN
-        RAISE EXCEPTION 'Offering start date should be at least 10 days after the registration deadline ';
     END IF ;
+    
+    SELECT MIN(session_date) INTO off_start_date FROM unnest(sessions_arr);
+    SELECT MAX(session_date) INTO off_end_date FROM unnest(sessions_arr);
+    
+    IF (off_start_date > off_end_date) THEN
+        RAISE EXCEPTION 'Offering end date cannot be earlier than start date';
 
+    END IF;
+
+    IF (off_start_date < registration_deadline + INTEGER '10' ) THEN
+        RAISE EXCEPTION 'Offering start date should be at least 10 days after the registration deadline ';
+    END IF;
+    
+    RAISE NOTICE 'Taking the session 1 date(%)', off_start_date;
+    SELECT COUNT(*) INTO num_sessions FROM unnest(sessions_arr);
+    RAISE NOTICE 'Taking the number of sessions(%)', num_sessions;
+    
+    missing_instructor := FALSE;
+
+    FOR counter in 1..num_sessions 
+        
+    LOOP
+        RAISE NOTICE 'counter: %', counter;
+        SELECT r_employee_id INTO instructor_id FROM get_available_instructors(off_course_id,sessions_arr[counter].session_date,sessions_arr[counter].session_date) LIMIT 1;
+        IF (instructor_id = NULL) THEN
+            missing_instructor := TRUE;
+        END IF;
+        session_end_hour := sessions_arr[counter].session_start_hour + course_duration;
+        IF ((session_start_hour < 12 AND session_end_hour > 12) OR session_start_hour > 18 OR session_end_hour > 18 OR session_start_hour < 9)THEN
+            RAISE EXCEPTION 'Session time is out of range';
+        END IF;
+        IF(to_char(sessions_arr[counter].session_date, 'Dy') = 'Sat' OR to_char(sessions_arr[counter].session_date, 'Dy') = 'Sun') THEN
+            RAISE EXCEPTION 'Can only have class from Mon - Fri';
+        END IF;
+        RAISE NOTICE 'instructor missing: %', missing_instructor;
+    END LOOP;
+
+    IF (missing_instructor = TRUE) THEN
+        RAISE EXCEPTION 'Offering does not have enough instructors for sessions';
+    END IF;
+
+    
     INSERT INTO CourseOfferings
     (offering_launch_date, offering_fees, offering_registration_deadline, offering_num_target_registration, offering_seating_capacity, course_id, admin_id, offering_start_date, offering_end_date)
     VALUES
-    (offering_launch_date, offering_fees, offering_registration_deadline, offering_num_target_registration, offering_seating_capacity, course_id, admin_id, offering_start_date, offering_end_date);
-    
-    /*Need to include sessions that does not have instructor = course offering should not be created*/
-    SELECT COUNT(*) INTO num_sessions FROM unnest(sessions_arr);
-    offering_start_date := sessions_arr[1][1];
-    offering_end_date := sessions_arr[1][1];
-    session_id := 1;
-    FOREACH r SLICE 1 in ARRAY sessions_arr
+    (launch_date, fees, registration_deadline, num_target_registration, seating_capacity, off_course_id, off_admin_id, off_start_date, off_end_date)
+    RETURNING * INTO new_course_offering;
+    offering_launch_date := new_course_offering.offering_launch_date;
+    offering_fees := new_course_offering.offering_fees;
+    offering_registration_deadline := new_course_offering.offering_registration_deadline;
+    offering_num_target_registration := new_course_offering.offering_num_target_registration;
+    offering_seating_capacity := new_course_offering.offering_seating_capacity;
+    course_id := new_course_offering.course_id;
+    admin_id := new_course_offering.admin_id;
+    offering_start_date := new_course_offering.offering_start_date;
+    offering_end_date := new_course_offering.offering_end_date;
+
+    RETURN NEXT;
+
+    SELECT cu.course_duration INTO course_duration FROM Courses cu WHERE off_course_id = cu.course_id;
+    FOR counter in 1..num_sessions 
+        
     LOOP
-        IF (r[1] <= offering_start_date) THEN
-            offering_start_date := r[1];
-        END IF;
-        IF (r[1] >= offering_end_date) THEN
-            offering_end_date := r[1];
-        END IF;
-        SELECT employee_id INTO instructor_id FROM get_available_instructors(course_id,offering_start_date,offering_end_date) LIMIT 1;
-        SELECT add_session(course_id,offering_launch_date,session_id,r[1],r[2],instructor_id,r[3]);
-        session_id := session_id + 1;
+        session_end_hour := sessions_arr[counter].session_start_hour + course_duration;
+        PERFORM (SELECT add_session(off_course_id,launch_date,counter,sessions_arr[counter].session_date,sessions_arr[counter].session_start_hour,session_end_hour,instructor_id,sessions_arr[counter].room_id));
     END LOOP;
 
+   
 END;
 $$ LANGUAGE plpgsql;

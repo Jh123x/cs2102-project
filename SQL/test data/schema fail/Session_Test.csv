@@ -16,3 +16,4 @@ session_id,session_date,session_start_hour,session_end_hour,course_id,offering_l
 2,1/9/2021,16,18,3,4/2/2021,3,4,fail ,instructor have 2 consecutive session
 2,30/8/2021,18,20,1,2/2/2021,1,5,fail ,session is after 6pm
 2,1/9/2021,10,12,1,2/2/2021,2,4,fail,room is occupied
+2,1/9/2021,10,16,1,2/2/2021,2,4,fail,session went pass 12-2pm
