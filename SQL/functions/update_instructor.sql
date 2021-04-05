@@ -6,6 +6,7 @@
         identifier of the new instructor.
     If the course session has not yet started and the update request is valid, the routine will process the request with the necessary updates.
 */
+DROP FUNCTION IF EXISTS update_instructor CASCADE;
 CREATE OR REPLACE FUNCTION update_instructor (
     offering_launch_date INTEGER,
     course_id INTEGER,

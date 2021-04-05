@@ -8,8 +8,8 @@
 
     Query: Find all the rooms where there does not exists another sessions that is at the same time slot
 */
-DROP FUNCTION IF EXISTS find_rooms;
-CREATE OR REPLACE FUNCTION find_rooms(
+DROP FUNCTION IF EXISTS find_rooms CASCADE;
+CREATE OR REPLACE FUNCTION find_rooms (
     session_date DATE,
     r_session_start_hour INTEGER,
     session_duration INTEGER

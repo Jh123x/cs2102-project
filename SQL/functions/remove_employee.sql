@@ -9,7 +9,6 @@
         (3) the employee is a manager who is managing some area.
 */
 
-
 DROP FUNCTION IF EXISTS is_active_admin CASCADE;
 CREATE OR REPLACE FUNCTION is_active_admin (admin_id_arg INTEGER)
 RETURNS BOOLEAN AS $$
@@ -26,7 +25,7 @@ BEGIN
 END;
 $$ LANGUAGE PLPGSQL;
 
-DROP FUNCTION IF EXISTS remove_employee;
+DROP FUNCTION IF EXISTS remove_employee CASCADE;
 CREATE OR REPLACE FUNCTION remove_employee (
     employee_id_arg INTEGER,
     employee_depart_date_arg DATE

@@ -17,6 +17,7 @@
             ascending order of hour.
 */
 
+DROP FUNCTION IF EXISTS get_available_instructors CASCADE
 CREATE OR REPLACE FUNCTION get_available_instructors (
     course_id INTEGER,
     start_date DATE,

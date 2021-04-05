@@ -10,7 +10,7 @@
         total number of course registrations via course package redemptions for the month.
     For example, if the number of specified months is 3 and the current month is January 2021, the output will consist of one record for each of the following three months: January 2021, December 2020, and November 2020.
 */
-
+DROP FUNCTION IF EXISTS view_summary_report CASCADE;
 CREATE OR REPLACE FUNCTION view_summary_report (
     N INTEGER
 )

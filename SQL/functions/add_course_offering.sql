@@ -23,7 +23,6 @@ CREATE TYPE session_information AS(
     room_id INTEGER
 );
 
-
 DROP FUNCTION IF EXISTS add_course_offering CASCADE;
 CREATE OR REPLACE FUNCTION add_course_offering (
     launch_date DATE,

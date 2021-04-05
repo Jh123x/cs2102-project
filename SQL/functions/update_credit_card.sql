@@ -4,6 +4,7 @@
         the customer identifier and
         his/her new credit card details (credit card number, expiry date, CVV code).
 */
+DROP FUNCTION IF EXISTS update_credit_card CASCADE;
 CREATE OR REPLACE FUNCTION update_credit_card (
     customer_id INTEGER,
     credit_card_number CHAR(16),

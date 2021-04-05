@@ -15,6 +15,7 @@
     For a part-time employees, the values for number of work days for the month and monthly salary should be null.
     For a full-time employees, the values for number of work hours for the month and hourly rate should be null.
 */
+DROP FUNCTION IF EXISTS pay_salary CASCADE;
 CREATE OR REPLACE FUNCTION pay_salary()
 RETURNS TABLE (employee_id INTEGER, name TEXT, status TEXT,
     num_work_days INTEGER, num_work_hours INTEGER,

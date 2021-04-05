@@ -7,7 +7,8 @@
         payment method (credit card or redemption from active package).
     If the registration transaction is valid, this routine will process the registration with the necessary updates (e.g., payment/redemption).
 */
-CREATE OR REPLACE FUNCTION register_session(
+DROP FUNCTION IF EXISTS register_session CASCADE;
+CREATE OR REPLACE FUNCTION register_session (
     offering_launch_date DATE,
     course_id INTEGER,
     session_id INTEGER,

@@ -3,7 +3,7 @@
     The inputs to the routine include the customer and course package identifiers.
     If the purchase transaction is valid, the routine will process the purchase with the necessary updates (e.g., payment).
 */
-DROP FUNCTION IF EXISTS buy_course_package;
+DROP FUNCTION IF EXISTS buy_course_package CASCADE;
 CREATE OR REPLACE FUNCTION buy_course_package (
     customer_id_arg         INTEGER,
     package_id_arg          INTEGER

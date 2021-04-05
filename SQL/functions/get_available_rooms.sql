@@ -11,7 +11,7 @@
     The output is sorted in ascending order of room identifier and day,
         and the array entries are sorted in ascending order of hour.
 */
-DROP FUNCTION IF EXISTS get_available_rooms;
+DROP FUNCTION IF EXISTS get_available_rooms CASCADE;
 CREATE OR REPLACE FUNCTION get_available_rooms (
     start_date DATE,
     end_date DATE

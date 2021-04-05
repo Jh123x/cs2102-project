@@ -6,6 +6,7 @@
         and new session number.
     If the update request is valid and there is an available seat in the new session, the routine will process the request with the necessary updates.
 */
+DROP FUNCTION IF EXISTS update_course_session CASCADE;
 CREATE OR REPLACE FUNCTION update_course_session (
     customer_id             INTEGER,
     course_id               INTEGER,

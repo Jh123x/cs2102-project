@@ -5,6 +5,7 @@
         course offering identifier.
     If the cancellation request is valid, the routine will process the request with the necessary updates.
 */
+DROP FUNCTION IF EXISTS cancel_registration CASCADE;
 CREATE OR REPLACE FUNCTION cancel_registration (
     customer_id             INTEGER,
     course_id               INTEGER,

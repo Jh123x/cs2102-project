@@ -54,7 +54,7 @@ END;
 $$ LANGUAGE PLPGSQL;
 
 DROP FUNCTION IF EXISTS get_available_course_sessions CASCADE;
-CREATE OR REPLACE FUNCTION get_available_course_sessions(
+CREATE OR REPLACE FUNCTION get_available_course_sessions (
     offering_launch_date_arg DATE, 
     course_id_arg INTEGER
 )

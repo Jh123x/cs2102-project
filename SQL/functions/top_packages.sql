@@ -15,6 +15,7 @@
     thus, the output table could have more than N records.
     It is also possible for the output table to have fewer than N records if N is larger than the number of packages launched this year.
 */
+DROP FUNCTION IF EXISTS top_packages CASCADE;
 CREATE OR REPLACE FUNCTION top_packages (
     N INTEGER
 )

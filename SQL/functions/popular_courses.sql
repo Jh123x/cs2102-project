@@ -35,7 +35,7 @@ END;
 $$ LANGUAGE PLPGSQL;
 
 DROP FUNCTION IF EXISTS popular_courses CASCADE;
-CREATE OR REPLACE FUNCTION popular_courses ()
+CREATE OR REPLACE FUNCTION popular_courses()
 RETURNS TABLE(
     course_id INTEGER,
     course_title TEXT,
