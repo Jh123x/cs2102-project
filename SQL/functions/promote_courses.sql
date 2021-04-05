@@ -20,6 +20,9 @@
     Design Note:
         IT is possible that a customer registers or redeems some sessions at the exact same time.
         In such cases, tiebreaking between the 3 latest course offerings registered/redeemed by customer C is performed using the course area name of the respective course (smaller lexicographical order wins).
+
+        We further impose a constraint on the results returned:
+        Courses that are currently/previously enrolled (i.e. having some course offering session redeemed or registered that is not cancelled) by a customer should not be promoted to the same customer. This is because it does not make sense to promote to a customer a course he/she has previously attended/is going to attend (if the course session has not started despite signing up > 6 months ago).
 */
 DROP FUNCTION IF EXISTS promote_courses();
 CREATE OR REPLACE FUNCTION promote_courses()
@@ -36,7 +39,7 @@ AS $$
 BEGIN
     RETURN QUERY (
         /* Try to find the last 3 sessions registered for each customer */
-        WITH LastThreeSessionsRegistered AS (
+        With LastThreeSessionsRegistered AS (
             SELECT r.customer_id, r.register_date AS enrol_date, c.course_area_name
             FROM Registers r
             NATURAL JOIN Sessions s
@@ -107,7 +110,23 @@ BEGIN
         InactiveCustomers AS (
             SELECT DISTINCT pair.customer_id, pair.customer_name
             FROM InactiveCustomersCourseAreasPairs pair
-        )
+        ),
+        AllSessionsEnrolled AS (
+            SELECT DISTINCT r.customer_id, c.course_id
+            FROM Registers r
+            NATURAL JOIN Sessions s
+            NATURAL JOIN CourseOfferings co
+            NATURAL JOIN Courses c
+            WHERE r.register_cancelled IS NOT TRUE
+            UNION
+            SELECT b.customer_id, c.course_id
+            FROM Redeems r
+            NATURAL JOIN Buys b
+            NATURAL JOIN Sessions s
+            NATURAL JOIN CourseOfferings co
+            NATURAL JOIN Courses c
+            WHERE r.redeem_cancelled IS NOT TRUE
+        ),
         SELECT DISTINCT ic.customer_id,
             ic.customer_name,
             c.course_area_name,
@@ -125,6 +144,11 @@ BEGIN
         ) AND c.course_title IN (
             SELECT co2.course_title FROM get_available_course_offerings() co2
         ) AND co.offering_registration_deadline >= CURRENT_DATE
+        AND co.course_id NOT IN (
+            SELECT e.course_id
+            FROM AllSessionsEnrolled e
+            WHERE e.customer_id = ic.customer_id
+        )
         ORDER BY ic.customer_id ASC,
             co.offering_registration_deadline ASC
     );
