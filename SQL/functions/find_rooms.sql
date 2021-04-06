@@ -10,7 +10,7 @@
 */
 DROP FUNCTION IF EXISTS find_rooms CASCADE;
 CREATE OR REPLACE FUNCTION find_rooms (
-    session_date DATE,
+    r_session_date DATE,
     r_session_start_hour INTEGER,
     session_duration INTEGER
 )
@@ -23,13 +23,17 @@ DECLARE
         WHERE NOT EXISTS(
             SELECT 1 FROM Sessions s
             WHERE s.room_id = r.room_id
-                AND (r_session_start_hour <= s.session_start_hour AND s.session_start_hour < end_hour)
-                OR (s.session_start_hour <= session_start_hour AND session_start_hour < s.session_end_hour)
+            AND s.session_date = r_session_date
+            AND (
+                (r_session_start_hour <= s.session_start_hour AND s.session_start_hour < end_hour)
+                OR
+                (s.session_start_hour <= session_start_hour AND session_start_hour < s.session_end_hour)
+            )
         ));
     rec RECORD;
 BEGIN
     /* Check for NULLs in arguments */
-    IF session_date IS NULL
+    IF r_session_date IS NULL
         OR r_session_start_hour IS NULL
         OR session_duration IS NULL
     THEN
