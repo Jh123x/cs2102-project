@@ -38,6 +38,7 @@ DECLARE
         NATURAL JOIN Specializes s
         NATURAL JOIN Courses c
         WHERE c.course_id = course_id_arg
+        AND e.employee_join_date <= start_date_arg /*Check if the instructor has already been hired*/
         ORDER BY e.employee_id ASC
     );
     r RECORD;
