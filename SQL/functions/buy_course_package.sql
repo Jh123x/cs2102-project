@@ -7,9 +7,9 @@ DROP FUNCTION IF EXISTS buy_course_package CASCADE;
 CREATE OR REPLACE FUNCTION buy_course_package (
     customer_id_arg         INTEGER,
     package_id_arg          INTEGER
-) RETURNS VOID
-AS $$
+) RETURNS TABLE (r_buy_timestamp TIMESTAMP) AS $$
 DECLARE
+    r_buy_timestamp                 TIMESTAMP;
     package_sale_start_date         DATE;
     package_sale_end_date           DATE;
     package_num_free_registrations  INTEGER;
@@ -53,10 +53,15 @@ BEGIN
         RAISE EXCEPTION 'This package is no longer for sale.';
     END IF;
 
+    /*Store the timestamp*/
+    SELECT CURRENT_TIMESTAMP INTO r_buy_timestamp;
+
     /* Do buying here with Credit Card number */
     INSERT INTO Buys
     (buy_timestamp, buy_num_remaining_redemptions, package_id, customer_id, credit_card_number)
     VALUES
-    (CURRENT_TIMESTAMP, package_num_free_registrations, package_id_arg, customer_id_arg, credit_card_number);
+    (r_buy_timestamp, package_num_free_registrations, package_id_arg, customer_id_arg, credit_card_number);
+
+    return NEXT;
 END;
 $$ LANGUAGE plpgsql;

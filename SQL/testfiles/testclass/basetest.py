@@ -110,7 +110,7 @@ class BaseTest(object):
         query = self.generate_query('add_course_package', args)
         return self.execute_query(query)[0][0]
 
-    def _buy_package(self, customer_id:int, package_id:int) -> None:
+    def _buy_package(self, customer_id:int, package_id:int) -> int:
         """Customer buys package"""
         q = self.generate_query('buy_course_package', (str(customer_id), str(package_id)))
         return self.execute_query(q)
