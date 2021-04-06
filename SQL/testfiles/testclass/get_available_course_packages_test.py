@@ -12,6 +12,7 @@ class ZGetAvailableCoursePackages(BaseTest, unittest.TestCase):
         assert (
             len(res) == 0
         ), "There should be no courses available if there are no courses added"
+        assert res == [], "There should be no courses"
 
     @expectedFailure
     def test_all_package_avail(self):
