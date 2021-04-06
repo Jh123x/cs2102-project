@@ -9,9 +9,7 @@ class ZRegisterSessionTest(BaseTest, unittest.TestCase):
         """Invalid registration input"""
         args = ("2020-04-21", "1", "1", "1", "Credit Card")
         q = self.generate_query("register_session", args)
-        res = self.execute_query(q)
-
-        assert len(res) == 0, f"Invalid inputs should not give correct output {res}"
+        self.check_fail_test(q, "Invalid input should raise an exception", RaiseException)
 
     def test_invalid_payment_type(self):
         """Invalid payment method"""
