@@ -40,33 +40,33 @@ BEGIN
     RETURN QUERY (
         /* Try to find the last 3 sessions registered for each customer */
         WITH LastThreeSessionsRegistered AS (
-            SELECT r.customer_id, r.register_date AS enrol_date, c.course_area_name
+            SELECT r.customer_id, r.register_timestamp AS enrol_date, c.course_area_name
             FROM Registers r
             NATURAL JOIN Sessions s
             NATURAL JOIN CourseOfferings co
             NATURAL JOIN Courses c
-            WHERE r.register_date IN (
-                SELECT r2.register_date
+            WHERE r.register_timestamp IN (
+                SELECT r2.register_timestamp
                 FROM Registers r2
                 WHERE r2.customer_id = r.customer_id
-                ORDER BY r2.register_date DESC, c.course_area_name ASC
+                ORDER BY r2.register_timestamp DESC, c.course_area_name ASC
                 LIMIT 3
             )
         ),
         /* Try to find the last 3 sessions redeemed for each customer - this is to identify course areas of interest for each customer */
         LastThreeSessionsRedeemed AS (
-            SELECT b.customer_id, r.redeem_date AS enrol_date, c.course_area_name
+            SELECT b.customer_id, r.redeem_timestamp AS enrol_date, c.course_area_name
             FROM Redeems r
             NATURAL JOIN Buys b
             NATURAL JOIN Sessions s
             NATURAL JOIN CourseOfferings co
             NATURAL JOIN Courses c
-            WHERE r.redeem_date IN (
-                SELECT r2.redeem_date
+            WHERE r.redeem_timestamp IN (
+                SELECT r2.redeem_timestamp
                 FROM Redeems r2
                 NATURAL JOIN Buys b2
                 WHERE b2.customer_id = b.customer_id
-                ORDER BY r2.redeem_date DESC, c.course_area_name ASC
+                ORDER BY r2.redeem_timestamp DESC, c.course_area_name ASC
                 LIMIT 3
             )
         ),

@@ -55,8 +55,8 @@ BEGIN
 
     /* Do buying here with Credit Card number */
     INSERT INTO Buys
-    (buy_date, buy_num_remaining_redemptions, package_id, customer_id, credit_card_number)
+    (buy_timestamp, buy_num_remaining_redemptions, package_id, customer_id, credit_card_number)
     VALUES
-    (CURRENT_DATE, package_num_free_registrations, package_id_arg, customer_id_arg, credit_card_number);
+    (CURRENT_TIMESTAMP, package_num_free_registrations, package_id_arg, customer_id_arg, credit_card_number);
 END;
 $$ LANGUAGE plpgsql;

@@ -1,4 +1,4 @@
-buy_date,buy_num_remaining_redemptions,package_id,customer_id,credit_card_number
+buy_timestamp,buy_num_remaining_redemptions,package_id,customer_id,credit_card_number
 2021-03-01 00:00:00,2,1,1,2221009800535070
 2021-03-02 00:00:00,2,2,2,2720992912410510
 2021-03-03 00:00:00,3,3,3,5221346498258540

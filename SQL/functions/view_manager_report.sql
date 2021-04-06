@@ -80,7 +80,7 @@ BEGIN
             GROUP BY offering_launch_date, course_id
         ),
         RedemptionRegistrationFees AS (
-            SELECT redeem_date, FLOOR(package_price / package_num_free_registrations) AS redemption_fees
+            SELECT redeem_timestamp, FLOOR(package_price / package_num_free_registrations) AS redemption_fees
             FROM Redeems
             NATURAL JOIN Buys
             NATURAL JOIN CoursePackages

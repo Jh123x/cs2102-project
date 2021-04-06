@@ -45,7 +45,7 @@ BEGIN
     IF enrolment_table = 'registers' THEN
         UPDATE Registers r
         SET r.register_cancelled = TRUE
-        WHERE r.register_date = enroll_date;
+        WHERE r.register_timestamp = enroll_date;
 
         IF CURRENT_DATE <= session_date - interval '7 days' THEN
             refund_amt := 0.90 * offering_fees;
@@ -59,7 +59,7 @@ BEGIN
     ELSE
         UPDATE Redeems r
         SET r.redeem_cancelled = TRUE
-        WHERE r.redeem_date = enroll_date;
+        WHERE r.redeem_timestamp = enroll_date;
 
         IF CURRENT_DATE <= session_date - interval '7 days' THEN
             package_credit := 1;

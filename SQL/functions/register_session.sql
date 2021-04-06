@@ -18,7 +18,7 @@ CREATE OR REPLACE FUNCTION register_session (
 AS $$
 DECLARE
     credit_card_number CHAR(16);
-    buy_date_arg DATE;
+    buy_timestamp_arg TIMESTAMP;
     package_name TEXT;
     package_id_arg INTEGER;
     package_num_free_registrations INTEGER;
@@ -44,7 +44,7 @@ BEGIN
     SELECT COUNT(*) INTO num_red_duplicate
     FROM Redeems r 
     JOIN Buys b
-    ON b.buy_date = r.buy_date
+    ON b.buy_timestamp = r.buy_timestamp
     WHERE b.customer_id = customer_id_arg
     AND r.course_id = course_id_arg
     AND r.session_id = session_id_arg;
@@ -54,7 +54,7 @@ BEGIN
     END IF;
 
     IF (payment_method = 'Redemption') THEN        
-        SELECT b.buy_date, b.package_id ,b.buy_num_remaining_redemptions INTO buy_date_arg, package_id_arg, buy_num_remaining_redemptions_arg
+        SELECT b.buy_timestamp, b.package_id ,b.buy_num_remaining_redemptions INTO buy_timestamp_arg, package_id_arg, buy_num_remaining_redemptions_arg
         FROM Buys b
         WHERE b.customer_id = customer_id_arg
         AND b.buy_num_remaining_redemptions >= 1
@@ -71,10 +71,10 @@ BEGIN
         SET buy_num_remaining_redemptions =  buy_num_remaining_redemptions_arg-1
         WHERE customer_id = customer_id_arg
         AND package_id = package_id_arg
-        AND buy_date = buy_date_arg;
+        AND buy_timestamp = buy_timestamp_arg;
 
         INSERT INTO Redeems
-        VALUES(CURRENT_TIMESTAMP, buy_date_arg,session_id_arg,offering_launch_date,course_id_arg);
+        VALUES(CURRENT_TIMESTAMP, buy_timestamp_arg,session_id_arg,offering_launch_date,course_id_arg);
     END IF;
 
     SELECT o.credit_card_number INTO credit_card_number
@@ -96,7 +96,7 @@ BEGIN
     END IF;
 
     IF(payment_method = 'Credit Card') THEN
-        INSERT INTO Registers(register_date, customer_id, credit_card_number, session_id, offering_launch_date, course_id)
+        INSERT INTO Registers(register_timestamp, customer_id, credit_card_number, session_id, offering_launch_date, course_id)
         VALUES (CURRENT_TIMESTAMP, customer_id_arg, credit_card_number, session_id_arg, offering_launch_date, course_id_arg);
     END IF;
 

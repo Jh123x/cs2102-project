@@ -6,7 +6,7 @@ DECLARE
 BEGIN
     SELECT COALESCE(SUM(buy_num_remaining_redemptions),0) INTO num_remaining_redemptions
     FROM Buys
-    WHERE NEW.buy_date = buy_date;
+    WHERE NEW.buy_timestamp = buy_timestamp;
 
     IF (num_remaining_redemptions <= 0) THEN
         RAISE EXCEPTION 'There are no redemptions left for this customer';

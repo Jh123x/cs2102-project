@@ -1,4 +1,4 @@
-redeem_date,buy_date,session_id,offering_launch_date,course_id ,redeem_cancelled
+redeem_timestamp,buy_timestamp,session_id,offering_launch_date,course_id ,redeem_cancelled
 2021-08-03 00:00:00,2021-03-01 00:00:00,2,2021-02-03 00:00:00,2,False
 2021-08-04 00:00:00,2021-03-02 00:00:00,1,2021-02-03 00:00:00,2,False
 2021-08-05 00:00:00,2021-03-03 00:00:00,2,2021-02-04 00:00:00,3,False

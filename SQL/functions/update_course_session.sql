@@ -69,11 +69,11 @@ BEGIN
     IF enrolment_table = 'registers' THEN
         UPDATE Registers r
         SET r.session_id = new_session_id
-        WHERE r.register_date = enroll_date;
+        WHERE r.register_timestamp = enroll_date;
     ELSE
         UPDATE Redeems r
         SET r.session_id = new_session_id
-        WHERE r.redeem_date = enroll_date;
+        WHERE r.redeem_timestamp = enroll_date;
     END IF;
 END;
 $$ LANGUAGE plpgsql;

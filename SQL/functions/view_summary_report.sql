@@ -51,12 +51,12 @@ BEGIN
         SELECT COALESCE(SUM(cp.package_price), 0.00) INTO course_package_sales
         FROM Buys b
         NATURAL JOIN CoursePackages cp
-        WHERE DATE_TRUNC('month', b.buy_date) = DATE_TRUNC('month', cur_date);
+        WHERE DATE_TRUNC('month', b.buy_timestamp) = DATE_TRUNC('month', cur_date);
 
         SELECT COALESCE(SUM(co.offering_fees), 0.00) INTO reg_fees_via_credit_card
         FROM Registers r
         NATURAL JOIN CourseOfferings co
-        WHERE DATE_TRUNC('month', r.register_date) = DATE_TRUNC('month', cur_date);
+        WHERE DATE_TRUNC('month', r.register_timestamp) = DATE_TRUNC('month', cur_date);
 
         SELECT COALESCE(SUM(c.cancel_refund_amt), 0.00) INTO reg_fees_refunded
         FROM Cancels c
@@ -64,7 +64,7 @@ BEGIN
 
         SELECT COUNT(*) INTO course_reg_redeemed
         FROM Redeems r
-        WHERE DATE_TRUNC('month', r.redeem_date) = DATE_TRUNC('month', cur_date);
+        WHERE DATE_TRUNC('month', r.redeem_timestamp) = DATE_TRUNC('month', cur_date);
 
         mm_count := mm_count + 1;
         cur_date := cur_date - INTERVAL '1 month';

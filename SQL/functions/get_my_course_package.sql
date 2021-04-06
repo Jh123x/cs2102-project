@@ -29,7 +29,7 @@ CREATE OR REPLACE FUNCTION get_customer_active_ish_course_package (
     customer_id_arg INTEGER
 )
 RETURNS TABLE(
-    buy_date TIMESTAMP,
+    buy_timestamp TIMESTAMP,
     package_name TEXT,
     package_price DEC(64,2),
     package_num_free_registrations INTEGER,
@@ -41,17 +41,17 @@ BEGIN
             Active - at least one unused session in the package
             Partially active - at least one cancellable session (at least 7 days before session date)
         */
-        SELECT cp.buy_date, cp.package_name, cp.package_price, cp.package_num_free_registrations, cp.buy_num_remaining_redemptions
+        SELECT cp.buy_timestamp, cp.package_name, cp.package_price, cp.package_num_free_registrations, cp.buy_num_remaining_redemptions
         FROM get_customer_course_packages(customer_id_arg) AS cp
         WHERE cp.buy_num_remaining_redemptions > 1
             OR EXISTS(
-                SELECT redeem_date
+                SELECT redeem_timestamp
                 FROM Redeems r
                 NATURAL JOIN Buys b
                 NATURAL JOIN Sessions s
-                WHERE r.buy_date = cp.buy_date AND s.session_date >= CURRENT_DATE + 7
+                WHERE r.buy_timestamp = cp.buy_timestamp AND s.session_date >= CURRENT_DATE + 7
             )
-        ORDER BY cp.buy_date DESC
+        ORDER BY cp.buy_timestamp DESC
         LIMIT 1
     );
 END;
@@ -74,7 +74,7 @@ CREATE OR REPLACE FUNCTION get_customer_course_packages (
     customer_id_arg INTEGER
 )
 RETURNS TABLE(
-    buy_date TIMESTAMP,
+    buy_timestamp TIMESTAMP,
     package_name TEXT,
     package_price DEC(64,2),
     package_num_free_registrations INTEGER,
@@ -82,11 +82,11 @@ RETURNS TABLE(
 ) AS $$
 BEGIN
     RETURN QUERY (
-        SELECT b.buy_date, cp.package_name, cp.package_price, cp.package_num_free_registrations, b.buy_num_remaining_redemptions
+        SELECT b.buy_timestamp, cp.package_name, cp.package_price, cp.package_num_free_registrations, b.buy_num_remaining_redemptions
         FROM Buys b
         NATURAL JOIN CoursePackages cp
         WHERE b.customer_id = customer_id_arg
-        ORDER BY buy_date DESC
+        ORDER BY buy_timestamp DESC
     );
 END;
 $$ LANGUAGE PLPGSQL;
@@ -98,7 +98,7 @@ CREATE OR REPLACE FUNCTION get_my_course_package (
 )
 RETURNS TABLE(course_package_details JSON) AS $$
 DECLARE
-    cp_buy_date TIMESTAMP;
+    cp_buy_timestamp TIMESTAMP;
     package_name TEXT;
     package_price DEC(64,2);
     package_num_free_registrations INTEGER;
@@ -121,8 +121,8 @@ BEGIN
         course_package_details := row_to_json(row());
     ELSE
         /* Customer must have either active or partially active course package */
-        SELECT cp.buy_date, cp.package_name, cp.package_price, cp.package_num_free_registrations, cp.buy_num_remaining_redemptions
-        INTO cp_buy_date, package_name, package_price, package_num_free_registrations, buy_num_remaining_redemptions
+        SELECT cp.buy_timestamp, cp.package_name, cp.package_price, cp.package_num_free_registrations, cp.buy_num_remaining_redemptions
+        INTO cp_buy_timestamp, package_name, package_price, package_num_free_registrations, buy_num_remaining_redemptions
         FROM get_customer_active_ish_course_package(customer_id_arg) AS cp;
 
         /* Aggregate all sessions redeemed using course package sorted in ascending order of session date and start hour */
@@ -134,13 +134,13 @@ BEGIN
             NATURAL JOIN Sessions s
             NATURAL JOIN CourseOfferings co
             NATURAL JOIN Courses c
-            WHERE r.buy_date = cp_buy_date AND r.redeem_cancelled IS NOT TRUE
+            WHERE r.buy_timestamp = cp_buy_timestamp AND r.redeem_cancelled IS NOT TRUE
             ORDER BY s.session_date ASC, s.session_start_hour ASC
         ) AS session_information;
 
         /* Return value is JSON object */
         SELECT jsonb_build_object(
-            'buy_date', cp_buy_date,
+            'buy_timestamp', cp_buy_timestamp,
             'package_name', package_name,
             'package_price', package_price,
             'package_num_free_registrations', package_num_free_registrations,

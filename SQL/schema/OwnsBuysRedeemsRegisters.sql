@@ -8,7 +8,7 @@ CREATE TABLE Owns (
 
 DROP TABLE IF EXISTS Buys CASCADE;
 CREATE TABLE Buys (
-    buy_date TIMESTAMP PRIMARY KEY NOT NULL,
+    buy_timestamp TIMESTAMP PRIMARY KEY NOT NULL,
     buy_num_remaining_redemptions INTEGER NOT NULL,
     package_id INTEGER NOT NULL REFERENCES CoursePackages,
     customer_id INTEGER NOT NULL,
@@ -20,8 +20,8 @@ CREATE TABLE Buys (
 
 DROP TABLE IF EXISTS Redeems CASCADE;
 CREATE TABLE Redeems (
-    redeem_date TIMESTAMP PRIMARY KEY NOT NULL,
-    buy_date TIMESTAMP NOT NULL REFERENCES Buys,
+    redeem_timestamp TIMESTAMP PRIMARY KEY NOT NULL,
+    buy_timestamp TIMESTAMP NOT NULL REFERENCES Buys,
     session_id INTEGER NOT NULL,
     offering_launch_date DATE NOT NULL,
     course_id INTEGER NOT NULL,
@@ -32,7 +32,7 @@ CREATE TABLE Redeems (
 
 DROP TABLE IF EXISTS Registers CASCADE;
 CREATE TABLE Registers (
-    register_date TIMESTAMP NOT NULL,
+    register_timestamp TIMESTAMP NOT NULL,
     customer_id INTEGER NOT NULL,
     credit_card_number CHAR(16) NOT NULL,
     session_id INTEGER NOT NULL,
@@ -40,18 +40,18 @@ CREATE TABLE Registers (
     course_id INTEGER NOT NULL,
     register_cancelled BOOLEAN NOT NULL DEFAULT FALSE,
 
-    PRIMARY KEY(register_date),
+    PRIMARY KEY(register_timestamp),
     FOREIGN KEY(session_id, offering_launch_date, course_id) REFERENCES Sessions(session_id, offering_launch_date, course_id) ON UPDATE CASCADE,
     FOREIGN KEY(customer_id, credit_card_number) REFERENCES Owns (customer_id, credit_card_number)
 );
 
 DROP VIEW IF EXISTS Enrolment;
 CREATE VIEW Enrolment AS
-SELECT register_date AS enroll_date, session_id, course_id, offering_launch_date, customer_id, 'registers' AS table_name
+SELECT register_timestamp AS enroll_date, session_id, course_id, offering_launch_date, customer_id, 'registers' AS table_name
 FROM Registers
 WHERE register_cancelled IS NOT TRUE
 UNION
-SELECT redeem_date AS enroll_date, session_id, course_id, offering_launch_date, customer_id, 'redeems' AS table_name
+SELECT redeem_timestamp AS enroll_date, session_id, course_id, offering_launch_date, customer_id, 'redeems' AS table_name
 FROM Redeems NATURAL JOIN Buys
 WHERE redeem_cancelled IS NOT TRUE;
 

@@ -15,20 +15,20 @@ BEGIN
         SELECT b.customer_id INTO new_cust_id 
         FROM Redeems r
         JOIN Buys b
-        ON r.buy_date = b.buy_date
-        WHERE NEW.buy_date = b.buy_date
+        ON r.buy_timestamp = b.buy_timestamp
+        WHERE NEW.buy_timestamp = b.buy_timestamp
         LIMIT 1;
         SELECT b.customer_id INTO old_cust_id
         FROM Redeems r
         JOIN Buys b
-        ON r.buy_date = b.buy_date
-        WHERE NEW.buy_date = b.buy_date
+        ON r.buy_timestamp = b.buy_timestamp
+        WHERE NEW.buy_timestamp = b.buy_timestamp
         LIMIT 1;
-        curr_date := NEW.redeem_date;
+        curr_date := NEW.redeem_timestamp;
     ELSE
         new_cust_id := NEW.customer_id;
         old_cust_id := OLD.customer_id;
-        curr_date := NEW.register_date;
+        curr_date := NEW.register_timestamp;
     END IF;
     IF (TG_OP = 'UPDATE' AND new_cust_id = old_cust_id AND NEW.course_id = OLD.course_id) THEN
         RETURN NEW;
@@ -50,7 +50,7 @@ BEGIN
     SELECT COUNT(*) INTO redeem_count 
     FROM Redeems r
     JOIN Buys b
-    ON b.buy_date = r.buy_date
+    ON b.buy_timestamp = r.buy_timestamp
     WHERE NEW.course_id = course_id
     AND b.customer_id = new_cust_id;
     IF (register_count > 0 OR redeem_count > 0) THEN

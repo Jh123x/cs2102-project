@@ -28,14 +28,14 @@ BEGIN
     END IF;
 
     WITH Registrations AS (
-        SELECT COUNT(r.register_date) AS num_registered
+        SELECT COUNT(r.register_timestamp) AS num_registered
         FROM Registers r
         WHERE r.session_id = session_id_arg 
             AND r.offering_launch_date = offering_launch_date_arg 
             AND r.course_id = course_id_arg
             AND r.register_cancelled IS NOT TRUE
     ), Redemptions AS (
-        SELECT COUNT(r.redeem_date) AS num_redeemed
+        SELECT COUNT(r.redeem_timestamp) AS num_redeemed
         FROM Redeems r
         WHERE r.session_id = session_id_arg 
             AND r.offering_launch_date = offering_launch_date_arg 

@@ -3,7 +3,7 @@
 CREATE OR REPLACE FUNCTION redeems_check()
 RETURNS TRIGGER AS $$
 BEGIN
-    IF (SELECT COALESCE(SUM(buy_num_remaining_redemptions),0) FROM Buys WHERE buy_date = NEW.buy_date) <= 0 THEN
+    IF (SELECT COALESCE(SUM(buy_num_remaining_redemptions),0) FROM Buys WHERE buy_timestamp = NEW.buy_timestamp) <= 0 THEN
         RAISE EXCEPTION 'THERE IS NOTHING LEFT TO REDEEM';
     END IF;
 

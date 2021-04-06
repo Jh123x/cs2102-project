@@ -1,4 +1,4 @@
-register_date,customer_id,credit_card_number,session_id,offering_launch_date,course_id,register_cancelled
+register_timestamp,customer_id,credit_card_number,session_id,offering_launch_date,course_id,register_cancelled
 2021-08-08 00:00:00,6,2720992107020130,2,2021-02-05 00:00:00,4,True
 2021-08-09 00:00:00,7,5329566110098690,1,2021-02-05 00:00:00,4,False
 2021-08-10 00:00:00,2,2720992912410510,2,2021-02-06 00:00:00,5,False
