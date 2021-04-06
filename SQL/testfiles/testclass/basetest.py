@@ -60,7 +60,7 @@ class BaseTest(object):
         args = ["John", "address", '987654321', 'test@test.com',
                 '2020-05-03', role, "full-time", '10.5', str(course_areas)]
         query = self.generate_query("add_employee", tuple(args))
-        return self.execute_query(query)
+        return self.execute_query(query)[0][0]
 
     def _add_course(self, category:str, duration:int) -> int:
         """Adds a course into the table
@@ -68,9 +68,10 @@ class BaseTest(object):
         """
         args = ("Database Systems", "Test description", category, str(duration))
         q = self.generate_query('add_course', args)
-        return self.generate_query(q)
+        return self.execute_query(q)[0][0]
 
     def make_session_array(self, rows:list):
+        """Convert the list to a session_information class"""
         def wrapper(tup: tuple):
             acc = ['row(']
             acc.append(", ".join(map(lambda ele: f"'{ele}'", tup)))
@@ -87,6 +88,16 @@ class BaseTest(object):
         return res
 
     def _add_room(self, room_id:int, room_name:str, room_capacity:int):
+        """Adds a room to the db"""
         query = f"INSERT INTO Rooms VALUES('{room_id}', '{room_name}', '{room_capacity}') RETURNING room_id"
+        return self.execute_query(query)[0][0]
+
+
+    def _add_customer(self, name:str, addr:str, phone:int, email:str, credit_card_no:str, cvv:str, card_expiry_date:str) -> int:
+        """Adds a customer to the db
+            returns the id of the customer
+        """
+        args = (name, addr, str(phone), email, credit_card_no, cvv, card_expiry_date)
+        query = self.generate_query('add_customer', args)
         return self.execute_query(query)[0][0]
 
