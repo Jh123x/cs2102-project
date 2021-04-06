@@ -14,19 +14,19 @@
 */
 DROP FUNCTION IF EXISTS get_my_registrations CASCADE;
 CREATE OR REPLACE FUNCTION get_my_registrations (
-    customer_id INTEGER
+    r_customer_id INTEGER
 )
 RETURNS TABLE(
     course_title TEXT,
     offering_fees DEC(64,2),
     session_date DATE,
     session_start_hour INTEGER,
-    session_end_hour INTEGER,
-    course_duration INTEGER
+    course_duration INTEGER,
+    instructor_name TEXT
 ) AS $$
 BEGIN
     /* Check for NULLs in arguments */
-    IF customer_id IS NULL
+    IF r_customer_id IS NULL
     THEN
         RAISE EXCEPTION 'Arguments to get_my_registrations() cannot contain NULL values.';
     END IF;
@@ -35,19 +35,21 @@ BEGIN
         WITH CourseRegistrations(session_id, offering_launch_date, course_id) AS (
             SELECT Registers.session_id, Registers.offering_launch_date, Registers.course_id
             FROM Registers
-            WHERE Registers.customer_id = customer_id AND Registers.register_cancelled IS NOT TRUE
+            WHERE Registers.customer_id = r_customer_id AND Registers.register_cancelled IS NOT TRUE
             UNION
-            SELECT Redeems.session_id, Redeems.offering_launch_date, Redeems.course_id
-            FROM Redeems
-            WHERE Redeems.customer_id = customer_id AND Redeems.redeem_cancelled IS NOT TRUE
+            SELECT r.session_id, r.offering_launch_date, r.course_id
+            FROM Redeems r
+            JOIN Buys b
+            ON b.buy_timestamp = r.buy_timestamp
+            WHERE b.customer_id = r_customer_id AND r.redeem_cancelled IS NOT TRUE
         ) 
         SELECT
             c.course_title,
             co.offering_fees,
             s.session_date,
             s.session_start_hour,
-            s.session_end_hour,
-            c.course_duration
+            c.course_duration,
+            e.employee_name
         FROM CourseRegistrations
         NATURAL JOIN Sessions s
         NATURAL JOIN CourseOfferings co
@@ -60,7 +62,7 @@ BEGIN
     );
 
     IF NOT FOUND THEN
-        RAISE NOTICE 'No active course registrations found for customer %.', customer_id;
+        RAISE NOTICE 'No active course registrations found for customer %.', r_customer_id;
     END IF;
 END;
 $$ LANGUAGE PLPGSQL;
