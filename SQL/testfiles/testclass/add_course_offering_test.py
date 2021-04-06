@@ -104,15 +104,6 @@ class HAddCourseOfferingTest(BaseTest, unittest.TestCase):
             )
         return super().setUp()
 
-    def make_session_array(self, rows:list):
-        def wrapper(tup: tuple):
-            acc = ['row(']
-            acc.append(", ".join(map(lambda ele: f"'{ele}'", tup)))
-            acc.append(')::session_information')
-            return ''.join(acc)
-        res = f"ARRAY[{', '.join(map(wrapper, rows))}]"
-        return res
-
     def test_add_course_offering(self):
         """Adding 2 different course offering should succeed"""
 
