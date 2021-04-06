@@ -22,6 +22,15 @@ DECLARE
     session_start_hour      INTEGER;
     room_seating_capacity   INTEGER;
 BEGIN
+    /* Check for NULLs in arguments */
+    IF course_id_arg IS NULL
+        OR offering_launch_date_arg IS NULL
+        OR session_id_arg IS NULL
+    THEN
+        RAISE EXCEPTION 'Arguments to remove_session() cannot contain NULL values.';
+    END IF;
+
+    /* Check if arguments yield a valid session */
     SELECT s.session_date, s.session_start_hour, r.room_seating_capacity
         INTO session_date, session_start_hour, room_seating_capacity
     FROM Sessions s
