@@ -11,8 +11,8 @@
 DROP FUNCTION IF EXISTS add_customer CASCADE;
 CREATE OR REPLACE FUNCTION add_customer (
     customer_name TEXT,
-    customer_phone INTEGER,
     customer_address TEXT,
+    customer_phone INTEGER,
     customer_email TEXT,
     credit_card_number CHAR(16),
     credit_card_cvv CHAR(3),

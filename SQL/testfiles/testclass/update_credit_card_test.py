@@ -9,7 +9,7 @@ class EUpdateCreditCardTest(BaseTest, unittest.TestCase):
 
     def _add_customer(self, name: str, card: int) -> int:
         """Add a customer to the table"""
-        args = (name, "987354312", "address here",
+        args = (name, "address here", "987354312",
                 "test@test.com", card, '123', '2020-04-20')
         query = self.generate_query('add_customer', args)
         res = self.execute_query(query)
