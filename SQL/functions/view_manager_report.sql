@@ -34,17 +34,18 @@ RETURNS TABLE (
 )
 AS $$
 BEGIN
-    WITH
+    RETURN QUERY (
         /* names */
-        ManagerNames AS (
-            SELECT manager_id, employee_name
-            FROM Managers m JOIN Employees e
-            ON m.manager_id = e.employee_id
+        WITH ManagerNames AS (
+            SELECT manager_id, employee_name AS manager_name
+            FROM Managers m
+            JOIN Employees e ON m.manager_id = e.employee_id
         ),
         /* course areas */
         ManagerNumCourseAreas AS (
-            SELECT manager_id, COUNT(*) as num_course_areas
-            FROM Managers NATURAL LEFT OUTER JOIN CourseAreas
+            SELECT manager_id, COUNT(*)::INTEGER as num_course_areas
+            FROM Managers
+            NATURAL LEFT OUTER JOIN CourseAreas
             GROUP BY manager_id
         ),
 
@@ -52,28 +53,37 @@ BEGIN
         /* Todo: ManagerCourseOfferings and ManagerNumCourseOfferings should be restricted to course offerings that ends in the current year. */
         ManagerCourseOfferings AS (
             SELECT manager_id, course_id, offering_launch_date
-            FROM CourseOfferings NATURAL JOIN Courses NATURAL JOIN CourseAreas
+            FROM CourseOfferings
+            NATURAL JOIN Courses
+            NATURAL JOIN CourseAreas
         ),
         ManagerNumCourseOfferings AS (
-            SELECT manager_id, COUNT(*) AS num_course_offerings
-            FROM Managers NATURAL LEFT OUTER JOIN ManagerCourseOfferings
+            SELECT manager_id, COUNT(*)::INTEGER AS num_course_offerings
+            FROM Managers
+            NATURAL LEFT OUTER JOIN ManagerCourseOfferings
             GROUP BY manager_id
         ),
 
         /* registration fees */
         CourseOfferingCreditCardRegistrationFees AS (
             SELECT offering_launch_date, course_id, SUM(offering_fees) AS total_registration_fees
-            FROM Registers NATURAL JOIN Sessions NATURAL RIGHT OUTER JOIN CourseOfferings
+            FROM Registers
+            NATURAL JOIN Sessions
+            NATURAL RIGHT OUTER JOIN CourseOfferings
             GROUP BY offering_launch_date, course_id
         ),
         CourseOfferingCreditCardRefundFees AS (
-            SELECT offering_launch_date, course_id, SUM(cancel_refund_amt) AS total_refunded_fees
-            FROM Cancels NATURAL JOIN Sessions NATURAL RIGHT OUTER JOIN CourseOfferings
+            SELECT offering_launch_date, course_id, COALESCE(SUM(cancel_refund_amt), 0.00) AS total_refunded_fees
+            FROM Cancels
+            NATURAL JOIN Sessions
+            NATURAL RIGHT OUTER JOIN CourseOfferings
             GROUP BY offering_launch_date, course_id
         ),
         RedemptionRegistrationFees AS (
             SELECT redeem_date, FLOOR(package_price / package_num_free_registrations) AS redemption_fees
-            FROM Redeems NATURAL JOIN Buys NATURAL JOIN CoursePackages
+            FROM Redeems
+            NATURAL JOIN Buys
+            NATURAL JOIN CoursePackages
         ),
         CourseOfferingRedemptionRegistrationFees AS (
             SELECT offering_launch_date, course_id, SUM(redemption_fees) AS total_redemption_fees
@@ -82,23 +92,27 @@ BEGIN
             GROUP BY offering_launch_date, course_id
         ),
         CourseOfferingNetRegistrationFees AS (
-            SELECT offering_launch_date, course_id, total_registration_fees - total_refunded_fees + total_redemption_fees AS net_registration_fees
+            SELECT offering_launch_date,
+                course_id,
+                (total_registration_fees - total_refunded_fees + total_redemption_fees) AS net_registration_fees
             FROM CourseOfferings
-                NATURAL JOIN CourseOfferingNetRegistrationFees
-                NATURAL JOIN CourseOfferingCreditCardRefundFees
-                NATURAL JOIN CourseOfferingRedemptionRegistrationFees
+            NATURAL JOIN CourseOfferingCreditCardRegistrationFees
+            NATURAL JOIN CourseOfferingCreditCardRefundFees
+            NATURAL JOIN CourseOfferingRedemptionRegistrationFees
         ),
         ManagerNetRegistrationFees AS (
-            SELECT manager_id, SUM(net_registration_fees) AS net_registration_fees
-            FROM Managers NATURAL LEFT OUTER JOIN ManagerCourseOfferings NATURAL JOIN CourseOfferingNetRegistrationFees
+            SELECT manager_id, SUM(f.net_registration_fees) AS net_registration_fees
+            FROM Managers
+            NATURAL LEFT OUTER JOIN ManagerCourseOfferings
+            NATURAL JOIN CourseOfferingNetRegistrationFees f
             GROUP BY manager_id
         ),
 
         /* top course offering titles */
         ManagerCourseOfferingRankedByFees AS (
             SELECT manager_id, course_id, offering_launch_date,
-                RANK() OVER (PARTITION BY manager_id ORDER BY net_registration_fees DESC) AS course_offering_rank
-            FROM ManagerCourseOfferings NATURAL JOIN CourseOfferingNetRegistrationFees
+                RANK() OVER (PARTITION BY manager_id ORDER BY f.net_registration_fees DESC) AS course_offering_rank
+            FROM ManagerCourseOfferings NATURAL JOIN CourseOfferingNetRegistrationFees f
         ),
         ManagerTopCourseOfferingTitles AS (
             SELECT manager_id, ARRAY_AGG(course_title) top_course_offering_titles
@@ -107,14 +121,15 @@ BEGIN
             GROUP BY manager_id
         )
 
-    /* oh yea everything come together */
-    SELECT manager_name, num_course_areas, num_course_offerings, net_registration_fees, top_course_offering_titles
-    FROM Managers
-        NATURAL JOIN ManagerNames
-        NATURAL JOIN ManagerNumCourseAreas
-        NATURAL JOIN ManagerNumCourseOfferings
-        NATURAL JOIN ManagerNetRegistrationFees
-        NATURAL JOIN ManagerTopCourseOfferingTitles
-    ORDER BY manager_name ASC;
+        /* oh yea everything come together */
+        SELECT m.manager_name, ca.num_course_areas, co.num_course_offerings, f.net_registration_fees, t.top_course_offering_titles
+        FROM Managers
+            NATURAL JOIN ManagerNames m
+            NATURAL JOIN ManagerNumCourseAreas ca
+            NATURAL JOIN ManagerNumCourseOfferings co
+            NATURAL JOIN ManagerNetRegistrationFees f
+            NATURAL JOIN ManagerTopCourseOfferingTitles t
+        ORDER BY m.manager_name ASC
+    );
 END;
 $$ LANGUAGE plpgsql;

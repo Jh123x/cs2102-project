@@ -10,4 +10,9 @@ from .add_course_package_test import GAddCoursePackageTest
 from .add_course_offering_test import HAddCourseOfferingTest
 from .get_available_instructors_test import IGetAvailableInstrutors
 from .find_rooms_test import ZFindRoomsTest
+from .get_available_course_packages_test import ZGetAvailableCoursePackages
+from .get_my_course_package_test import ZGetMyCoursePackage
+from .get_available_course_offerings import ZGetAvailableCourseOfferings
+from .get_available_course_sessions_test import ZGetAvailableCourseSessionsTest
+from .register_session_test import ZRegisterSessionTest
 from .buy_course_package_test import ZBuyCoursePackageTest
