@@ -91,15 +91,6 @@ BEGIN
 END;
 $$ LANGUAGE PLPGSQL;
 
-DROP FUNCTION IF EXISTS has_active_or_partially_active_course_package CASCADE;
-CREATE OR REPLACE FUNCTION has_active_or_partially_active_course_package (
-    customer_id_arg INTEGER
-)
-RETURNS BOOLEAN AS $$
-BEGIN
-
-END;
-$$ LANGUAGE PLPGSQL;
 
 DROP FUNCTION IF EXISTS get_my_course_package CASCADE;
 CREATE OR REPLACE FUNCTION get_my_course_package (
