@@ -20,6 +20,13 @@ CREATE OR REPLACE FUNCTION get_offering_num_remaining_seats (
 DECLARE
     num_remaining_seats INTEGER;
 BEGIN
+    /* Check for NULLs in arguments */
+    IF offering_launch_date_arg IS NULL
+        OR course_id_arg IS NULL
+    THEN
+        RAISE EXCEPTION 'Arguments to get_offering_num_remaining_seats() cannot contain NULL values.';
+    END IF;
+
     SELECT SUM(get_session_num_remaining_seats(s.session_id, s.offering_launch_date, s.course_id)) INTO num_remaining_seats
     FROM Sessions s
     WHERE s.offering_launch_date = offering_launch_date_arg

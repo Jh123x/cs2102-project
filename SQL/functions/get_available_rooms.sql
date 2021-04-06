@@ -35,7 +35,7 @@ DECLARE
 BEGIN
     IF start_date IS NULL OR end_date IS NULL THEN
         RAISE EXCEPTION 'Start and end dates cannot be NULL.';
-    ELSIF end_date < start_date THEN
+    ELSIF start_date > end_date THEN
         RAISE EXCEPTION 'Start date cannot be later than end date.';
     END IF;
 

@@ -22,6 +22,14 @@ DECLARE
     refund_amt          DEC(64,2);
     package_credit      INTEGER;
 BEGIN
+    /* Check for NULLs in arguments */
+    IF customer_id IS NULL
+        OR course_id IS NULL
+        OR offering_launch_date IS NULL
+    THEN
+        RAISE EXCEPTION 'Arguments to cancel_registration() cannot contain NULL values.';
+    END IF;
+
     SELECT e.enroll_date, e.session_id, e.table_name INTO enroll_date, session_id, enrolment_table
     FROM Enrolment e
     WHERE customer_id = e.customer_id AND course_id = e.course_id AND offering_launch_date = e.offering_launch_date;

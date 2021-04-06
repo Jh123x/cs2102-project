@@ -24,7 +24,7 @@ DECLARE
             SELECT 1 FROM Sessions s
             WHERE s.room_id = r.room_id
                 AND (r_session_start_hour <= s.session_start_hour AND s.session_start_hour < end_hour)
-                AND (s.session_start_hour <= session_start_hour AND session_start_hour < s.session_end_hour)
+                OR (s.session_start_hour <= session_start_hour AND session_start_hour < s.session_end_hour)
         ));
     rec RECORD;
 BEGIN

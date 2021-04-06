@@ -19,9 +19,9 @@
 
 DROP FUNCTION IF EXISTS get_available_instructors CASCADE;
 CREATE OR REPLACE FUNCTION get_available_instructors (
-    course_id INTEGER,
-    start_date DATE,
-    end_date DATE
+    course_id_arg INTEGER,
+    start_date_arg DATE,
+    end_date_arg DATE
 )
 RETURNS TABLE (
     r_employee_id INTEGER,
@@ -37,36 +37,49 @@ DECLARE
         FROM Employees e
         NATURAL JOIN Specializes s
         NATURAL JOIN Courses c
-    ) ORDER BY employee_id ASC;
+        WHERE c.course_id = course_id_arg
+        ORDER BY e.employee_id ASC
+    );
     r RECORD;
     cur_date DATE;
     hour INTEGER;
     work_hours INTEGER[] := ARRAY[9,10,11,14,15,16,17];
 
 BEGIN
+    /* Check for NULLs in arguments */
+    IF course_id_arg IS NULL
+        OR start_date_arg IS NULL
+        OR end_date_arg IS NULL
+    THEN
+        RAISE EXCEPTION 'Arguments to get_available_instructors() cannot contain NULL values.';
+    ELSIF start_date_arg > end_date_arg THEN
+        RAISE EXCEPTION 'Start date should not be later than end date.';
+    END IF;
+
     OPEN curs;
     LOOP
         FETCH curs INTO r;
         EXIT WHEN NOT FOUND;
 
-        cur_date := start_date;
+        cur_date := start_date_arg;
         LOOP
-            EXIT WHEN cur_date > end_date;
+            EXIT WHEN cur_date > end_date_arg;
 
             day := cur_date;
             r_employee_id := r.employee_id;
             name := r.employee_name;
+            available_hours := '{}';
 
             /* requirement: total number of teaching hours that the instructor has been assigned for this month */
             /* assuming that this month refers to the day in this row */
-            SELECT COALESCE(SUM(s.session_end_hour - s.session_start_hour), 0) INTO total_teaching_hours FROM Sessions s
-                    WHERE s.instructor_id = r.employee_id
+            SELECT COALESCE(SUM(s.session_end_hour - s.session_start_hour), 0) INTO total_teaching_hours
+            FROM Sessions s
+                WHERE s.instructor_id = r.employee_id
                     AND EXTRACT(MONTH FROM s.session_date) = EXTRACT(MONTH FROM cur_date);
-            available_hours := '{}';
 
             FOREACH hour IN ARRAY work_hours LOOP
                 IF r_employee_id IN
-                    (SELECT employee_id FROM find_instructors(course_id, cur_date, hour)) THEN
+                    (SELECT employee_id FROM find_instructors(course_id_arg, cur_date, hour)) THEN
                     available_hours := array_append(available_hours, hour);
                 END IF;
             END LOOP;

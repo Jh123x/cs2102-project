@@ -114,6 +114,12 @@ DECLARE
     buy_num_remaining_redemptions INTEGER;
     redeemed_sessions JSON;
 BEGIN
+    /* Check for NULLs in arguments */
+    IF customer_id_arg IS NULL
+    THEN
+        RAISE EXCEPTION 'Arguments to get_my_course_package() cannot contain NULL values.';
+    END IF;
+
     IF customer_has_course_packages(customer_id_arg) IS NOT TRUE
     THEN
         RAISE NOTICE 'Customer % has not purchased any course packages.', customer_id_arg;

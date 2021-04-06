@@ -25,6 +25,12 @@ RETURNS TABLE(
     course_duration INTEGER
 ) AS $$
 BEGIN
+    /* Check for NULLs in arguments */
+    IF customer_id IS NULL
+    THEN
+        RAISE EXCEPTION 'Arguments to get_my_registrations() cannot contain NULL values.';
+    END IF;
+
     RETURN QUERY (
         WITH CourseRegistrations(session_id, offering_launch_date, course_id) AS (
             SELECT Registers.session_id, Registers.offering_launch_date, Registers.course_id

@@ -32,6 +32,20 @@ DECLARE
     new_employee RECORD;
     course_area_name TEXT;
 BEGIN
+    /* Check for NULLs in arguments */
+    IF employee_name IS NULL
+        OR employee_address IS NULL
+        OR employee_phone IS NULL
+        OR employee_email IS NULL
+        OR employee_join_date IS NULL
+        OR employee_category IS NULL
+        OR employee_type IS NULL
+        OR salary_amount IS NULL
+        OR course_area_names IS NULL
+    THEN
+        RAISE EXCEPTION 'Arguments to add_employee() cannot contain NULL values.';
+    END IF;
+
     /* Insert the employee in */
     INSERT INTO Employees
     (employee_name, employee_address, employee_phone, employee_email, employee_join_date)

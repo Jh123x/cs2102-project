@@ -25,8 +25,17 @@ DECLARE
     package_num_free_registrations INTEGER;
     num_duplicate INTEGER;
     buy_num_remaining_redemptions INTEGER;
-
 BEGIN
+    /* Check for NULLs in arguments */
+    IF offering_launch_date IS NULL
+        OR course_id IS NULL
+        OR session_id IS NULL
+        OR customer_id IS NULL
+        OR payment_method IS NULL
+    THEN
+        RAISE EXCEPTION 'Arguments to register_session() cannot contain NULL values.';
+    END IF;
+
     SELECT o.credit_card_number, o.credit_card_expiry_date INTO credit_card_number, credit_card_expiry_date
     FROM Owns o
     WHERE o.cust_id = cust_id;

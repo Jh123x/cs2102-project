@@ -46,6 +46,17 @@ DECLARE
     r_capacity INTEGER;
     temp INTEGER;
 BEGIN
+    /* Check for NULLs in arguments */
+    IF launch_date IS NULL
+        OR fees IS NULL
+        OR sessions_arr IS NULL
+        OR registration_deadline IS NULL
+        OR off_course_id IS NULL
+        OR off_admin_id IS NULL
+    THEN
+        RAISE EXCEPTION 'Arguments to add_course_offering() cannot contain NULL values.';
+    END IF;
+
     /*Extracting the start date and end date*/
     SELECT MIN(session_date) INTO off_start_date FROM unnest(sessions_arr);
     SELECT MAX(session_date) INTO off_end_date FROM unnest(sessions_arr);

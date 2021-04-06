@@ -19,6 +19,14 @@ CREATE OR REPLACE FUNCTION get_session_num_remaining_seats (
 DECLARE
     num_remaining_seats INTEGER;
 BEGIN
+    /* Check for NULLs in arguments */
+    IF session_id_arg IS NULL
+        OR offering_launch_date_arg IS NULL
+        OR course_id_arg IS NULL
+    THEN
+        RAISE EXCEPTION 'Arguments to get_session_num_remaining_seats() cannot contain NULL values.';
+    END IF;
+
     WITH Registrations AS (
         SELECT COUNT(r.register_date) AS num_registered
         FROM Registers r

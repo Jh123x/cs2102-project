@@ -32,6 +32,13 @@ CREATE OR REPLACE FUNCTION remove_employee (
 ) RETURNS VOID
 AS $$
 BEGIN
+    /* Check for NULLs in arguments */
+    IF employee_id_arg IS NULL
+        OR employee_depart_date_arg IS NULL
+    THEN
+        RAISE EXCEPTION 'Arguments to remove_employee() cannot contain NULL values.';
+    END IF;
+
     /* The below conditions needs changing; need to check if it's managing a course offering/session AFTER departure date */
     IF employee_id_arg NOT IN (SELECT employee_id FROM Employees)
     THEN

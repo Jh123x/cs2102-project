@@ -25,6 +25,19 @@ DECLARE
     new_package RECORD;
     session_offering_registration_deadline DATE;
 BEGIN
+    /* Check for NULLs in arguments */
+    IF session_course_id IS NULL
+        OR session_offering_launch_date IS NULL
+        OR session_number IS NULL
+        OR session_date IS NULL
+        OR session_start_hour IS NULL
+        OR session_end_hour IS NULL
+        OR instructor_id IS NULL
+        OR room_id IS NULL
+    THEN
+        RAISE EXCEPTION 'Arguments to add_session() cannot contain NULL values.';
+    END IF;
+
     session_id := session_number;
 
     IF EXISTS(
