@@ -1,9 +1,121 @@
 import unittest
 from . import BaseTest
 from unittest import expectedFailure
+from psycopg2.errors import RaiseException
 
 
 class ZGetAvailableCourseOfferings(BaseTest, unittest.TestCase):
+    # pass
+    def _add_manager(self, name: str, areas: tuple):
+        """Add a manager to the table with an area"""
+        args = (
+            name,
+            "address",
+            "123456789",
+            "test@test.com",
+            "2020-05-03",
+            "Manager",
+            "Full-time",
+            "20.5",
+            self.process_arr_args(areas),
+        )
+        query = self.generate_query("add_employee", args)
+        res = self.execute_query(query)
+        assert len(res) > 0, "Manager not added successfully"
+        return res[0][0]
+
+    def _add_instructor(self, name: str, time: str, areas: tuple):
+        """Add an instructor to a table"""
+        args = (
+            name,
+            "address",
+            "123456789",
+            "test@test.com",
+            "2020-05-03",
+            "Instructor",
+            time,
+            "20.5",
+            self.process_arr_args(areas),
+        )
+        query = self.generate_query("add_employee", args)
+        res = self.execute_query(query)
+        assert len(res) > 0, "Instructor not added successfully"
+        return res[0][0]
+
+    def _add_course(self, name: str, area: str):
+        """Add a course to the table
+        course title, course description, course area, and duration
+        """
+        args = (name, "Description", area, "4")
+        query = self.generate_query("add_course", args)
+        res = self.execute_query(query)
+        assert len(res) == 1, "Course is not added successfully"
+        return res[0][0]
+
+    def _add_admin(self, name: str):
+        """Add an admin into the table"""
+        args = (
+            name,
+            "address",
+            "123456789",
+            "test@test.com",
+            "2020-05-03",
+            "Admin",
+            "Full-time",
+            "20.5",
+        )
+        query = self.generate_query("add_employee", args)
+        res = self.execute_query(query)
+        assert len(res) > 0, "Admin not added successfully"
+        return res[0][0]
+
+    def add_rooms(self):
+        """Add 2 rooms into the db"""
+        # Add rooms
+        query = f"INSERT INTO Rooms VALUES('1', 'Room1', '20') RETURNING room_id"
+        self.rid = self.execute_query(query)[0][0]
+
+        query = f"INSERT INTO Rooms VALUES('2', 'Room2', '20') RETURNING room_id"
+        self.rid1 = self.execute_query(query)[0][0]
+    
+   
+    def setUp(self) -> None:
+
+        # Add Rooms
+        self.add_rooms()
+
+        # Add Manager
+        self.manager_id = self._add_manager("Manager1", ("Database",))
+        self.manager_id1 = self._add_manager("Manager2", ("Network",))
+
+        # Add admin
+        self.admin_id = self._add_admin("Admin1")
+
+        # Add courses
+        self.course_id = self._add_course("Database", "Database")
+        self.course_id1 = self._add_course("Network", "Network")
+        self.course_id2 = self._add_course("PSQL", "Database")
+
+        self.instructor_ids = {}
+        specialization = (("Database",), ("Network",))
+        part_full_time = ("Part-Time", "Full-time")
+        for index in range(3):
+            spec = specialization[index % len(specialization)]
+            t = part_full_time[index % 2]
+            self.instructor_ids[index] = self._add_instructor(
+                f"Instructor{index}", t, spec
+            )
+        return super().setUp()
+
+    def make_session_array(self, rows:list):
+        def wrapper(tup: tuple):
+            acc = ['row(']
+            acc.append(", ".join(map(lambda ele: f"'{ele}'", tup)))
+            acc.append(')::session_information')
+            return ''.join(acc)
+        res = f"ARRAY[{', '.join(map(wrapper, rows))}]"
+        return res
+
     def test_no_course_offering_available(self):
         """No offering available should return empty list"""
         q = self.generate_query("get_available_course_offerings", ())
@@ -11,15 +123,30 @@ class ZGetAvailableCourseOfferings(BaseTest, unittest.TestCase):
 
         assert len(res) == 0, "No course offering available should return empty table"
 
-    @expectedFailure
-    def test_course_offering_over(self):
+    
+    def test_course_offering_available_1(self):
         """All course offerings are over"""
-        raise NotImplementedError("Test is not implemented")
+
+        query = f"INSERT INTO CourseOfferings VALUES('2021-03-14'::DATE,100.00,'2021-05-01'::DATE,20,20,"+ str(self.course_id)+", "+ str(self.admin_id)+",'2021-05-14'::DATE,'2021-06-14'::DATE) RETURNING offering_launch_date,offering_registration_deadline "
+
+        self.launch_date = self.execute_query(query)
+        print(self.launch_date)
+        q = self.generate_query("get_available_course_offerings", ())
+        res = self.execute_query(q)
+        print (res)
+        assert len(res) == 1, "1 course offering return"
+
 
     @expectedFailure
     def test_course_offering_avail(self):
         """All course offering are available"""
+
         raise NotImplementedError("Test is not implemented")
+        
+        
+
+
+
 
     @expectedFailure
     def test_course_offering_half_avail(self):
