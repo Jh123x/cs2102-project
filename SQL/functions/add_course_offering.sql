@@ -59,19 +59,23 @@ BEGIN
         RAISE EXCEPTION 'Arguments to add_course_offering() cannot contain NULL values.';
     END IF;
 
-    /*Extracting the start date and end date*/
-    SELECT MIN(session_date) INTO off_start_date FROM unnest(sessions_arr);
-    SELECT MAX(session_date) INTO off_end_date FROM unnest(sessions_arr);
-
+    /*Check if there is atleast in the array*/
     SELECT COUNT(*) INTO num_sessions FROM unnest(sessions_arr);
-    SELECT cu.course_duration INTO course_duration FROM Courses cu WHERE off_course_id = cu.course_id;
-    missing_instructor := FALSE;
-    r_capacity := 0;
-
     IF (num_sessions < 1) THEN
         RAISE EXCEPTION 'There needs to to be at least 1 session';
     END IF;
 
+
+    /*Extracting the start date and end date*/
+    SELECT MIN(session_date) INTO off_start_date FROM unnest(sessions_arr);
+    SELECT MAX(session_date) INTO off_end_date FROM unnest(sessions_arr);
+
+   
+    SELECT cu.course_duration INTO course_duration FROM Courses cu WHERE off_course_id = cu.course_id;
+    missing_instructor := FALSE;
+    r_capacity := 0;
+
+  
     /*Checking the conditions of course offering*/
     IF (launch_date > registration_deadline) THEN
         RAISE EXCEPTION 'Offering registration date cannot be earlier than launch date';
