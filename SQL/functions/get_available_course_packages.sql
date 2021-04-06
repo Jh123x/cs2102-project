@@ -15,14 +15,6 @@ RETURNS TABLE(
     package_price DEC(64,2)
 ) AS $$
 BEGIN
-    /* Check for NULLs in arguments */
-    IF package_name IS NULL
-        OR package_num_free_registrations IS NULL
-        OR package_sale_end_date IS NULL
-        OR package_price IS NULL
-    THEN
-        RAISE EXCEPTION 'Arguments to get_available_course_packages() cannot contain NULL values.';
-    END IF;
 
     RETURN QUERY (
         SELECT cp.package_name, cp.package_num_free_registrations, cp.package_sale_end_date, cp.package_price
