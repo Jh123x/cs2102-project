@@ -28,8 +28,9 @@ DECLARE
     mm_count INTEGER;
     cur_date DATE;
 BEGIN
-    IF N <= 0 THEN
-        RAISE EXCEPTION 'Monthly summary report can only be generated if the number of months supplied is more than 0.';
+    IF N IS NULL OR N <= 0
+    THEN
+        RAISE EXCEPTION 'Number of months supplied to generate monthly summary report for must be an integer more than 0.';
     END IF;
 
     mm_count := 0;

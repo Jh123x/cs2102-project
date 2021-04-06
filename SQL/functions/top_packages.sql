@@ -29,6 +29,11 @@ RETURNS TABLE (package_id INTEGER,
 DECLARE
 
 BEGIN
+    IF N IS NULL OR N <= 0
+    THEN
+        RAISE EXCEPTION 'Number of top packages to find must be an integer more than 0.';
+    END IF;
+
     WITH
         /* excluded packages that are not sold */
         PackagesSold AS

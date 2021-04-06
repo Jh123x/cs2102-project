@@ -20,6 +20,16 @@ RETURNS TABLE (package_id INTEGER) AS $$
 DECLARE
     new_package RECORD;
 BEGIN
+    /* Check for NULLs in arguments */
+    IF package_name IS NULL
+        OR package_num_free_registrations IS NULL
+        OR package_sale_start_date IS NULL
+        OR package_sale_end_date IS NULL
+        OR package_price IS NULL
+    THEN
+        RAISE EXCEPTION 'Arguments to add_course_package() cannot contain NULL values.';
+    END IF;
+
     INSERT INTO CoursePackages
     (package_sale_start_date, package_num_free_registrations, package_sale_end_date, package_name, package_price)
     VALUES

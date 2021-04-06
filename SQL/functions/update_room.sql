@@ -41,6 +41,7 @@ DECLARE
     session_end_hour INTEGER;
     available_hours INTEGER[];
 BEGIN
+    /* Check for NULLs in arguments */
     IF offering_launch_date_arg IS NULL
         OR course_id_arg IS NULL
         OR session_id_arg IS NULL
@@ -49,6 +50,7 @@ BEGIN
         RAISE EXCEPTION 'Arguments to update_room() cannot contain NULL values.';
     END IF;
 
+    /* Check if arguments yield a valid session */
     SELECT s.session_date, s.session_start_hour, s.session_end_hour
     INTO session_date, session_start_hour, session_end_hour
     FROM Sessions s

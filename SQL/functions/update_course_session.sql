@@ -19,27 +19,48 @@ DECLARE
     old_session_id      INTEGER;
     enrolment_table     TEXT;
     num_seats_available INTEGER;
-    new_session_count   INTEGER;
 BEGIN
-    SELECT COUNT(*) INTO new_session_count
-    FROM Sessions s
-    WHERE course_id = s.course_id AND offering_launch_date = s.offering_launch_date AND new_session_id = s.session_id;
-
-    IF new_session_count = 0 THEN
-        RAISE EXCEPTION 'Requested new session does not exist.';
+    /* Check for NULLs in arguments */
+    IF customer_id IS NULL
+        OR course_id IS NULL
+        OR offering_launch_date IS NULL
+        OR new_session_id IS NULL
+    THEN
+        RAISE EXCEPTION 'Arguments to update_course_session() cannot contain NULL values.';
     END IF;
 
-    SELECT e.enroll_date, e.session_id, e.table_name INTO enroll_date, old_session_id, enrolment_table
+    /* Check if session identifier supplied exists */
+    IF NOT EXISTS(
+        SELECT s.session_date INTO new_session_count
+        FROM Sessions s
+        WHERE s.course_id = course_id
+            AND s.offering_launch_date = offering_launch_date
+            AND s.new_session_id = session_id
+    ) THEN
+        RAISE EXCEPTION 'Session not found. Check if the session identifier (course_id, offering_launch_date and session_id) are correct.';
+    /* Check if customer identifier supplied exists */
+    ELSIF NOT EXISTS(
+        SELECT c.customer_id FROM Customers c
+    ) THEN
+        RAISE EXCEPTION 'Customer ID not found.';
+    END IF;
+
+    SELECT e.enroll_date, e.session_id, e.table_name
+    INTO enroll_date, old_session_id, enrolment_table
     FROM Enrolment e
-    WHERE customer_id = e.customer_id AND course_id = e.course_id AND offering_launch_date = e.offering_launch_date;
+    WHERE e.customer_id = customer_id
+        AND e.course_id = course_id
+        AND e.offering_launch_date = offering_launch_date;
 
     IF e.enroll_date IS NULL THEN
         RAISE EXCEPTION 'Customer is not registered to any session for this course offering.';
     END IF;
 
-    SELECT r.room_seating_capacity - c.num_enrolled INTO num_seats_available
+    SELECT (r.room_seating_capacity - c.num_enrolled) INTO num_seats_available
     FROM Sessions s NATURAL JOIN Rooms r NATURAL JOIN EnrolmentCount c
-    WHERE course_id = s.course_id AND offering_launch_date = s.offering_launch_date AND new_session_id = s.session_id;
+    WHERE s.course_id = course_id
+        AND s.offering_launch_date = offering_launch_date
+        AND s.new_session_id = session_id;
 
     IF num_seats_available = 0 THEN
         RAISE EXCEPTION 'Customer cannot change to this session because there are no seats remaining in the room.';

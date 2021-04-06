@@ -13,17 +13,26 @@ DECLARE
     package_sale_start_date         DATE;
     package_sale_end_date           DATE;
     package_num_free_registrations  INTEGER;
-    credit_card_number            CHAR(16);
+    credit_card_number              CHAR(16);
 BEGIN
+    /* Check for NULLs in arguments */
+    IF customer_id_arg IS NULL
+        OR package_id_arg IS NULL
+    THEN
+        RAISE EXCEPTION 'Arguments to buy_course_package() cannot contain NULL values.';
+    END IF;
+
     /* Select last owned credit card of customer */
     SELECT o.credit_card_number INTO credit_card_number
     FROM Owns o
+    NATURAL JOIN CreditCards cc
     WHERE o.customer_id = customer_id_arg
+        AND cc.credit_card_expiry_date >= CURRENT_DATE
     ORDER BY o.own_from_date DESC
     LIMIT 1;
-    
+
     IF credit_card_number IS NULL THEN
-        RAISE EXCEPTION 'There is no credit card found for customer. Check if customer_id supplied (%) is valid.', customer_id_arg;
+        RAISE EXCEPTION 'No valid credit card found for customer. Check if credit card for customer_id supplied (%) is valid (e.g. it has not expired).', customer_id_arg;
     END IF;
 
     /* Check if customer has an active/partially active package now */

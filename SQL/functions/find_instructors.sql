@@ -10,12 +10,29 @@
 */
 DROP FUNCTION IF EXISTS find_instructors CASCADE;
 CREATE OR REPLACE FUNCTION find_instructors (
-    r_course_id INTEGER,
-    r_session_date DATE,
-    r_session_start_hour INTEGER
+    course_id_arg INTEGER,
+    session_date_arg DATE,
+    session_start_hour_arg INTEGER
 )
 RETURNS TABLE (employee_id INTEGER, employee_name TEXT) AS $$
 BEGIN
+    /* Check for NULLs in arguments */
+    IF course_id_arg IS NULL
+        OR session_date_arg IS NULL
+        OR session_start_hour_arg IS NULL
+    THEN
+        RAISE EXCEPTION 'Arguments to find_instructors() cannot contain NULL values.';
+    END IF;
+
+    /* Check if course_id supplied is valid */
+    IF NOT EXISTS(
+        SELECT c.course_id FROM Courses c
+        WHERE c.course_id = course_id_arg
+    ) THEN
+        RAISE EXCEPTION 'Course ID not found.';
+    END IF;
+    /* Todo: Validate session_date and session_start_hour to ensure > current time? */
+
     /*
     * requirements:
     * - must be specialized in that area
@@ -33,21 +50,22 @@ BEGIN
         WHERE NOT EXISTS (
                 SELECT 1
                 FROM Sessions s
-                WHERE s.session_date = r_session_date
-                    AND s.course_id = r_course_id
+                WHERE s.session_date = session_date_arg
+                    AND s.course_id = course_id_arg
                     AND s.instructor_id = e.employee_id
-                    AND (s.session_start_hour <= r_session_start_hour AND r_session_start_hour <= session_end_hour)
+                    AND s.session_start_hour <= session_start_hour_arg
+                    AND session_start_hour_arg <= session_end_hour
             )
             AND (
                 SELECT COALESCE(SUM(session_end_hour - session_start_hour), 0)
                 FROM Sessions s
                 WHERE s.instructor_id = e.employee_id
-                    AND EXTRACT(MONTH FROM r_session_date) = EXTRACT(MONTH FROM CURRENT_DATE)
+                    AND EXTRACT(MONTH FROM session_date_arg) = EXTRACT(MONTH FROM CURRENT_DATE)
             ) < 30
             AND sp.course_area_name = (
                 SELECT course_area_name
                 FROM Courses
-                WHERE r_course_id = course_id
+                WHERE course_id = course_id_arg
             )
     );
 END;

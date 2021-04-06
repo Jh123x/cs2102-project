@@ -18,6 +18,15 @@ RETURNS TABLE (course_id INTEGER) AS $$
 DECLARE
     new_course RECORD;
 BEGIN
+    /* Check for NULLs in arguments */
+    IF course_title IS NULL
+        OR course_description IS NULL
+        OR course_area_name IS NULL
+        OR course_duration IS NULL
+    THEN
+        RAISE EXCEPTION 'Arguments to add_course() cannot contain NULL values.';
+    END IF;
+
     INSERT INTO Courses
     (course_title, course_description, course_duration, course_area_name)
     VALUES

@@ -30,6 +30,7 @@ BEGIN
     SELECT o.credit_card_number, o.credit_card_expiry_date INTO credit_card_number, credit_card_expiry_date
     FROM Owns o
     WHERE o.cust_id = cust_id;
+
     IF (payment_method = 'Redemption') THEN
         SELECT COALESCE(b.buy_date, NULL), COALESCE(b.package_id, NULL) ,COALESCE(b.buy_num_remaining_redemptions, NULL) INTO buy_date, package_id, buy_num_remaining_redemptions
         FROM Buys b

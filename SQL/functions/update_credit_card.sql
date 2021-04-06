@@ -13,6 +13,22 @@ CREATE OR REPLACE FUNCTION update_credit_card (
 ) RETURNS VOID
 AS $$
 BEGIN
+    /* Check for NULLs in arguments */
+    IF customer_id IS NULL
+        OR credit_card_number IS NULL
+        OR credit_card_cvv IS NULL
+        OR credit_card_expiry_date IS NULL
+    THEN
+        RAISE EXCEPTION 'Arguments to update_credit_card() cannot contain NULL values.';
+    END IF;
+
+    /* Deny adding expired credit cards, but accept credit card if it will expire by end of today. */
+    /* => validity of credit cards will be checked upon making any purchases. */
+    IF credit_card_expiry_date < CURRENT_DATE
+    THEN
+        RAISE EXCEPTION 'Cannot add a credit card that had already expired.';
+    END IF;
+
     INSERT INTO CreditCards
     (credit_card_number, credit_card_cvv, credit_card_expiry_date)
     VALUES
