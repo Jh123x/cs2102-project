@@ -1,5 +1,6 @@
 import unittest
 import datetime
+from unittest.case import expectedFailure
 from . import BaseTest
 
 
@@ -152,11 +153,12 @@ class IGetAvailableInstrutors(BaseTest, unittest.TestCase):
 
     def test_get_none_available_instructor_success(self) -> None:
         """Get behavior when there is only 1 available instructor"""
-        args = ("1", "2020-04-04", "2020-04-06")
+        args = (str(self.course_id1), "2020-04-04", "2020-04-06")
         query = self.generate_query("get_available_instructors", args)
         res = self.execute_query(query)
-        assert len(res) == 0
+        assert len(res) == 0, f"Number of instructors is incorrect {res}"
 
+    @expectedFailure
     def test_get_one_available_instructors_success(self) -> None:
         """Get available instructors when there is only 1 that is available"""
-        pass
+        raise NotImplementedError("Have not implement the test yet")
