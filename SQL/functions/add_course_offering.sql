@@ -6,6 +6,7 @@
         course fees,
         launch date,
         registration deadline,
+        target number of registrations,
         administrator's identifier,and
         information for each session (session date, session start hour, and room identifier).
     If the input course offering information is valid, the routine will assign instructors for the sessions.
@@ -29,6 +30,7 @@ CREATE OR REPLACE FUNCTION add_course_offering (
     fees NUMERIC,
     sessions_arr session_information ARRAY,
     registration_deadline DATE,
+    num_target_registration INTEGER,
     off_course_id INTEGER,
     off_admin_id INTEGER
 )
@@ -67,7 +69,7 @@ BEGIN
     r_capacity := 0;
 
     IF (num_sessions < 1) THEN
-        RAISE EXCEPTION 'There needs to to be atleast 1 sessions';
+        RAISE EXCEPTION 'There needs to to be at least 1 session';
     END IF;
 
     /*Checking the conditions of course offering*/
@@ -75,15 +77,10 @@ BEGIN
         RAISE EXCEPTION 'Offering registration date cannot be earlier than launch date';
     END IF ;
     
-    IF (seating_capacity < num_target_registration) THEN
-        RAISE EXCEPTION 'Offering seating capacity cannot be less than number of target registration';
-    END IF ;
-    
     IF (num_target_registration < 0) THEN
         RAISE EXCEPTION 'Offering target registration should be more than or equal to 0';
-    
     END IF ;
-    
+
     IF (off_start_date > off_end_date) THEN
         RAISE EXCEPTION 'Offering end date cannot be earlier than start date';
 
@@ -101,12 +98,13 @@ BEGIN
         SELECT r_employee_id INTO instructor_id FROM get_available_instructors(off_course_id,sessions_arr[counter].session_date,sessions_arr[counter].session_date) LIMIT 1;
         IF (instructor_id = NULL) THEN
             missing_instructor := TRUE;
+            EXIT; /* End the loop once there is a missing instructor*/
         END IF;
         session_end_hour := sessions_arr[counter].session_start_hour + course_duration;
-        IF ((sessions_arr[counter].session_start_hour >= 9 AND sessions_arr[counter].session_start_hour < 12 AND session_end_hour > 12) OR sessions_arr[counter].session_start_hour > 18 OR session_end_hour > 18 OR sessions_arr[counter].session_start_hour < 9)THEN
+        IF (sessions_arr[counter].session_start_hour >= 9 AND sessions_arr[counter].session_start_hour < 12 AND session_end_hour > 12) OR (sessions_arr[counter].session_start_hour > 18 OR session_end_hour > 18 OR sessions_arr[counter].session_start_hour < 9)THEN
             RAISE EXCEPTION 'Session time is out of range';
         END IF;
-        IF(to_char(sessions_arr[counter].session_date, 'Dy') = 'Sat' OR to_char(sessions_arr[counter].session_date, 'Dy') = 'Sun') THEN
+        IF (to_char(sessions_arr[counter].session_date, 'Dy') in ('Sat', 'Sun')) THEN
             RAISE EXCEPTION 'Can only have class from Mon - Fri';
         END IF;
         IF sessions_arr[counter].room_id NOT IN (SELECT rid FROM find_rooms(sessions_arr[counter].session_date,sessions_arr[counter].session_start_hour, course_duration)) THEN
@@ -120,6 +118,10 @@ BEGIN
 
     IF (missing_instructor = TRUE) THEN
         RAISE EXCEPTION 'Offering does not have enough instructors for sessions';
+    END IF;
+
+    IF (r_capacity < num_target_registration) THEN
+        RAISE EXCEPTION 'Capacity is less than target number of registration';
     END IF;
 
     /*Inserting into course offering*/
