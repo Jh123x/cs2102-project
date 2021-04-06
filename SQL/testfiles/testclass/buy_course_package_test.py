@@ -42,15 +42,15 @@ class ZBuyCoursePackageTest(BaseTest, unittest.TestCase):
 
         # Check if it is in the Buys table
         query = f'SELECT * FROM Buys WHERE package_id = {self.package_id}'
+        today = datetime.datetime.now()
         res = self.execute_query(query)
         assert len(res) == 1, "Incorrect number of bought packages reported"
-        today = datetime.datetime.combine(
-            datetime.datetime.now().date(), datetime.time(0))
-        assert res == [(today, 10, self.package_id, self.customer_id,
-                        '1234123412341234')], "The package added is incorrect"
+        exp = [(today, 10, self.package_id, self.customer_id,'1234123412341234')]
+        assert res[0][1:] == exp[0][1:], f"The package added is incorrect {res}\n{exp}"
+        assert self.time_cmp(exp[0][0],res[0][0]), f"Date time diff is too big {exp}\nResult: {res}"
 
     def test_buy_same_package_2_times_more_than_0_redemp_val_fail(self):
-        """Buy the same pacakge 2 times"""
+        """Buy the same package 2 times"""
         # Buy a package
         self.test_buy_success()
 
@@ -62,9 +62,6 @@ class ZBuyCoursePackageTest(BaseTest, unittest.TestCase):
 
     def test_buy_same_package_2_times_equal_0_redemp_val_same_day_fail(self):
         """Buy the same package 2 times but they have 0 value each"""
-        # Const
-        today = datetime.datetime.combine(
-            datetime.datetime.now().date(), datetime.time(0))
 
         # Create another course_package
         args = ('Best Package 2', '0', '2020-04-20', '2023-04-20', '200')
@@ -78,11 +75,13 @@ class ZBuyCoursePackageTest(BaseTest, unittest.TestCase):
 
         # Check if the package is in buys
         query = f'SELECT * FROM Buys WHERE package_id = {package_id}'
+        today = datetime.datetime.now()
         res = self.execute_query(query)
         assert len(res) == 1, "Incorrect number of bought packages reported"
         expected = [
             (today, 0, package_id, self.customer_id, '1234123412341234')]
-        assert res == expected, f"The package added is incorrect {res}: {expected}"
+        assert res[0][1:] == expected[0][1:], f"The package added is incorrect {res}: {expected}"
+        assert self.time_cmp(expected[0][0], res[0][0])
 
         # Buy it again
         query = self.generate_query('buy_course_package', args)
@@ -107,9 +106,6 @@ class ZBuyCoursePackageTest(BaseTest, unittest.TestCase):
 
     def test_buy_different_package_while_no_active(self):
         """Test if buying a package while there are no active packages will succeed"""
-        # Constants
-        today = datetime.datetime.combine(
-            datetime.datetime.now().date(), datetime.time(0))
 
         # Create another course_package with 0 redemptions
         args = ('Best Package 2', '0', '2020-04-03', '2023-04-20', '200')
@@ -140,9 +136,11 @@ class ZBuyCoursePackageTest(BaseTest, unittest.TestCase):
 
         # Check if new package is in the buys table
         query = f'SELECT * FROM Buys WHERE package_id = {self.package_id}'
+        today = datetime.datetime.now()
         res = self.execute_query(query)
         assert len(
             res) == 1, f"Incorrect number of bought packages reported {res}"
         expected = [(today, 10, self.package_id,
                      self.customer_id, '1234123412341234')]
-        assert res == expected, f"The package added is incorrect {res} : {expected}"
+        assert res[0][1:] == expected[0][1:], f"The package added is incorrect {res} : {expected}"
+        assert self.time_cmp(expected[0][0], res[0][0]), f"Date time diff is too big {res} : {expected}"

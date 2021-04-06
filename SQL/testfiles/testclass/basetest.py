@@ -110,4 +110,14 @@ class BaseTest(object):
         query = self.generate_query('add_course_package', args)
         return self.execute_query(query)[0][0]
 
+    def _buy_package(self, customer_id:int, package_id:int) -> int:
+        """Customer buys package"""
+        q = self.generate_query('buy_course_package', (str(customer_id), str(package_id)))
+        return self.execute_query(q)
+
+    def time_cmp(self, time1: datetime.datetime, time2: datetime.datetime) -> bool:
+        """Compare timestamps to see if they are close enough"""
+        return time1 - time2 < datetime.timedelta(seconds = 0.5)
+
+
 
