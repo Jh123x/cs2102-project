@@ -1,3 +1,5 @@
+import datetime
+
 def parse_args(arg: str):
     if '::' in arg or '[' in arg:
         return arg
@@ -8,6 +10,7 @@ class BaseTest(object):
     DB = None
     CURSOR = None
     ERR_MSG = "Expected: %s\nActual: %s"
+    TODAY = datetime.datetime.now().date()
 
     def tearDown(self) -> None:
         """Tear down after each test case"""
@@ -100,4 +103,11 @@ class BaseTest(object):
         args = (name, addr, str(phone), email, credit_card_no, cvv, card_expiry_date)
         query = self.generate_query('add_customer', args)
         return self.execute_query(query)[0][0]
+
+    def _add_course_package(self, pkg_name:str, no_redemptions: int, offer_start_date:str, offer_end_date:str, cost:int):
+        """Add a course package"""
+        args = (pkg_name, str(no_redemptions), offer_start_date, offer_end_date, str(cost))
+        query = self.generate_query('add_course_package', args)
+        return self.execute_query(query)[0][0]
+
 
