@@ -1,6 +1,3 @@
-import psycopg2.errors
-
-
 def parse_args(arg: str):
     if '::' in arg or '[' in arg:
         return arg
@@ -58,9 +55,38 @@ class BaseTest(object):
         else:
             raise AssertionError(msg)
 
-    def _add_person(self, role: str, course_areas: list = 'ARRAY[]::TEXT[]') -> None:
+    def _add_person(self, role: str, course_areas: list = 'ARRAY[]::TEXT[]') -> int:
         """Add a manager into the table"""
         args = ["John", "address", '987654321', 'test@test.com',
                 '2020-05-03', role, "full-time", '10.5', str(course_areas)]
-        manager_query = self.generate_query("add_employee", tuple(args))
-        self.execute_query(manager_query)
+        query = self.generate_query("add_employee", tuple(args))
+        return self.execute_query(query)
+
+    def _add_course(self, category:str, duration:int) -> int:
+        """Adds a course into the table
+            returns the course id
+        """
+        args = ("Database Systems", "Test description", category, str(duration))
+        q = self.generate_query('add_course', args)
+        return self.generate_query(q)
+
+    def make_session_array(self, rows:list):
+        def wrapper(tup: tuple):
+            acc = ['row(']
+            acc.append(", ".join(map(lambda ele: f"'{ele}'", tup)))
+            acc.append(')::session_information')
+            return ''.join(acc)
+        res = f"ARRAY[{', '.join(map(wrapper, rows))}]"
+        return res
+
+    def _add_course_offering(self, launch_date:str, fees:int, session_array:list, reg_deadline:str, target_num:int, course_id:int, admin_id:int):
+        """Add a course offering"""
+        args = (launch_date, str(fees), self.make_session_array(session_array), reg_deadline, str(target_num), str(course_id), str(admin_id))
+        q = self.generate_query('add_course_offering', args)
+        res = self.execute_query(q)
+        return res
+
+    def _add_room(self, room_id:int, room_name:str, room_capacity:int):
+        query = f"INSERT INTO Rooms VALUES('{room_id}', '{room_name}', '{room_capacity}') RETURNING room_id"
+        return self.execute_query(query)[0][0]
+
