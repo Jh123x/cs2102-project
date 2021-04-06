@@ -11,7 +11,7 @@ class ZBuyCoursePackageTest(BaseTest, unittest.TestCase):
         """Extended setup for the class"""
         # Create a customer
         args = ("Invoker", "address here", "987354312",
-                "test@test.com", '1234123412341234', '123', '2020-04-20')
+                "test@test.com", '1234123412341234', '123', '2025-04-20')
         query = self.generate_query('add_customer', args)
         self.customer_id = self.execute_query(query)[0][0]
 

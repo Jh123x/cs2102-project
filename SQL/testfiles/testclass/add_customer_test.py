@@ -6,7 +6,7 @@ from psycopg2.errors import UniqueViolation, CheckViolation, InvalidTextRepresen
 class DAddCustomerTest(BaseTest, unittest.TestCase):
     def setUp(self) -> None:
         self.args = ["Invoker", "address here", "987354312",
-                "test@test.com", '1234123412341234', '123', '2020-04-20']
+                "test@test.com", '1234123412341234', '123', '2025-04-20']
         return super().setUp()
 
     def test_add_customer_success(self):
