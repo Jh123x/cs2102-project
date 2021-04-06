@@ -18,13 +18,13 @@ CREATE OR REPLACE FUNCTION register_session (
 AS $$
 DECLARE
     credit_card_number CHAR(16);
-    buy_date DATE;
+    buy_date_arg DATE;
     package_name TEXT;
-    package_id INTEGER;
+    package_id_arg INTEGER;
     package_num_free_registrations INTEGER;
     num_red_duplicate INTEGER;
     num_reg_duplicate INTEGER;
-    buy_num_remaining_redemptions INTEGER;
+    buy_num_remaining_redemptions_arg INTEGER;
 BEGIN
     /* Check for NULLs in arguments */
     IF offering_launch_date IS NULL
@@ -54,27 +54,27 @@ BEGIN
     END IF;
 
     IF (payment_method = 'Redemption') THEN        
-        SELECT b.buy_date, b.package_id ,b.buy_num_remaining_redemptions INTO buy_date, package_id, buy_num_remaining_redemptions
+        SELECT b.buy_date, b.package_id ,b.buy_num_remaining_redemptions INTO buy_date_arg, package_id_arg, buy_num_remaining_redemptions_arg
         FROM Buys b
         WHERE b.customer_id = customer_id_arg
         AND b.buy_num_remaining_redemptions >= 1
-        ORDER BY buy_num_remaining_redemptions ASC
+        ORDER BY b.buy_num_remaining_redemptions ASC
         LIMIT 1;
     END IF;
 
-    IF (package_id IS NULL AND payment_method = 'Redemption') THEN
+    IF (package_id_arg IS NULL AND payment_method = 'Redemption') THEN
         RAISE EXCEPTION 'No active packages!';
     END IF;
 
-    IF (package_id IS NOT NULL AND payment_method = 'Redemption') THEN
-        UPDATE Buys b
-        SET b.buy_num_remaining_redemptions = buy_num_remaining_redemptions-1
-        WHERE b.customer_id = customer_id_arg
-        AND b.package_id = package_id
-        AND b.buy_date = buy_date;
+    IF (package_id_arg IS NOT NULL AND payment_method = 'Redemption') THEN
+        UPDATE Buys
+        SET buy_num_remaining_redemptions =  buy_num_remaining_redemptions_arg-1
+        WHERE customer_id = customer_id_arg
+        AND package_id = package_id_arg
+        AND buy_date = buy_date_arg;
 
         INSERT INTO Redeems
-        VALUES(CURRENT_DATE, customer_id_arg,package_id,session_id_arg,offering_launch_date,course_id);
+        VALUES(CURRENT_TIMESTAMP, buy_date_arg,session_id_arg,offering_launch_date,course_id_arg);
     END IF;
 
     SELECT o.credit_card_number INTO credit_card_number
@@ -97,7 +97,7 @@ BEGIN
 
     IF(payment_method = 'Credit Card') THEN
         INSERT INTO Registers(register_date, customer_id, credit_card_number, session_id, offering_launch_date, course_id)
-        VALUES (CURRENT_DATE, customer_id_arg, credit_card_number, session_id_arg, offering_launch_date, course_id_arg);
+        VALUES (CURRENT_TIMESTAMP, customer_id_arg, credit_card_number, session_id_arg, offering_launch_date, course_id_arg);
     END IF;
 
 END;
