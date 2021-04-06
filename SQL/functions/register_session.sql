@@ -22,7 +22,8 @@ DECLARE
     package_name TEXT;
     package_id INTEGER;
     package_num_free_registrations INTEGER;
-    num_duplicate INTEGER;
+    num_red_duplicate INTEGER;
+    num_reg_duplicate INTEGER;
     buy_num_remaining_redemptions INTEGER;
 BEGIN
     /* Check for NULLs in arguments */
@@ -39,13 +40,21 @@ BEGIN
     IF (payment_method NOT IN ('Redemption', 'Credit Card')) THEN
         RAISE EXCEPTION 'Invalid payment type';
     END IF;
+    
+    SELECT COUNT(*) INTO num_red_duplicate
+    FROM Redeems r 
+    JOIN Buys b
+    ON b.buy_date = r.buy_date
+    WHERE b.customer_id = customer_id_arg
+    AND r.course_id = course_id_arg
+    AND r.session_id = session_id_arg;
 
-    SELECT o.credit_card_number INTO credit_card_number
-    FROM Owns o
-    WHERE o.customer_id = customer_id_arg;
+    IF (num_red_duplicate > 0) THEN
+        RAISE EXCEPTION 'Session has been redeemed!';
+    END IF;
 
-    IF (payment_method = 'Redemption') THEN
-        SELECT COALESCE(b.buy_date, NULL), COALESCE(b.package_id, NULL) ,COALESCE(b.buy_num_remaining_redemptions, NULL) INTO buy_date, package_id, buy_num_remaining_redemptions
+    IF (payment_method = 'Redemption') THEN        
+        SELECT b.buy_date, b.package_id ,b.buy_num_remaining_redemptions INTO buy_date, package_id, buy_num_remaining_redemptions
         FROM Buys b
         WHERE b.customer_id = customer_id_arg
         AND b.buy_num_remaining_redemptions >= 1
@@ -53,26 +62,11 @@ BEGIN
         LIMIT 1;
     END IF;
 
-    IF (package_id = NULL AND payment_method = 'Redemption') THEN
+    IF (package_id IS NULL AND payment_method = 'Redemption') THEN
         RAISE EXCEPTION 'No active packages!';
     END IF;
 
-    SELECT COUNT(*) INTO num_duplicate
-    FROM Registers r
-    WHERE r.customer_id = customer_id_arg
-    AND r.course_id = course_id_arg
-    AND r.session_id = session_id_arg;
-
-    IF (num_duplicate > 0) THEN
-        RAISE EXCEPTION 'Session has been redeemed!';
-    END IF;
-
-    IF(payment_method = 'Credit Card') THEN
-        INSERT INTO Registers(register_date, customer_id, credit_card_number, session_id, offering_launch_date, course_id)
-        VALUES (CURRENT_DATE, customer_id_arg, credit_card_number, session_id_arg, offering_launch_date, course_id_arg);
-    END IF;
-
-    IF (package_id <> NULL) THEN
+    IF (package_id IS NOT NULL AND payment_method = 'Redemption') THEN
         UPDATE Buys b
         SET b.buy_num_remaining_redemptions = buy_num_remaining_redemptions-1
         WHERE b.customer_id = customer_id_arg
@@ -82,5 +76,29 @@ BEGIN
         INSERT INTO Redeems
         VALUES(CURRENT_DATE, customer_id_arg,package_id,session_id_arg,offering_launch_date,course_id);
     END IF;
+
+    SELECT o.credit_card_number INTO credit_card_number
+    FROM Owns o
+    WHERE o.customer_id = customer_id_arg;
+
+    SELECT COUNT(*) INTO num_reg_duplicate
+    FROM Registers r
+    WHERE r.customer_id = customer_id_arg
+    AND r.course_id = course_id_arg
+    AND r.session_id = session_id_arg;
+
+    IF (credit_card_number IS NULL) THEN 
+        RAISE EXCEPTION 'Credit card is invalid';
+    END IF;
+
+    IF (num_reg_duplicate > 0) THEN
+        RAISE EXCEPTION 'Session has been redeemed!';
+    END IF;
+
+    IF(payment_method = 'Credit Card') THEN
+        INSERT INTO Registers(register_date, customer_id, credit_card_number, session_id, offering_launch_date, course_id)
+        VALUES (CURRENT_DATE, customer_id_arg, credit_card_number, session_id_arg, offering_launch_date, course_id_arg);
+    END IF;
+
 END;
 $$ LANGUAGE plpgsql;
