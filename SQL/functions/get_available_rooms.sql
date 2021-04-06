@@ -33,7 +33,9 @@ DECLARE
     hour INTEGER;
     work_hours INTEGER[] := ARRAY[9,10,11,14,15,16,17];
 BEGIN
-    IF end_date < start_date THEN
+    IF start_date IS NULL OR end_date IS NULL THEN
+        RAISE EXCEPTION 'Start and end dates cannot be NULL.';
+    ELSIF end_date < start_date THEN
         RAISE EXCEPTION 'Start date cannot be later than end date.';
     END IF;
 

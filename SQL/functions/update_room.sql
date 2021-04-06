@@ -41,6 +41,25 @@ DECLARE
     session_end_hour INTEGER;
     available_hours INTEGER[];
 BEGIN
+    IF offering_launch_date_arg IS NULL
+        OR course_id_arg IS NULL
+        OR session_id_arg IS NULL
+        OR room_id_arg IS NULL
+    THEN
+        RAISE EXCEPTION 'Arguments to update_room() cannot contain NULL values.';
+    END IF;
+
+    SELECT s.session_date, s.session_start_hour, s.session_end_hour
+    INTO session_date, session_start_hour, session_end_hour
+    FROM Sessions s
+    WHERE s.offering_launch_date = offering_launch_date_arg
+        AND s.course_id = course_id_arg
+        AND s.session_id = session_id_arg;
+
+    IF session_date IS NULL THEN
+        RAISE EXCEPTION 'Session not found. Check if the course offering identifier (course_id and offering_launch_date) are correct.';
+    END IF;
+
     /* Check if room seating capacity can accomodate all active registrations now */
     SELECT COUNT(*) INTO num_enrolled
     FROM Enrolment e
@@ -52,13 +71,6 @@ BEGIN
     THEN
         RAISE EXCEPTION 'Cannot accomodate all active registrations in room %.', room_id_arg;
     END IF;
-
-    SELECT s.session_date, s.session_start_hour, s.session_end_hour
-    INTO session_date, session_start_hour, session_end_hour
-    FROM Sessions s
-    WHERE s.offering_launch_date = offering_launch_date_arg
-        AND s.course_id = course_id_arg
-        AND s.session_id = session_id_arg;
 
     /* Check room availability */
     SELECT r.available_hours INTO available_hours
@@ -89,8 +101,8 @@ BEGIN
         RETURN;
     END IF;
 
-    UPDATE Sessions s 
-    SET s.room_id = room_id_arg
+    UPDATE Sessions s
+    SET room_id = room_id_arg
     WHERE s.session_id = session_id_arg
         AND s.offering_launch_date = offering_launch_date_arg
         AND s.course_id = course_id_arg;
