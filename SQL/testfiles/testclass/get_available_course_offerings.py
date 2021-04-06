@@ -138,12 +138,23 @@ class ZGetAvailableCourseOfferings(BaseTest, unittest.TestCase):
         # Check if there is exactly 1 course offering
         assert len(res) == 1, f"Should return 1 but it returned {res}"
 
-    @expectedFailure
+    # @expectedFailure
     def test_course_offering_half_avail(self):
         """Only some of the course offering are avail"""
-        raise NotImplementedError("Test is not implemented")
+        # Add 2 course offerings to the table
+        arr = self.make_session_array([('2021-07-05', '14', self.rid), ('2021-08-06', '14', self.rid)])
+        args = ('2021-03-05','100.00', arr, '2021-06-20', '40', str(self.course_id2), str(self.admin_id))
+        q = self.generate_query('add_course_offering', args)
+        res = self.execute_query(q)
 
-    @expectedFailure
-    def test_course_offering_available_1(self):
-        """All course offerings are over"""
-        raise NotImplementedError('Test is not implemented')
+        arr2 = self.make_session_array([('2021-07-06', '14', self.rid), ('2021-08-05', '14', self.rid)])
+        args2 = ('2021-03-05','100.00', arr, '2021-04-05', '40', str(self.course_id1), str(self.admin_id))
+        q2 = self.generate_query('add_course_offering', args2)
+        res2 = self.execute_query(q2)
+
+        # Get the course offering from the table
+        q = self.generate_query("get_available_course_offerings", ())
+        res = self.execute_query(q)
+
+        # Check if there is exactly 1 course offering
+        assert len(res) == 1, f"Should return 1 but it returned {res}"
