@@ -10,7 +10,7 @@
     Design Notes:
         Since each course offering consists of one or more sessions, if the session to be deleted is the only session of the course offering, the deletion request will NOT be processed.
 */
-DROP FUNCTION IF EXISTS top_packages remove_session;
+DROP FUNCTION IF EXISTS remove_session;
 CREATE OR REPLACE FUNCTION remove_session (
     course_id_arg               INTEGER,
     offering_launch_date_arg    DATE,

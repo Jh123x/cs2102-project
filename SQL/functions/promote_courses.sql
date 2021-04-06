@@ -126,7 +126,7 @@ BEGIN
             NATURAL JOIN CourseOfferings co
             NATURAL JOIN Courses c
             WHERE r.redeem_cancelled IS NOT TRUE
-        ),
+        )
         SELECT DISTINCT ic.customer_id,
             ic.customer_name,
             c.course_area_name,
