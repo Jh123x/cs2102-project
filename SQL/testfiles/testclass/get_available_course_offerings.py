@@ -138,7 +138,7 @@ class ZGetAvailableCourseOfferings(BaseTest, unittest.TestCase):
         # Check if there is exactly 1 course offering
         assert len(res) == 1, f"Should return 1 but it returned {res}"
 
-    # @expectedFailure
+    
     def test_course_offering_half_avail(self):
         """Only some of the course offering are avail"""
         # Add 2 course offerings to the table
@@ -147,10 +147,10 @@ class ZGetAvailableCourseOfferings(BaseTest, unittest.TestCase):
         q = self.generate_query('add_course_offering', args)
         res = self.execute_query(q)
 
-        arr2 = self.make_session_array([('2021-07-06', '14', self.rid), ('2021-08-05', '14', self.rid)])
-        args2 = ('2021-03-05','100.00', arr, '2021-04-05', '40', str(self.course_id1), str(self.admin_id))
-        q2 = self.generate_query('add_course_offering', args2)
-        res2 = self.execute_query(q2)
+        query = f"INSERT INTO CourseOfferings VALUES('2021-03-14'::DATE,100.00,'2021-04-01'::DATE,20,20,"+ str(self.course_id)+", "+ str(self.admin_id)+",'2021-05-14'::DATE,'2021-06-14'::DATE)"
+        self.execute_query(query)
+        query = f"INSERT INTO Sessions VALUES(1,'2021-07-06'::DATE,14,18,"+ str(self.course_id)+", '2021-03-14'::DATE,"+ str(self.rid)+","+ str(self.instructor_ids[1])+")"
+        self.execute_query(query)
 
         # Get the course offering from the table
         q = self.generate_query("get_available_course_offerings", ())

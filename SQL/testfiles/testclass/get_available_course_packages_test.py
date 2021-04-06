@@ -51,3 +51,5 @@ class ZGetAvailableCoursePackages(BaseTest, unittest.TestCase):
         res = self.execute_query(q)
         
         assert len(res) == 1, "There should be 1 course packages available"
+        expected =[('(\"Best package\",10,2023-05-06,200.01)',)]
+        assert res == expected, f'\nOutput:   {res}\nExpected: {expected}'
