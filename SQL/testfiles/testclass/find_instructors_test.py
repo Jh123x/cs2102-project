@@ -40,14 +40,14 @@ class FindInstructorsTest(BaseTest, unittest.TestCase):
         assert len(res) > 0, "Manager not added successfully"
         return res[0][0]
 
-    def _add_instructor(self, name: str, time: str, areas: tuple):
+    def _add_instructor(self, name: str, time: str, areas: tuple, date: str = '2020-03-03'):
         """Add an instructor to a table"""
         args = (
             name,
             "address",
             "123456789",
             "test@test.com",
-            "2020-05-03",
+            date,
             "Instructor",
             time,
             "20.5",
@@ -202,3 +202,18 @@ class FindInstructorsTest(BaseTest, unittest.TestCase):
         ]
         assert len(res) == 4, f"Not all the instructors are found correctly. {res}"
         assert res == expected, f"Expected: {expected}\nActual: {res}"
+
+    def test_find_instructor_before_hire(self):
+        """Test if they can be found before hire date"""
+        args = (str(self.course_id), '2000-05-21', '9')
+        q = self.generate_query('find_instructors', args)
+        res = self.execute_query(q)
+        assert len(res) == 0, f"Instructors cannot be found before hire date {res}"
+
+    def test_find_instructor_on_hire(self):
+        """Test if they can be found before hire date"""
+        self._add_instructor('special_inst', 'full-time', ('Database',), '2000-05-21')
+        args = (str(self.course_id), '2000-05-21', '9')
+        q = self.generate_query('find_instructors', args)
+        res = self.execute_query(q)
+        assert len(res) == 1, f"Instructors can be found on hire date {res}"

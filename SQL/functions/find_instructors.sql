@@ -32,6 +32,7 @@ BEGIN
         RAISE EXCEPTION 'Course ID not found.';
     END IF;
     /* Todo: Validate session_date and session_start_hour to ensure > current time? */
+    /*Maybe do not need to enforce that because they didnt mention?*/
 
     /*
     * requirements:
@@ -47,7 +48,8 @@ BEGIN
         JOIN Instructors i
         ON i.instructor_id = e.employee_id
         NATURAL JOIN Specializes sp
-        WHERE NOT EXISTS (
+        WHERE e.employee_join_date <= session_date_arg /*Check for the hire date of the instructors*/
+            AND NOT EXISTS (
                 SELECT 1
                 FROM Sessions s
                 WHERE s.session_date = session_date_arg
