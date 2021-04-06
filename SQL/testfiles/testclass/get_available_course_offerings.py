@@ -77,8 +77,7 @@ class ZGetAvailableCourseOfferings(BaseTest, unittest.TestCase):
 
         query = f"INSERT INTO Rooms VALUES('2', 'Room2', '20') RETURNING room_id"
         self.rid1 = self.execute_query(query)[0][0]
-    
-   
+
     def setUp(self) -> None:
 
         # Add Rooms
@@ -107,7 +106,7 @@ class ZGetAvailableCourseOfferings(BaseTest, unittest.TestCase):
             )
         return super().setUp()
 
-    def make_session_array(self, rows:list):
+    def make_session_array(self, rows: list):
         def wrapper(tup: tuple):
             acc = ['row(']
             acc.append(", ".join(map(lambda ele: f"'{ele}'", tup)))
@@ -121,34 +120,30 @@ class ZGetAvailableCourseOfferings(BaseTest, unittest.TestCase):
         q = self.generate_query("get_available_course_offerings", ())
         res = self.execute_query(q)
 
-        assert len(res) == 0, "No course offering available should return empty table"
-
+        assert len(
+            res) == 0, "No course offering available should return empty table"
     
-    def test_course_offering_available_1(self):
-        """All course offerings are over"""
-
-        query = f"INSERT INTO CourseOfferings VALUES('2021-03-14'::DATE,100.00,'2021-05-01'::DATE,20,20,"+ str(self.course_id)+", "+ str(self.admin_id)+",'2021-05-14'::DATE,'2021-06-14'::DATE) RETURNING offering_launch_date,offering_registration_deadline "
-
-        self.launch_date = self.execute_query(query)
-        print(self.launch_date)
-        q = self.generate_query("get_available_course_offerings", ())
-        res = self.execute_query(q)
-        print (res)
-        assert len(res) == 1, "1 course offering return"
-
-
-    @expectedFailure
     def test_course_offering_avail(self):
         """All course offering are available"""
+        # Add 1 course offering to the table
+        arr = self.make_session_array([('2021-07-05', '14', self.rid1), ('2021-08-06', '14', self.rid1)])
+        args = ('2021-03-05','100.00', arr, '2021-06-20', '40', str(self.course_id), str(self.admin_id))
+        q = self.generate_query('add_course_offering', args)
+        res = self.execute_query(q)
 
-        raise NotImplementedError("Test is not implemented")
-        
-        
+        # Get the course offering from the table
+        q = self.generate_query("get_available_course_offerings", ())
+        res = self.execute_query(q)
 
-
-
+        # Check if there is exactly 1 course offering
+        assert len(res) == 1, f"Should return 1 but it returned {res}"
 
     @expectedFailure
     def test_course_offering_half_avail(self):
         """Only some of the course offering are avail"""
         raise NotImplementedError("Test is not implemented")
+
+    @expectedFailure
+    def test_course_offering_available_1(self):
+        """All course offerings are over"""
+        raise NotImplementedError('Test is not implemented')
