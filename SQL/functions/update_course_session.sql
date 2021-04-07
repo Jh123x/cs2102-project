@@ -37,7 +37,7 @@ BEGIN
             AND s.session_id = new_session_id;
 
     /* Check if session identifier supplied exists */
-    IF (new_session_count IS NULL) THEN
+    IF (new_session_count <= 0) THEN
         RAISE EXCEPTION 'Session not found. Check if the session identifier (course_id, offering_launch_date and session_id) are correct.';
     /* Check if customer identifier supplied exists */
     ELSIF NOT EXISTS(
@@ -63,7 +63,7 @@ BEGIN
         AND s.offering_launch_date = r_offering_launch_date
         AND s.session_id = new_session_id;
 
-    IF num_seats_available = 0 THEN
+    IF num_seats_available <= 0 THEN
         RAISE EXCEPTION 'Customer cannot change to this session because there are no seats remaining in the room.';
     END IF;
 
