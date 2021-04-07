@@ -47,11 +47,11 @@ CREATE TABLE Registers (
 
 DROP VIEW IF EXISTS Enrolment;
 CREATE VIEW Enrolment AS
-SELECT register_timestamp AS enroll_date, session_id, course_id, offering_launch_date, customer_id, 'registers' AS table_name
+SELECT register_timestamp AS enroll_timestamp, session_id, course_id, offering_launch_date, customer_id, 'registers' AS table_name
 FROM Registers
 WHERE register_cancelled IS NOT TRUE
 UNION
-SELECT redeem_timestamp AS enroll_date, session_id, course_id, offering_launch_date, customer_id, 'redeems' AS table_name
+SELECT redeem_timestamp AS enroll_timestamp, session_id, course_id, offering_launch_date, customer_id, 'redeems' AS table_name
 FROM Redeems NATURAL JOIN Buys
 WHERE redeem_cancelled IS NOT TRUE;
 
