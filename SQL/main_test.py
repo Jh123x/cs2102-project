@@ -46,17 +46,20 @@ FILES_TEST_MAP = [
 
 
 # DB functions
-def connect_db(host: str, port: int, user: str, password: str, dbname: str):
+def connect_db(host: str, port: int, user: str, password: str, dbname: str, options:str = ""):
     """Connect to the database and return the database object"""
     conn = psycopg2.connect(
-        database=dbname, host=host, port=port, user=user, password=password
+        database=dbname, 
+        host=host, 
+        port=port, 
+        user=user, 
+        password=password, 
+        options = options
     )
     return conn
 
 
 # General functions
-
-
 def _get_data(csv_path: str, csv_obj):
     """Main logic for get_data"""
     data = []
@@ -404,8 +407,16 @@ if __name__ == "__main__":
         password = getpass()
 
     # Connect to the database
-    with connect_db(HOST, PORT, user, password, DBNAME) as db:
+    with connect_db(
+        HOST, 
+        PORT, 
+        user, 
+        password, 
+        DBNAME,
+        # options="-c search_path=team80" # Uncomment to load in the team path
+    ) as db:
         db.autocommit = True
+
         with db.cursor() as cursor:
 
             # Setup the sql env
@@ -419,13 +430,20 @@ if __name__ == "__main__":
             setup_triggers(cursor, trigger_dir)
             db.autocommit = False
 
+            # Insert data.sql
+            with open('data.sql') as file:
+                res = file.read()
+                cursor.execute(res)
+
+    exit(0)
+
     with connect_db(HOST, PORT, user, password, DBNAME) as db:
         with db.cursor() as cursor:
             # Positive test cases for schema (Cumulative)
             load_success_data('./test data/schema test', cursor)
             db.rollback()
 
-            # # Run the negative test cases for schema Data
+            # Run the negative test cases for schema Data
             load_fail_data('./test data/schema fail', cursor, db)
             db.rollback()
 
