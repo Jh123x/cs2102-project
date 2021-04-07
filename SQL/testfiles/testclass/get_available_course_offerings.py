@@ -5,7 +5,7 @@ from psycopg2.errors import RaiseException
 
 
 class ZGetAvailableCourseOfferings(BaseTest, unittest.TestCase):
-    # pass
+    
     def _add_manager(self, name: str, areas: tuple):
         """Add a manager to the table with an area"""
         args = (
