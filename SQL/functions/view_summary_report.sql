@@ -60,7 +60,7 @@ BEGIN
 
         SELECT COALESCE(SUM(c.cancel_refund_amt), 0.00) INTO reg_fees_refunded
         FROM Cancels c
-        WHERE DATE_TRUNC('month', c.cancel_date) = DATE_TRUNC('month', cur_date);
+        WHERE DATE_TRUNC('month', c.cancel_timestamp) = DATE_TRUNC('month', cur_date);
 
         SELECT COUNT(*) INTO course_reg_redeemed
         FROM Redeems r
