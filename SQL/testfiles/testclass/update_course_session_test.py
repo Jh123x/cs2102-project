@@ -123,6 +123,5 @@ class ZUpdateCourseSessionTest(BaseTest, unittest.TestCase):
 
         # Check the registers table after
         final_res = self.execute_query(qr)
-        print(initial_res, final_res)
         assert len(final_res) == 1 and len(final_res[0]) > 1, f"The update for the session was not successful"
         assert final_res != initial_res, f"The final and initial should not be the same {final_res}"
