@@ -61,7 +61,6 @@ BEGIN
                 FROM Sessions s
                 WHERE (
                         s.session_date = session_date_arg
-                        AND s.course_id = course_id_arg
                         AND s.instructor_id = e.employee_id
                     )
                     AND 
