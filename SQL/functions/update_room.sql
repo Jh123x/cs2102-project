@@ -16,8 +16,9 @@ CREATE OR REPLACE FUNCTION array_includes_range(
 DECLARE
     total_ints INTEGER;
 BEGIN
-    total_ints := int_end - int_start + 1;
+    total_ints := int_end - int_start;
 
+    /*Between is inclusive*/
     RETURN total_ints = (
         SELECT ( COUNT(DISTINCT arr.i))
         FROM (SELECT unnest(int_array) AS i) AS arr
