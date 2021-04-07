@@ -3,8 +3,8 @@ DECLARE
     course_deadline DATE;
 BEGIN
     /*Check if it is a package or not. Must be 1 or another and not both*/
-    IF (NEW.cancel_refund_amt > 0 AND NEW.cancel_package_credit > 0) THEN
-        RAISE EXCEPTION 'Either cancel_refund_amt or cancel_package_credit must be 0';
+    IF (NEW.cancel_refund_amount > 0 AND NEW.cancel_package_credit > 0) THEN
+        RAISE EXCEPTION 'Either cancel_refund_amount or cancel_package_credit must be 0';
     END IF;
 
     IF (TG_OP = 'UPDATE' AND NEW.customer_id = OLD.customer_id) THEN
@@ -18,7 +18,7 @@ BEGIN
     AND s.session_id = NEW.session_id;
 
 
-    IF (NEW.cancel_timestamp >= course_deadline + INTEGER '7' AND (NEW.cancel_refund_amt > 0 OR NEW.cancel_package_credit > 0) ) THEN
+    IF (NEW.cancel_timestamp >= course_deadline + INTEGER '7' AND (NEW.cancel_refund_amount > 0 OR NEW.cancel_package_credit > 0) ) THEN
         RAISE EXCEPTION 'Refunds closer than 7 days are not eligible for refund';
     END IF;
 

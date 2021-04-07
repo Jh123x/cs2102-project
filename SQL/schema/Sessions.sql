@@ -22,13 +22,13 @@ CREATE TABLE Sessions (
 DROP TABLE IF EXISTS Cancels CASCADE;
 CREATE TABLE Cancels (
     cancel_timestamp TIMESTAMP PRIMARY KEY,
-    cancel_refund_amt DEC(64,2),
+    cancel_refund_amount DEC(64,2),
     cancel_package_credit INTEGER,
     course_id INTEGER NOT NULL,
     session_id INTEGER NOT NULL,
     offering_launch_date DATE NOT NULL,
     customer_id INTEGER NOT NULL REFERENCES Customers(customer_id),
 
-    CHECK(cancel_refund_amt >= 0),
+    CHECK(cancel_refund_amount >= 0),
     FOREIGN KEY (course_id, session_id, offering_launch_date) REFERENCES Sessions(course_id, session_id, offering_launch_date) MATCH FULL
 );

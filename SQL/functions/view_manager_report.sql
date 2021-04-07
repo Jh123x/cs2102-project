@@ -73,7 +73,7 @@ BEGIN
             GROUP BY offering_launch_date, course_id
         ),
         CourseOfferingCreditCardRefundFees AS (
-            SELECT offering_launch_date, course_id, COALESCE(SUM(cancel_refund_amt), 0.00) AS total_refunded_fees
+            SELECT offering_launch_date, course_id, COALESCE(SUM(cancel_refund_amount), 0.00) AS total_refunded_fees
             FROM Cancels
             NATURAL JOIN Sessions
             NATURAL RIGHT OUTER JOIN CourseOfferings

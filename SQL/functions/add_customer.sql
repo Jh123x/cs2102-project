@@ -58,7 +58,7 @@ BEGIN
 
     /* Match the credit card into the owner */
     INSERT INTO Owns
-    (customer_id, credit_card_number, own_from_date)
+    (customer_id, credit_card_number, own_from_timestamp)
     VALUES
     (customer_id, credit_card_number, CURRENT_DATE);
 

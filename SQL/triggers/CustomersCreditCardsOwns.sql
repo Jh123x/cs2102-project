@@ -95,15 +95,15 @@ FOR EACH ROW EXECUTE FUNCTION credit_cards_key_constraint_check();
 
     INSERT INTO Customers (customer_id, customer_phone, customer_address, customer_name, customer_email) VALUES (1, 1, 'a', 'b', 'a@b.com');
     INSERT INTO CreditCards (credit_card_number, credit_card_cvv, credit_card_expiry_date) VALUES ('1234567890123456', '123', CURRENT_DATE);
-    INSERT INTO Owns (customer_id, credit_card_number, own_from_date) VALUES ('1', '1234567890123456', CURRENT_DATE);
+    INSERT INTO Owns (customer_id, credit_card_number, own_from_timestamp) VALUES ('1', '1234567890123456', CURRENT_DATE);
 
     INSERT INTO Customers (customer_id, customer_phone, customer_address, customer_name, customer_email) VALUES (2, 1, 'a', 'b', 'a@b.com');
     INSERT INTO CreditCards (credit_card_number, credit_card_cvv, credit_card_expiry_date) VALUES ('1234567890123457', '123', CURRENT_DATE);
-    INSERT INTO Owns (customer_id, credit_card_number, own_from_date) VALUES ('2', '1234567890123457', CURRENT_DATE);
+    INSERT INTO Owns (customer_id, credit_card_number, own_from_timestamp) VALUES ('2', '1234567890123457', CURRENT_DATE);
     COMMIT;
 
     -- Below should fail
-    INSERT INTO Owns (customer_id, credit_card_number, own_from_date) VALUES ('1', '1234567890123457', CURRENT_DATE);
+    INSERT INTO Owns (customer_id, credit_card_number, own_from_timestamp) VALUES ('1', '1234567890123457', CURRENT_DATE);
     UPDATE Owns Set customer_id = 1 WHERE customer_id = 2;
     DELETE FROM Owns;
 */

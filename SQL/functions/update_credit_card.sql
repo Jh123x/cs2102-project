@@ -35,7 +35,7 @@ BEGIN
     (credit_card_number, credit_card_cvv, credit_card_expiry_date);
 
     INSERT INTO Owns
-    (customer_id, credit_card_number, own_from_date)
+    (customer_id, credit_card_number, own_from_timestamp)
     VALUES
     (customer_id, credit_card_number, CURRENT_DATE);
 END;

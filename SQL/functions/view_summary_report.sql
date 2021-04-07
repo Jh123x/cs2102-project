@@ -58,7 +58,7 @@ BEGIN
         NATURAL JOIN CourseOfferings co
         WHERE DATE_TRUNC('month', r.register_timestamp) = DATE_TRUNC('month', cur_date);
 
-        SELECT COALESCE(SUM(c.cancel_refund_amt), 0.00) INTO reg_fees_refunded
+        SELECT COALESCE(SUM(c.cancel_refund_amount), 0.00) INTO reg_fees_refunded
         FROM Cancels c
         WHERE DATE_TRUNC('month', c.cancel_timestamp) = DATE_TRUNC('month', cur_date);
 

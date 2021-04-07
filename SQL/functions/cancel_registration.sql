@@ -52,7 +52,7 @@ BEGIN
             refund_amt := 0;
         END IF;
 
-        INSERT INTO Cancels(cancel_timestamp, cancel_refund_amt, cancel_package_credit,
+        INSERT INTO Cancels(cancel_timestamp, cancel_refund_amount, cancel_package_credit,
                             course_id, session_id, offering_launch_date, customer_id)
         VALUES (CURRENT_TIMESTAMP, refund_amt, NULL, r_course_id, r_session_id, r_offering_launch_date, r_customer_id);
     ELSE
@@ -66,7 +66,7 @@ BEGIN
             package_credit := 0;
         END IF;
 
-        INSERT INTO Cancels(cancel_timestamp, cancel_refund_amt, cancel_package_credit,
+        INSERT INTO Cancels(cancel_timestamp, cancel_refund_amount, cancel_package_credit,
                             course_id, session_id, offering_launch_date, customer_id)
         VALUES (CURRENT_TIMESTAMP, NULL, package_credit, r_course_id, r_session_id, r_offering_launch_date, r_customer_id);
     END IF;

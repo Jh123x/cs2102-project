@@ -28,7 +28,7 @@ BEGIN
     NATURAL JOIN CreditCards cc
     WHERE o.customer_id = customer_id_arg
         AND cc.credit_card_expiry_date >= CURRENT_DATE
-    ORDER BY o.own_from_date DESC
+    ORDER BY o.own_from_timestamp DESC
     LIMIT 1;
 
     IF credit_card_number IS NULL THEN
