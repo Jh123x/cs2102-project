@@ -64,7 +64,7 @@ BEGIN
         FROM Sessions s
         WHERE s.course_id = course_id_arg
         AND s.offering_launch_date = offering_launch_date_arg
-    ) > 1 THEN
+    ) = 1 THEN
         RAISE EXCEPTION 'Cannot delete the only session of a course offering (each course offering must have at least one session).';
     END IF;
 
