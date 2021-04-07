@@ -34,6 +34,14 @@ class IGetAvailableInstrutors(BaseTest, unittest.TestCase):
         query = f"INSERT INTO Rooms VALUES('2', 'Room2', '20')"
         self.execute_query(query)
 
+        query = f"INSERT INTO Rooms VALUES('3', 'Room3', '20')"
+        self.execute_query(query)
+        
+        query = f"INSERT INTO Rooms VALUES('4', 'Room4', '20')"
+        self.execute_query(query)
+
+        query = f"INSERT INTO Rooms VALUES('5', 'Room5', '20')"
+        self.execute_query(query)
         # Add session date and time
         self.session_date = "2025-06-10"
         self.session_time = "9"
@@ -113,13 +121,13 @@ class IGetAvailableInstrutors(BaseTest, unittest.TestCase):
         """Add a course to the table
         course title, course description, course area, and duration
         """
-        args = (name, "Description", area, "4")
+        args = (name, "Description", area, "1")
         query = self.generate_query("add_course", args)
         res = self.execute_query(query)
         assert len(res) == 1, "Course is not added successfully"
         return res[0][0]
 
-    def make_not_free(self, inst_id: int) -> int:
+    def make_not_free(self, inst_id: int, sess_id:int, sess_time:int) -> int:
         """Add course offering which will allocated sessions to the instructors
         returns the Session_id
         """
@@ -131,7 +139,7 @@ class IGetAvailableInstrutors(BaseTest, unittest.TestCase):
         res = self.execute_query(query)[0][0]
 
         # Check cat for offering
-        if "Network" == res:
+        if "Network" == res:           
             offering = self.net_course_offering
         elif "Database" == res:
             offering = self.db_course_offering
@@ -139,7 +147,8 @@ class IGetAvailableInstrutors(BaseTest, unittest.TestCase):
             raise ValueError(f"Wrong Category {res}")
 
         self.rid += 1
-        query = f"INSERT INTO Sessions VALUES (1, '{self.session_date}', {self.session_time}, 12, {offering[5]}, '2025-05-21', {self.rid}, {inst_id})"
+        
+        query = f"INSERT INTO Sessions VALUES ('{sess_id}', '{self.session_date}', {sess_time}, {sess_time +1}, '{offering[5]}', '{offering[0]}', {self.rid}, {inst_id})"
         self.execute_query(query)
         return 1
 
@@ -158,7 +167,18 @@ class IGetAvailableInstrutors(BaseTest, unittest.TestCase):
         res = self.execute_query(query)
         assert len(res) == 0, f"Number of instructors is incorrect {res}"
 
-    @expectedFailure
+
     def test_get_one_available_instructors_success(self) -> None:
         """Get available instructors when there is only 1 that is available"""
-        raise NotImplementedError("Have not implement the test yet")
+        starttime = (9,10,14,15,16)
+        for index in range(5):
+           self.make_not_free(self.instructor_ids[index],index+1,starttime[index])
+        
+        args = (str(self.course_id),  "2025-06-10", "2025-06-10")
+        query = self.generate_query("get_available_instructors", args)
+        res = self.execute_query(query)
+        
+        expected =[('(144,Instructor0,1,2025-06-10,"{11,14,15,16,17}")',), ('(145,Instructor1,1,2025-06-10,"{9,14,15,16,17}")',), ('(147,Instructor3,1,2025-06-10,"{9,10,11,16,17}")',), ('(148,Instructor4,1,2025-06-10,"{9,10,11,14,17}")',)]
+        assert res == expected, f'\nOutput:   {res}\nExpected: {expected}'
+        
+        

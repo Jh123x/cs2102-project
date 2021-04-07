@@ -396,8 +396,8 @@ if __name__ == "__main__":
 
     # Check if username exists
     if not user:
-        user ="e0417622"
-        password = "qingning"
+        user = input("Username: ")
+        password = getpass()
 
     # Check if password exists
     elif not password:
