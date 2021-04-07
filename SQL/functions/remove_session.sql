@@ -49,7 +49,7 @@ BEGIN
     END IF;
 
     IF EXISTS(
-        SELECT e.enroll_date
+        SELECT e.enroll_timestamp
         FROM Enrolment e
         WHERE e.course_id = course_id_arg
             AND e.offering_launch_date = offering_launch_date_arg
