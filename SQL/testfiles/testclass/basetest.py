@@ -65,11 +65,11 @@ class BaseTest(object):
         query = self.generate_query("add_employee", tuple(args))
         return self.execute_query(query)[0][0]
 
-    def _add_course(self, category:str, duration:int) -> int:
+    def _add_course(self, category:str, duration:int, name:str = "Database Systems") -> int:
         """Adds a course into the table
             returns the course id
         """
-        args = ("Database Systems", "Test description", category, str(duration))
+        args = (name, "Test description", category, str(duration))
         q = self.generate_query('add_course', args)
         return self.execute_query(q)[0][0]
 
