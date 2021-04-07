@@ -10,6 +10,10 @@ BEGIN
         AND NEW.course_id = s.course_id
         AND NEW.offering_launch_date = s.offering_launch_date;
 
+    IF m_end_date IS NULL OR m_start_date IS NULL THEN
+        RAISE EXCEPTION 'There is no sessions left in the table';
+    END IF;
+
     UPDATE CourseOfferings c
     SET offering_start_date = m_start_date,
         offering_end_date = m_end_date
