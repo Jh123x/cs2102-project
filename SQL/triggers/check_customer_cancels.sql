@@ -18,7 +18,7 @@ BEGIN
     AND s.session_id = NEW.session_id;
 
 
-    IF (NEW.cancel_date >= course_deadline + INTEGER '7' AND (NEW.cancel_refund_amt > 0 OR NEW.cancel_package_credit > 0) ) THEN
+    IF (NEW.cancel_timestamp >= course_deadline + INTEGER '7' AND (NEW.cancel_refund_amt > 0 OR NEW.cancel_package_credit > 0) ) THEN
         RAISE EXCEPTION 'Refunds closer than 7 days are not eligible for refund';
     END IF;
 

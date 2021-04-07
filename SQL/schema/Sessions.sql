@@ -21,7 +21,7 @@ CREATE TABLE Sessions (
 
 DROP TABLE IF EXISTS Cancels CASCADE;
 CREATE TABLE Cancels (
-    cancel_date TIMESTAMP PRIMARY KEY,
+    cancel_timestamp TIMESTAMP PRIMARY KEY,
     cancel_refund_amt DEC(64,2),
     cancel_package_credit INTEGER,
     course_id INTEGER NOT NULL,
