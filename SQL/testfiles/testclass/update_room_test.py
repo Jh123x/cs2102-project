@@ -1,6 +1,5 @@
 import unittest
 from . import BaseTest
-from unittest import expectedFailure
 from psycopg2.errors import RaiseException
 
 
@@ -45,7 +44,7 @@ class ZUpdateRoomTest(BaseTest, unittest.TestCase):
         assert len(res) == 2, "There is suppose to be 2 sessions"
         assert set(map(lambda x: x[-2], res)) == set((self.room_id,)), f"Room is not assigned correctly {res}"
 
-    def test_setup_room_success(self):
+    def test_update_room_success(self):
         """Test if the setup room routine works"""
         self.setup_session()
 
@@ -59,7 +58,7 @@ class ZUpdateRoomTest(BaseTest, unittest.TestCase):
         res = self.execute_query(qs)
         assert set(map(lambda x: x[-2], res)) == set((self.room_id,self.room_id2)), f"Room is not updated correctly {res}"
 
-    def test_setup_room_in_use_fail(self):
+    def test_update_room_in_use_fail(self):
         """Test if adding another room in use at that time fails"""
         # Setup the room
         self.setup_session()
