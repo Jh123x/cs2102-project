@@ -142,7 +142,7 @@ class ZGetAvailableCourseSessionsTest(BaseTest, unittest.TestCase):
         assert res == expected, f'\nOutput:   {res}\nExpected: {expected}'
   
     def test_half_sessions_avail(self):
-        """Return 2 when there are 2 sessions"""
+        """Return 1 when there are 2 sessions"""
         # Create 2 sessions 
         arr = self.make_session_array([('2021-05-06', '14', str(self.rid)),('2021-05-06', '10', str(self.rid))])
         args = ('2021-04-06','100.00', arr, '2021-04-20', '2', str(self.course_id), str(self.admin_id))
