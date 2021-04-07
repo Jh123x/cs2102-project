@@ -67,6 +67,7 @@ BEGIN
                     AND session_start_hour_arg <= s.session_end_hour
                     AND session_start_hour_arg <= s.session_start_hour
                     AND s.session_start_hour <= session_end_hour_var
+                    AND s.session_start_hour <> session_start_hour_arg
             )
             AND (
                 SELECT COALESCE(SUM(session_end_hour - session_start_hour), 0)
