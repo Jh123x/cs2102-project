@@ -8,7 +8,7 @@
 */
 DROP FUNCTION IF EXISTS update_instructor CASCADE;
 CREATE OR REPLACE FUNCTION update_instructor (
-    offering_launch_date_arg INTEGER,
+    offering_launch_date_arg DATE,
     course_id_arg INTEGER,
     session_id_arg INTEGER,
     instructor_id_arg INTEGER
@@ -49,10 +49,17 @@ BEGIN
     END IF;
 
     IF instructor_id_arg NOT IN (
-        SELECT employee_id FROM find_instructors(offering_launch_date_arg, course_id_arg, session_date, session_start_hour)
+        SELECT employee_id FROM find_instructors(course_id_arg, session_date, session_start_hour)
     )
     THEN
         RAISE EXCEPTION 'This instructor cannot teach this session!';
     END IF;
+
+    /*Update the table*/
+    UPDATE Sessions s
+    SET instructor_id = instructor_id_arg
+    WHERE s.offering_launch_date = offering_launch_date_arg
+    AND s.course_id = course_id_arg
+    AND s.session_id = session_id_arg;
 END;
 $$ LANGUAGE plpgsql;
