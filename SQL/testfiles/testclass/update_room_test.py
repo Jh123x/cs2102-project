@@ -16,15 +16,18 @@ class ZUpdateRoomTest(BaseTest, unittest.TestCase):
         """Set up the sessions to be modified"""
         # Add a manager
         self.manager_id = self._add_person('Manager', "Array['Database']")
+        self.manager_id = self._add_person('Manager', "Array['Network']")
 
         # Add an instructor
         self.instructor_id = self._add_person('Instructor', "Array['Database']")
+        self.instructor_id = self._add_person('Instructor', "Array['Network']")
 
         # Add an admin
         self.admin_id = self._add_person('Admin')
 
         # Add a course
         self.course_id = self._add_course('Database', 1)
+        self.course_id1 = self._add_course('Network', 1, 'Networks')
 
         # Add a room
         self.room_id = self._add_room(1, 'Test room 1', 20)
@@ -55,3 +58,16 @@ class ZUpdateRoomTest(BaseTest, unittest.TestCase):
         qs = 'SELECT * FROM Sessions'
         res = self.execute_query(qs)
         assert set(map(lambda x: x[-2], res)) == set((self.room_id,self.room_id2)), f"Room is not updated correctly {res}"
+
+    def test_setup_room_in_use_fail(self):
+        """Test if adding another room in use at that time fails"""
+        # Setup the room
+        self.setup_session()
+
+        # Add a course offering
+        self.course_offering = self._add_course_offering('2021-02-21', 10, [('2021-06-21', 9, self.room_id2)], '2021-06-01', 20, self.course_id1, self.admin_id)
+
+        # Update the room number to another room that is used during the timeslot
+        args = ('2021-01-21', str(self.course_id), '1', str(self.room_id2))
+        q = self.generate_query('update_room', args)
+        self.check_fail_test(q, 'The room is also in use', RaiseException)
