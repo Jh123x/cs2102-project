@@ -64,7 +64,7 @@ class ZUpdateRoomTest(BaseTest, unittest.TestCase):
         self.setup_session()
 
         # Add a course offering
-        self.course_offering = self._add_course_offering('2021-02-21', 10, [('2021-06-21', 9, self.room_id2)], '2021-06-01', 20, self.course_id1, self.admin_id)
+        self.course_offering1 = self._add_course_offering('2021-02-21', 10, [('2021-06-21', 9, self.room_id2)], '2021-06-01', 20, self.course_id1, self.admin_id)
 
         # Update the room number to another room that is used during the timeslot
         args = ('2021-01-21', str(self.course_id), '1', str(self.room_id2))
