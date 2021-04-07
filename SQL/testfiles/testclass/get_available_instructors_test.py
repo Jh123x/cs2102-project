@@ -178,7 +178,7 @@ class IGetAvailableInstrutors(BaseTest, unittest.TestCase):
         query = self.generate_query("get_available_instructors", args)
         res = self.execute_query(query)
         
-        expected =[('(144,Instructor0,1,2025-06-10,"{11,14,15,16,17}")',), ('(145,Instructor1,1,2025-06-10,"{9,14,15,16,17}")',), ('(147,Instructor3,1,2025-06-10,"{9,10,11,16,17}")',), ('(148,Instructor4,1,2025-06-10,"{9,10,11,14,17}")',)]
+        expected = [('(152,Instructor0,1,2025-06-10,"{11,14,15,16,17}")',), ('(153,Instructor1,1,2025-06-10,"{14,15,16,17}")',), ('(155,Instructor3,1,2025-06-10,"{9,10,11,17}")',), ('(156,Instructor4,1,2025-06-10,"{9,10,11,14}")',)]
         assert res == expected, f'\nOutput:   {res}\nExpected: {expected}'
         
         

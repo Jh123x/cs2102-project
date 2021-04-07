@@ -62,13 +62,13 @@ class FindInstructorsTest(BaseTest, unittest.TestCase):
         """Add a course to the table
         course title, course description, course area, and duration
         """
-        args = (name, "Description", area, "4")
+        args = (name, "Description", area, "1")
         query = self.generate_query("add_course", args)
         res = self.execute_query(query)
         assert len(res) == 1, "Course is not added successfully"
         return res[0][0]
 
-    def make_not_free(self, inst_id: int) -> int:
+    def make_not_free(self, inst_id: int, sess_id:int, sess_time:int) -> int:
         """Add course offering which will allocated sessions to the instructors
         returns the Session_id
         """
@@ -80,7 +80,7 @@ class FindInstructorsTest(BaseTest, unittest.TestCase):
         res = self.execute_query(query)[0][0]
 
         # Check cat for offering
-        if "Network" == res:
+        if "Network" == res:           
             offering = self.net_course_offering
         elif "Database" == res:
             offering = self.db_course_offering
@@ -88,7 +88,8 @@ class FindInstructorsTest(BaseTest, unittest.TestCase):
             raise ValueError(f"Wrong Category {res}")
 
         self.rid += 1
-        query = f"INSERT INTO Sessions VALUES (1, '{self.session_date}', {self.session_time}, 12, {offering[5]}, '2025-05-21', {self.rid}, {inst_id})"
+        
+        query = f"INSERT INTO Sessions VALUES ('{sess_id}', '{self.session_date}', {sess_time}, {sess_time +1}, '{offering[5]}', '{offering[0]}', {self.rid}, {inst_id})"
         self.execute_query(query)
         return 1
 
@@ -122,6 +123,15 @@ class FindInstructorsTest(BaseTest, unittest.TestCase):
         query = f"INSERT INTO Rooms VALUES('2', 'Room2', '20')"
         res = self.execute_query(query)
 
+        query = f"INSERT INTO Rooms VALUES('3', 'Room3', '20')"
+        self.execute_query(query)
+        
+        query = f"INSERT INTO Rooms VALUES('4', 'Room4', '20')"
+        self.execute_query(query)
+
+        query = f"INSERT INTO Rooms VALUES('5', 'Room5', '20')"
+        self.execute_query(query)
+
         # Add session date and time
         self.session_date = "2025-06-10"
         self.session_time = "9"
@@ -141,7 +151,7 @@ class FindInstructorsTest(BaseTest, unittest.TestCase):
     def test_find_free_instructor(self):
         """Find only free instructors from the free / not free ones"""
         # Make one instructor not free TODO
-        self.make_not_free(self.instructor_ids[0])
+        self.make_not_free(self.instructor_ids[0],1,9)
 
         # Check the number of free instructors
         args = (str(self.course_id), self.session_date, self.session_time)
@@ -163,7 +173,7 @@ class FindInstructorsTest(BaseTest, unittest.TestCase):
             self.execute_query(q)
 
         # Make the instructor not free
-        self.make_not_free(self.instructor_ids[0])
+        self.make_not_free(self.instructor_ids[0],1,9)
 
         # Find the instructors
         args = (str(self.course_id), self.session_date, self.session_time)
@@ -182,7 +192,7 @@ class FindInstructorsTest(BaseTest, unittest.TestCase):
             self.execute_query(q)
 
         # Make the first instructor not free
-        self.make_not_free(self.instructor_ids[0])
+        self.make_not_free(self.instructor_ids[0],1,9)
 
         args = (str(self.course_id), self.session_date, self.session_time)
         query = self.generate_query("find_instructors", args)
@@ -217,3 +227,19 @@ class FindInstructorsTest(BaseTest, unittest.TestCase):
         q = self.generate_query('find_instructors', args)
         res = self.execute_query(q)
         assert len(res) == 1, f"Instructors can be found on hire date {res}"
+
+    def test_find_no_free_instructor_assign(self):
+
+        # Make the instructor not free
+        starttime = (9,10,14,15,16)
+        for index in range(5):
+           self.make_not_free(self.instructor_ids[index],index+1,starttime[index])
+
+        # Find the instructors
+        args = (str(self.course_id), self.session_date, '9')
+        query = self.generate_query("find_instructors", args)
+        res = self.execute_query(query)
+        # assert len(res) == 0, f"Not all the instructors are found correctly {res}"
+        # assert res == [], f"The data struct is not correct"
+        expected = [('(63,Instructor3)',), ('(64,Instructor4)',)]
+        assert res == expected, f'\nOutput:   {res}\nExpected: {expected}'
