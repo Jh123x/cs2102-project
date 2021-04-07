@@ -30,7 +30,7 @@ BEGIN
         RAISE EXCEPTION 'Arguments to update_course_session() cannot contain NULL values.';
     END IF;
 
-    SELECT s.session_date INTO new_session_count
+    SELECT COUNT(s.session_date) INTO new_session_count
         FROM Sessions s
         WHERE s.course_id = r_course_id
             AND s.offering_launch_date = r_offering_launch_date
@@ -69,11 +69,11 @@ BEGIN
 
     IF enrolment_table = 'registers' THEN
         UPDATE Registers r
-        SET r.session_id = new_session_id
+        SET session_id = new_session_id
         WHERE r.register_timestamp = enroll_timestamp;
     ELSE
         UPDATE Redeems r
-        SET r.session_id = new_session_id
+        SET session_id = new_session_id
         WHERE r.redeem_timestamp = enroll_timestamp;
     END IF;
 END;
