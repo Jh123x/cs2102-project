@@ -20,4 +20,5 @@ from .update_course_session_test import ZUpdateCourseSessionTest
 from .cancel_registration_test import ZCancelRegistrationTest
 from .update_instructor_test import ZUpdateInstructorTest
 from .update_room_test import ZUpdateRoomTest
+from .remove_session_test import ZRemoveSessionTest
 from .buy_course_package_test import ZBuyCoursePackageTest
