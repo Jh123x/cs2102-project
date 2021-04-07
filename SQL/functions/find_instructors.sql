@@ -15,6 +15,8 @@ CREATE OR REPLACE FUNCTION find_instructors (
     session_start_hour_arg INTEGER
 )
 RETURNS TABLE (employee_id INTEGER, employee_name TEXT) AS $$
+DECLARE 
+    session_end_hour_var INTEGER;
 BEGIN
     /* Check for NULLs in arguments */
     IF course_id_arg IS NULL
@@ -33,6 +35,11 @@ BEGIN
     END IF;
     /* Todo: Validate session_date and session_start_hour to ensure > current time? */
     /*Maybe do not need to enforce that because they didnt mention?*/
+
+    /*Get the duration of the course*/
+    SELECT session_start_hour_arg + course_duration INTO session_end_hour_var
+    FROM Courses
+    WHERE Courses.course_id = course_id_arg;
 
     /*
     * requirements:
@@ -55,8 +62,11 @@ BEGIN
                 WHERE s.session_date = session_date_arg
                     AND s.course_id = course_id_arg
                     AND s.instructor_id = e.employee_id
+                    /*Check for overlap instead of just checking if start lands within*/
                     AND s.session_start_hour <= session_start_hour_arg
-                    AND session_start_hour_arg <= session_end_hour
+                    AND session_start_hour_arg <= s.session_end_hour
+                    AND session_start_hour_arg <= s.session_start_hour
+                    AND s.session_start_hour <= session_end_hour_var
             )
             AND (
                 SELECT COALESCE(SUM(session_end_hour - session_start_hour), 0)
