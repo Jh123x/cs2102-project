@@ -420,9 +420,13 @@ if __name__ == "__main__":
         with db.cursor() as cursor:
 
             # Setup the sql env
+            print('Dropping Triggers')
             drop_triggers(cursor, trigger_dir)
+            print('Dropping functions')
             drop_functions(cursor, function_dir)
+            print('Dropping views')
             drop_view(cursor, view_dir)
+            print("Dropping schema")
             drop_schema(cursor, schema_dir)
             setup_schema(cursor, schema_dir)
             setup_view(cursor, view_dir)
@@ -431,11 +435,9 @@ if __name__ == "__main__":
             db.autocommit = False
 
             # Insert data.sql
-            with open('data.sql') as file:
-                res = file.read()
-                cursor.execute(res)
-
-    exit(0)
+            # with open('data.sql') as file:
+            #     res = file.read()
+            #     cursor.execute(res)
 
     with connect_db(HOST, PORT, user, password, DBNAME) as db:
         with db.cursor() as cursor:
