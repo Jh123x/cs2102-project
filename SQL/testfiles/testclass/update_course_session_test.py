@@ -56,8 +56,8 @@ class ZUpdateCourseSessionTest(BaseTest, unittest.TestCase):
         self.setup_sessions()
 
         # Check the registers table before
-        q = 'SELECT * FROM Registers'
-        initial_res = self.execute_query(q)
+        qr = 'SELECT * FROM Registers'
+        initial_res = self.execute_query(qr)
         assert len(initial_res) == 1, f"Customer was not successful in being added to the table {initial_res}"
 
         # Change from the first session to the second one
@@ -66,8 +66,8 @@ class ZUpdateCourseSessionTest(BaseTest, unittest.TestCase):
         self.execute_query(q) # Returns nothing
 
         # Check the registers table after
-        final_res = self.execute_query(q)
-        assert len(final_res) == 1, f"The update for the session was not successful"
+        final_res = self.execute_query(qr)
+        assert len(final_res) == 1 and len(final_res[0]) > 1, f"The update for the session was not successful"
         assert final_res != initial_res, f"The final and initial should not be the same {final_res}"
 
 
