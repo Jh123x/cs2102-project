@@ -22,7 +22,7 @@ BEGIN
     RETURN total_ints = (
         SELECT ( COUNT(DISTINCT arr.i))
         FROM (SELECT unnest(int_array) AS i) AS arr
-        WHERE arr.i BETWEEN int_start AND int_end
+        WHERE arr.i BETWEEN int_start AND int_end - 1
     );
 END;
 $$ LANGUAGE plpgsql;
