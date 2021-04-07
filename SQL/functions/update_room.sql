@@ -64,13 +64,6 @@ BEGIN
         RAISE EXCEPTION 'Session not found. Check if the course offering identifier (course_id and offering_launch_date) are correct.';
     END IF;
 
-    /*Check if the lesson has started*/
-    IF session_date < CURRENT_DATE THEN
-        RAISE EXCEPTION 'Cannot change room after it has happened';
-    ELSIF session_date = CURRENT_DATE AND EXTRACT(hour from CURRENT_TIMESTAMP) <= session_start_hour THEN
-        RAISE EXCEPTION 'Cannot change room after it has started';
-    END IF;
-
     /* Check if room seating capacity can accomodate all active registrations now */
     SELECT COUNT(*) INTO num_enrolled
     FROM Enrolment e
