@@ -18,4 +18,5 @@ from .register_session_test import ZRegisterSessionTest
 from .get_my_registrations_test import ZGetMyRegistrationsTest
 from .update_course_session_test import ZUpdateCourseSessionTest
 from .cancel_registration_test import ZCancelRegistrationTest
+from .update_instructor_test import ZUpdateInstructorTest
 from .buy_course_package_test import ZBuyCoursePackageTest
