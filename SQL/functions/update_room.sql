@@ -81,7 +81,7 @@ BEGIN
     WHERE r.room_id = room_id_arg;
 
     /* Also check that entire range of hours used by the session is available */
-    IF available_hours IS NULL OR array_includes_range(available_hours, session_start_hour, session_end_hour)
+    IF available_hours IS NULL OR NOT array_includes_range(available_hours, session_start_hour, session_end_hour)
     THEN
         RAISE EXCEPTION 'Room % is already in use', room_id_arg;
     ELSIF (
