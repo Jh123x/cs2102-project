@@ -16,13 +16,13 @@ CREATE OR REPLACE FUNCTION add_session (
     session_number INTEGER,
     session_date DATE,
     session_start_hour INTEGER,
-    session_end_hour INTEGER,
     instructor_id INTEGER,
     room_id INTEGER
 )
 RETURNS TABLE (session_id INTEGER) AS $$
 DECLARE
     new_package RECORD;
+    session_end_hour INTEGER;
     session_offering_registration_deadline DATE;
 BEGIN
     /* Check for NULLs in arguments */
@@ -31,7 +31,6 @@ BEGIN
         OR session_number IS NULL
         OR session_date IS NULL
         OR session_start_hour IS NULL
-        OR session_end_hour IS NULL
         OR instructor_id IS NULL
         OR room_id IS NULL
     THEN
@@ -39,6 +38,10 @@ BEGIN
     END IF;
 
     session_id := session_number;
+
+    /*Get the end hour from the courses*/
+    SELECT session_start_hour + course_duration INTO session_end_hour FROM Courses
+    WHERE course_id = session_course_id;
 
     IF EXISTS(
         SELECT s.session_id FROM Sessions s
