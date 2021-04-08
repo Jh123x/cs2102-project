@@ -55,7 +55,7 @@ BEGIN
             day := cur_date;
             available_hours := '{}'; /* need to reset to empty array for each room-day pair */
 
-            FOREACH hour IN ARRAY start_hours LOOP
+            FOREACH cur_hour IN ARRAY start_hours LOOP
                 /* Check room availability for 1 hour block on current iterated date */
                 IF room_id IN (SELECT rid FROM find_rooms(cur_date, cur_hour, 1))
                 THEN
