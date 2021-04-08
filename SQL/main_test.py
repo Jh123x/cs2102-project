@@ -112,7 +112,8 @@ def order_correctly(header, data) -> str:
 def generate_query(table_name: str, header: tuple, data: dict) -> str:
     """Generate the query based on header and data"""
     header, values = order_correctly(header, data)
-    return f"INSERT INTO {table_name}({', '.join(header)}) VALUES {values};"
+    # return f"INSERT INTO {table_name}({', '.join(header)}) VALUES {values};"
+    return f"INSERT INTO {table_name}({', '.join(header)}) VALUES {values};".replace("'NULL'", 'NULL')
 
 
 def generate_function_query(function: str, args: tuple) -> str:
@@ -148,6 +149,7 @@ def execute_query(cursor, query_paths: list) -> None:
             continue
         try:
             cursor.execute(query)
+            print(query)
         except Exception as e:
             raise ValueError(f"Query: at {path} has error: {e}")
 
@@ -201,6 +203,7 @@ def setup_triggers(cursor, trigger_dir: str) -> None:
     """Set up the triggers"""
     logger.debug("Setting up triggers")
     trigger_files = get_files(trigger_dir)
+    print(trigger_files)
     execute_query(cursor, map_with_dir(trigger_dir, trigger_files))
     logger.debug("Triggers Added")
 
@@ -446,20 +449,20 @@ if __name__ == "__main__":
 
     with connect_db(HOST, PORT, user, password, DBNAME) as db:
         with db.cursor() as cursor:
-            # # Positive test cases for schema (Cumulative)
-            # load_success_data('./test data/schema test', cursor)
-            # db.rollback()
+            # Positive test cases for schema (Cumulative)
+            load_success_data('./test data/schema test', cursor)
+            db.rollback()
 
-            # # Run the negative test cases for schema Data
-            # load_fail_data('./test data/schema fail', cursor, db)
-            # db.rollback()
+            # Run the negative test cases for schema Data
+            load_fail_data('./test data/schema fail', cursor, db)
+            db.rollback()
 
             # Load Custom Test cases
-            # load_custom_testcases("./test data/custom test cases", cursor)
-            # db.rollback()
+            load_custom_testcases("./test data/custom test cases", cursor)
+            db.rollback()
 
             # Commit
-            # db.commit()
+            db.commit()
 
             # Unittest for functions
             BaseTest.DB = db
