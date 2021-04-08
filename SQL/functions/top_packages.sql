@@ -19,16 +19,16 @@ DROP FUNCTION IF EXISTS top_packages CASCADE;
 CREATE OR REPLACE FUNCTION top_packages (
     N INTEGER
 )
-RETURNS TABLE (package_id INTEGER,
+RETURNS TABLE (
+    package_id INTEGER,
     package_num_free_registrations INTEGER,
     package_price DEC(64, 2),
     package_sale_start_date DATE,
     package_sale_end_date DATE,
     packages_num_sold INTEGER)
     AS $$
-DECLARE
-
 BEGIN
+    /* Check for NULLs in arguments */
     IF N IS NULL OR N <= 0
     THEN
         RAISE EXCEPTION 'Number of top packages to find must be an integer more than 0.';
@@ -38,7 +38,7 @@ BEGIN
         /* excluded packages that are not sold */
         PackagesSold AS
         (
-            SELECT package_id, COUNT(*) as packages_num_sold
+            SELECT package_id, COUNT(*) AS packages_num_sold
             FROM CoursePackages c NATURAL JOIN Buys b
             GROUP BY package_id
         ),
@@ -50,7 +50,7 @@ BEGIN
         (
             SELECT package_id, package_num_free_registrations, package_price, package_sale_start_date,
                    package_sale_end_date, packages_num_sold,
-                   RANK() over (order by packages_num_sold DESC) as package_rank
+                   RANK() OVER (ORDER BY packages_num_sold DESC) AS package_rank
             FROM CoursePackages NATURAL JOIN PackagesSold
         )
     SELECT package_id, package_num_free_registrations, package_price, package_sale_start_date,
