@@ -18,9 +18,11 @@ DECLARE
 BEGIN
     total_ints := int_end - int_start;
 
-    /*Between is inclusive*/
+    /* Count number of distinct integers in array range */
+    /* E.g. if a session starts at 9am and ends at 12pm, the array (available hours) needs to include 9, 10, 11 */
+    /* Note: Between is inclusive */
     RETURN total_ints = (
-        SELECT ( COUNT(DISTINCT arr.i))
+        SELECT (COUNT(DISTINCT arr.i))
         FROM (SELECT unnest(int_array) AS i) AS arr
         WHERE arr.i BETWEEN int_start AND int_end - 1
     );
@@ -50,11 +52,10 @@ BEGIN
     THEN
         RAISE EXCEPTION 'Arguments to update_room() cannot contain NULL values.';
     END IF;
-    
 
     /* Check if arguments yield a valid session */
-    SELECT s.session_date, s.session_start_hour, s.session_end_hour
-    INTO session_date, session_start_hour, session_end_hour
+    SELECT s.session_date, s.session_start_hour, s.session_end_hour, s.room_id
+    INTO session_date, session_start_hour, session_end_hour, current_room_id
     FROM Sessions s
     WHERE s.offering_launch_date = offering_launch_date_arg
         AND s.course_id = course_id_arg
@@ -62,6 +63,11 @@ BEGIN
 
     IF session_date IS NULL THEN
         RAISE EXCEPTION 'Session not found. Check if the course offering identifier (course_id and offering_launch_date) are correct.';
+    END IF;
+
+    /* Check if arguments yield a valid room */
+    IF NOT EXISTS(SELECT room_id FROM Rooms r WHERE r.room_id = room_id_arg) THEN
+        RAISE EXCEPTION 'Room id % does not exists', room_id_arg;
     END IF;
 
     /* Check if room seating capacity can accomodate all active registrations now */
@@ -94,13 +100,8 @@ BEGIN
     END IF;
 
     /* Warn user when updating to same room */
-    SELECT s.session_date, s.room_id INTO session_date, current_room_id
-    FROM Sessions s
-    WHERE s.course_id = course_id_arg
-        AND s.session_id = session_id_arg
-        AND s.offering_launch_date = offering_launch_date_arg;
-
-    IF (current_room_id = room_id_arg) THEN
+    IF current_room_id = room_id_arg
+    THEN
         RAISE NOTICE 'Assigning the same room to the session has no effect!';
         RETURN;
     END IF;

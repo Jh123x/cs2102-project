@@ -8,9 +8,9 @@ BEGIN
     FROM Buys
     WHERE NEW.buy_timestamp = buy_timestamp;
 
-    IF (num_remaining_redemptions <= 0) THEN
+    IF (num_remaining_redemptions < 0) THEN
         RAISE EXCEPTION 'There are no redemptions left for this customer';
-    END IF; 
+    END IF;
 
     RETURN NEW;
 END;

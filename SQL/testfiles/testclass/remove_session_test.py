@@ -53,7 +53,7 @@ class ZRemoveSessionTest(BaseTest, unittest.TestCase):
         q = 'SELECT * FROM Sessions'
         res = self.execute_query(q)
         assert len(res) == 1, 'Sessions was not removed correctly'
-        
+
 
     @expectedFailure
     def test_remove_session_with_1_student_fail(self):

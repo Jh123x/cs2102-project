@@ -25,3 +25,4 @@ from .update_room_test import ZUpdateRoomTest
 from .remove_session_test import ZRemoveSessionTest
 from .buy_course_package_test import ZBuyCoursePackageTest
 from .add_session_test import JAddSessionTest
+from .view_summary_report_test import ZViewSummaryReportTest

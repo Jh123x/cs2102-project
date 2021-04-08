@@ -54,7 +54,7 @@ BEGIN
 
         INSERT INTO Cancels(cancel_timestamp, cancel_refund_amount, cancel_package_credit,
                             course_id, session_id, offering_launch_date, customer_id)
-        VALUES (CURRENT_TIMESTAMP, refund_amt, NULL, r_course_id, r_session_id, r_offering_launch_date, r_customer_id);
+        VALUES (statement_timestamp(), refund_amt, NULL, r_course_id, r_session_id, r_offering_launch_date, r_customer_id);
     ELSE
         UPDATE Redeems r
         SET redeem_cancelled = true
@@ -68,7 +68,7 @@ BEGIN
 
         INSERT INTO Cancels(cancel_timestamp, cancel_refund_amount, cancel_package_credit,
                             course_id, session_id, offering_launch_date, customer_id)
-        VALUES (CURRENT_TIMESTAMP, NULL, package_credit, r_course_id, r_session_id, r_offering_launch_date, r_customer_id);
+        VALUES (statement_timestamp(), NULL, package_credit, r_course_id, r_session_id, r_offering_launch_date, r_customer_id);
     END IF;
 END;
 $$ LANGUAGE plpgsql;

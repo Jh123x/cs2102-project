@@ -193,6 +193,21 @@ class BaseTest(object):
         )
         return self.execute_query(q)
 
+    def _register_credit_card(self, date: str, course_id: int, session_id: int, customer_id: int):
+        args = (date, str(course_id), str(session_id), str(customer_id), 'Credit Card')
+        q = self.generate_query('register_session', args)
+        self.execute_query(q)
+
+    def _register_redeems(self, date: str, course_id: int, session_id: int, customer_id: int):
+        args = (date, str(course_id), str(session_id), str(customer_id), 'Redemption')
+        q = self.generate_query('register_session', args)
+        self.execute_query(q)
+
+    def _cancel_registration(self, customer_id: int, course_id: int):
+        args = (str(customer_id), str(course_id), '2021-01-21')
+        q = self.generate_query('cancel_registration', args)
+        self.execute_query(q) #No return
+
     def time_cmp(self, time1: datetime.datetime, time2: datetime.datetime) -> bool:
         """Compare timestamps to see if they are close enough"""
         return time1 - time2 < datetime.timedelta(seconds=0.5)
