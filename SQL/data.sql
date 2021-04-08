@@ -120,6 +120,7 @@ INSERT INTO Sessions(session_id, session_date, session_start_hour, session_end_h
 INSERT INTO Sessions(session_id, session_date, session_start_hour, session_end_hour, course_id, offering_launch_date, room_id, instructor_id) VALUES (1, '2021-04-02', 10, 12, 5, '2021-02-06', 5, 5);
 INSERT INTO Sessions(session_id, session_date, session_start_hour, session_end_hour, course_id, offering_launch_date, room_id, instructor_id) VALUES (2, '2021-04-01', 14, 16, 5, '2021-02-06', 5, 1);
 INSERT INTO Sessions(session_id, session_date, session_start_hour, session_end_hour, course_id, offering_launch_date, room_id, instructor_id) VALUES (1, '2021-06-01', 14, 18, 9, '2021-04-10', 5, 1);
+INSERT INTO Sessions(session_id, session_date, session_start_hour, session_end_hour, course_id, offering_launch_date, room_id, instructor_id) VALUES (2, '2021-06-02', 14, 18, 9, '2021-04-10', 5, 1);
 INSERT INTO Buys(buy_timestamp, buy_num_remaining_redemptions, package_id, customer_id, credit_card_number) VALUES ('2021-03-01 00:00:00', 2, 1, 1, '2221009800535070');
 INSERT INTO Buys(buy_timestamp, buy_num_remaining_redemptions, package_id, customer_id, credit_card_number) VALUES ('2021-03-02 00:00:00', 3, 2, 2, '2720992912410510');
 INSERT INTO Buys(buy_timestamp, buy_num_remaining_redemptions, package_id, customer_id, credit_card_number) VALUES ('2021-03-03 00:00:00', 4, 3, 3, '5221346498258540');
