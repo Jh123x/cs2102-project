@@ -47,7 +47,7 @@ BEGIN
 
         SELECT COALESCE(SUM(session_end_hour - session_start_hour), 0) INTO num_work_hours
         FROM Sessions s
-        WHERE r.employee_id = s.instructor_id AND EXTRACT(MONTH FROM s.session_date) = EXTRACT(MONTH FROM CURRENT_DATE);
+        WHERE r.employee_id = s.instructor_id AND DATE_TRUNC('month', s.session_date) = DATE_TRUNC('month', CURRENT_DATE);
 
         hourly_rate := r.employee_hourly_rate;
         monthly_salary := NULL;
