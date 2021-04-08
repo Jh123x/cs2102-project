@@ -73,14 +73,14 @@ BEGIN
             SELECT offering_launch_date, course_id, SUM(offering_fees) AS total_registration_fees
             FROM Registers
             NATURAL JOIN Sessions
-            NATURAL RIGHT OUTER JOIN CourseOfferingsThisYear
+            NATURAL JOIN CourseOfferingsThisYear
             GROUP BY offering_launch_date, course_id
         ),
         CourseOfferingCreditCardRefundFees AS (
             SELECT offering_launch_date, course_id, COALESCE(SUM(cancel_refund_amount), 0.00) AS total_refunded_fees
             FROM Cancels
             NATURAL JOIN Sessions
-            NATURAL RIGHT OUTER JOIN CourseOfferingsThisYear
+            NATURAL JOIN CourseOfferingsThisYear
             GROUP BY offering_launch_date, course_id
         ),
         RedemptionRegistrationFees AS (
@@ -94,24 +94,25 @@ BEGIN
             FROM Redeems
             NATURAL JOIN RedemptionRegistrationFees
             NATURAL JOIN Sessions
-            NATURAL RIGHT OUTER JOIN CourseOfferingsThisYear
+            NATURAL JOIN CourseOfferingsThisYear
             WHERE NOT redeem_cancelled
             GROUP BY offering_launch_date, course_id
         ),
         CourseOfferingNetRegistrationFees AS (
             SELECT offering_launch_date,
                 course_id,
-                (total_registration_fees - total_refunded_fees + total_redemption_fees) AS net_registration_fees
+                SUM(COALESCE(total_registration_fees, 0) - COALESCE(total_refunded_fees, 0) + COALESCE(total_redemption_fees, 0)) AS net_registration_fees
             FROM CourseOfferingsThisYear
-            NATURAL JOIN CourseOfferingCreditCardRegistrationFees
-            NATURAL JOIN CourseOfferingCreditCardRefundFees
-            NATURAL JOIN CourseOfferingRedemptionRegistrationFees
+            NATURAL FULL OUTER JOIN CourseOfferingCreditCardRegistrationFees
+            NATURAL FULL OUTER JOIN CourseOfferingCreditCardRefundFees
+            NATURAL FULL OUTER JOIN CourseOfferingRedemptionRegistrationFees
+            GROUP BY offering_launch_date, course_id
         ),
         ManagerNetRegistrationFees AS (
             SELECT manager_id, SUM(f.net_registration_fees) AS net_registration_fees
             FROM Managers
             NATURAL LEFT OUTER JOIN ManagerCourseOfferings
-            NATURAL JOIN CourseOfferingNetRegistrationFees f
+            NATURAL LEFT OUTER JOIN CourseOfferingNetRegistrationFees f
             GROUP BY manager_id
         ),
 
