@@ -132,7 +132,7 @@ BEGIN
     INSERT INTO CourseOfferings
     (offering_launch_date, offering_fees, offering_registration_deadline, offering_num_target_registration, offering_seating_capacity, course_id, admin_id, offering_start_date, offering_end_date)
     VALUES
-    (launch_date, fees, registration_deadline, r_capacity, r_capacity, off_course_id, off_admin_id, off_start_date, off_end_date)
+    (launch_date, fees, registration_deadline, num_target_registration, r_capacity, off_course_id, off_admin_id, off_start_date, off_end_date)
     RETURNING * INTO new_course_offering;
     offering_launch_date := new_course_offering.offering_launch_date;
     offering_fees := new_course_offering.offering_fees;
