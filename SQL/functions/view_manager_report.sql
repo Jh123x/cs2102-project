@@ -50,11 +50,10 @@ BEGIN
         ),
 
         /* course offerings */
-        /* Todo: ManagerCourseOfferings and ManagerNumCourseOfferings should be restricted to course offerings that ends in the current year. */
         CourseOfferingsThisYear AS (
             SELECT *
             FROM CourseOfferings
-            WHERE EXTRACT(YEAR FROM offering_end_date) == EXTRACT(YEAR FROM CURRENT_DATE)
+            WHERE EXTRACT(YEAR FROM offering_end_date) = EXTRACT(YEAR FROM CURRENT_DATE)
         ),
         ManagerCourseOfferings AS (
             SELECT manager_id, course_id, offering_launch_date
@@ -92,7 +91,10 @@ BEGIN
         ),
         CourseOfferingRedemptionRegistrationFees AS (
             SELECT offering_launch_date, course_id, SUM(redemption_fees) AS total_redemption_fees
-            FROM Redeems NATURAL JOIN RedemptionRegistrationFees NATURAL JOIN Sessions NATURAL RIGHT OUTER JOIN CourseOfferingsThisYear
+            FROM Redeems
+            NATURAL JOIN RedemptionRegistrationFees
+            NATURAL JOIN Sessions
+            NATURAL RIGHT OUTER JOIN CourseOfferingsThisYear
             WHERE NOT redeem_cancelled
             GROUP BY offering_launch_date, course_id
         ),
@@ -121,7 +123,8 @@ BEGIN
         ),
         ManagerTopCourseOfferingTitles AS (
             SELECT manager_id, ARRAY_AGG(course_title) top_course_offering_titles
-            FROM Managers NATURAL LEFT OUTER JOIN (ManagerCourseOfferingRankedByFees NATURAL JOIN Courses)
+            FROM Managers
+            NATURAL LEFT OUTER JOIN (ManagerCourseOfferingRankedByFees NATURAL JOIN Courses)
             WHERE course_offering_rank = 1
             GROUP BY manager_id
         )
