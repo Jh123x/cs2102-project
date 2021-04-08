@@ -43,7 +43,7 @@ BEGIN
         RAISE EXCEPTION 'Employee ID supplied is invalid (either not an instructor or the employee ID does not exist).';
     END IF;
 
-    IF (session_start_hour >= EXTRACT(HOUR FROM CURRENT_TIME))
+    IF (session_date = CURRENT_DATE AND session_start_hour <= EXTRACT(HOUR FROM CURRENT_TIME)) OR (session_date < CURRENT_DATE)
     THEN
         RAISE EXCEPTION 'Session already started! Cannot update instructor!';
     END IF;
