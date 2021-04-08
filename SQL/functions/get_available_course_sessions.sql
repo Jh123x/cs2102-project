@@ -73,6 +73,13 @@ RETURNS TABLE(
     session_num_remaining_seats INTEGER
 ) AS $$
 BEGIN
+    /* Check for NULLs in arguments */
+    IF offering_launch_date_arg IS NULL
+        OR course_id_arg IS NULL
+    THEN
+        RAISE EXCEPTION 'Arguments to get_available_course_sessions() cannot contain NULL values.';
+    END IF;
+
     RETURN QUERY (
         SELECT 
             s.session_date,
