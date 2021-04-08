@@ -30,9 +30,11 @@ DECLARE
     r RECORD;
 
     cur_date DATE;
-    hour INTEGER;
-    work_hours INTEGER[] := ARRAY[9,10,11,14,15,16,17];
+    cur_hour INTEGER;
+    /* Rooms can only be used from 9am - 12pm and 2pm - 6pm. */
+    start_hours INTEGER[] := ARRAY[9,10,11,14,15,16,17];
 BEGIN
+    /* Check for NULLs in arguments */
     IF start_date IS NULL OR end_date IS NULL THEN
         RAISE EXCEPTION 'Start and end dates cannot be NULL.';
     ELSIF start_date > end_date THEN
@@ -48,18 +50,20 @@ BEGIN
         LOOP
             EXIT WHEN cur_date > end_date;
 
-            day := cur_date;
             room_id := r.room_id;
             room_seating_capacity := r.room_seating_capacity;
+            day := cur_date;
             available_hours := '{}'; /* need to reset to empty array for each room-day pair */
 
-            FOREACH hour IN ARRAY work_hours LOOP
-                IF room_id IN (SELECT rid FROM find_rooms(cur_date, hour, 1))
+            FOREACH hour IN ARRAY start_hours LOOP
+                /* Check room availability for 1 hour block on current iterated date */
+                IF room_id IN (SELECT rid FROM find_rooms(cur_date, cur_hour, 1))
                 THEN
-                    available_hours := array_append(available_hours, hour);
+                    available_hours := array_append(available_hours, cur_hour);
                 END IF;
             END LOOP;
 
+            /* Only include into results if room is free for at least one hour on the current iterated date */
             IF array_length(available_hours, 1) > 0 THEN
                 RETURN NEXT;
             END IF;
