@@ -11,7 +11,8 @@ BEGIN
     WHERE c.course_id = NEW.course_id
     AND c.offering_launch_date = NEW.offering_launch_date;
 
-    IF NEW.session_date BETWEEN start_date AND end_date THEN
+    /*Data sql violates this check for some reason*/
+    IF (NEW.session_date BETWEEN start_date AND end_date) THEN
         RETURN NEW;
     ELSE
         RAISE EXCEPTION 'Session cannot be outside offering start date and end date';
