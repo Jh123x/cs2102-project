@@ -42,8 +42,8 @@ class EUpdateCreditCardTest(BaseTest, unittest.TestCase):
         today = datetime.datetime.combine(
             datetime.datetime.now().date(), datetime.time(0))
         expected = [
-            (id, '1234123412341235', today),
-            (id, '1234123412341234', today)
+            (id, '1234123412341234', today),
+            (id, '1234123412341235', today)
         ]
         res = self.execute_query(query)
         assert set(res) == set(

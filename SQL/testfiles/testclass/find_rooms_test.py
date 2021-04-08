@@ -86,7 +86,7 @@ class ZFindRoomsTest(BaseTest, unittest.TestCase):
         """Add a course to the table
         course title, course description, course area, and duration
         """
-        args = (name, "Description", area, "4")
+        args = (name, "Description", area, "2")
         query = self.generate_query("add_course", args)
         res = self.execute_query(query)
         assert len(res) == 1, "Course is not added successfully"

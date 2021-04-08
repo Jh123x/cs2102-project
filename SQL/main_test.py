@@ -149,7 +149,7 @@ def execute_query(cursor, query_paths: list) -> None:
             continue
         try:
             cursor.execute(query)
-            print(query)
+            # print(query)
         except Exception as e:
             raise ValueError(f"Query: at {path} has error: {e}")
 
