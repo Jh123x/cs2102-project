@@ -10,10 +10,10 @@
 */
 
 DROP FUNCTION IF EXISTS is_active_admin CASCADE;
-CREATE OR REPLACE FUNCTION is_active_admin (admin_id_arg INTEGER)
+CREATE OR REPLACE FUNCTION is_active_admin(admin_id_arg INTEGER, departure_date DATE)
 RETURNS BOOLEAN AS $$
 BEGIN
-    RETURN EXISTS(SELECT * FROM CourseOfferings co WHERE co.admin_id = admin_id_arg);
+    RETURN EXISTS(SELECT * FROM CourseOfferings co WHERE co.admin_id = admin_id_arg AND co.offering_registration_deadline > departure_date);
 END;
 $$ LANGUAGE PLPGSQL;
 
@@ -44,9 +44,9 @@ BEGIN
     THEN
         RAISE EXCEPTION 'Employee identifier % does not exist', employee_id_arg;
     /* Check if they are still handling admin tasks */
-    ELSIF is_active_admin(employee_id_arg) IS TRUE
+    ELSIF is_active_admin(employee_id_arg, employee_depart_date_arg) IS TRUE
     THEN
-        RAISE EXCEPTION 'Employee is still an administrator for a course offering.';
+        RAISE EXCEPTION 'Employee is still an administrator for a course offering that starts after departure date.';
     /* Check if they are manager managing some area */
     ELSIF is_active_manager(employee_id_arg) IS TRUE
     THEN
