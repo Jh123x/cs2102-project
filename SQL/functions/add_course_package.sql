@@ -30,6 +30,11 @@ BEGIN
         RAISE EXCEPTION 'Arguments to add_course_package() cannot contain NULL values.';
     END IF;
 
+    IF package_sale_end_date < CURRENT_DATE
+    THEN
+        RAISE EXCEPTION 'Cannot add a course package which has sales end date that had already past.';
+    END IF;
+
     INSERT INTO CoursePackages
     (package_sale_start_date, package_num_free_registrations, package_sale_end_date, package_name, package_price)
     VALUES

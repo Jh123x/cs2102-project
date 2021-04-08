@@ -91,7 +91,6 @@ BEGIN
 END;
 $$ LANGUAGE PLPGSQL;
 
-
 DROP FUNCTION IF EXISTS get_my_course_package CASCADE;
 CREATE OR REPLACE FUNCTION get_my_course_package (
     customer_id_arg INTEGER
@@ -109,6 +108,11 @@ BEGIN
     IF customer_id_arg IS NULL
     THEN
         RAISE EXCEPTION 'Arguments to get_my_course_package() cannot contain NULL values.';
+    END IF;
+
+    IF NOT EXISTS(SELECT customer_id FROM Customers c WHERE c.customer_id = r_customer_id)
+    THEN
+        RAISE EXCEPTION 'Customer ID % does not exist.', r_customer_id;
     END IF;
 
     IF customer_has_course_packages(customer_id_arg) IS NOT TRUE

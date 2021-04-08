@@ -31,6 +31,11 @@ BEGIN
         RAISE EXCEPTION 'Arguments to get_my_registrations() cannot contain NULL values.';
     END IF;
 
+    IF NOT EXISTS(SELECT customer_id FROM Customers c WHERE c.customer_id = r_customer_id)
+    THEN
+        RAISE EXCEPTION 'Customer ID % does not exist.', r_customer_id;
+    END IF;
+
     RETURN QUERY (
         WITH CourseRegistrations(session_id, offering_launch_date, course_id) AS (
             SELECT Registers.session_id, Registers.offering_launch_date, Registers.course_id

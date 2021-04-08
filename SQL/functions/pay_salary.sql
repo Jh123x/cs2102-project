@@ -17,10 +17,16 @@
 */
 DROP FUNCTION IF EXISTS pay_salary CASCADE;
 CREATE OR REPLACE FUNCTION pay_salary()
-RETURNS TABLE (employee_id INTEGER, name TEXT, status TEXT,
-    num_work_days INTEGER, num_work_hours INTEGER,
-    hourly_rate NUMERIC, monthly_salary NUMERIC, amount_paid NUMERIC)
-AS $$
+RETURNS TABLE (
+    employee_id INTEGER,
+    name TEXT,
+    status TEXT,
+    num_work_days INTEGER,
+    num_work_hours INTEGER,
+    hourly_rate NUMERIC,
+    monthly_salary NUMERIC,
+    amount_paid NUMERIC
+) AS $$
 DECLARE
     curs_part_time CURSOR FOR (
         SELECT * FROM PartTimeEmployees NATURAL JOIN Employees

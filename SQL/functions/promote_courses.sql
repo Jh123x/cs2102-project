@@ -18,7 +18,7 @@
         course offering's registration deadline.
 
     Design Note:
-        IT is possible that a customer registers or redeems some sessions at the exact same time.
+        It is possible that a customer registers or redeems some sessions at the exact same time.
         In such cases, tiebreaking between the 3 latest course offerings registered/redeemed by customer C is performed using the course area name of the respective course (smaller lexicographical order wins).
 
         We further impose a constraint on the results returned:
