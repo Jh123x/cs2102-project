@@ -40,9 +40,9 @@ BEGIN
     IF (payment_method NOT IN ('Redemption', 'Credit Card')) THEN
         RAISE EXCEPTION 'Invalid payment type';
     END IF;
-    
+
     SELECT COUNT(*) INTO num_red_duplicate
-    FROM Redeems r 
+    FROM Redeems r
     JOIN Buys b
     ON b.buy_timestamp = r.buy_timestamp
     WHERE b.customer_id = customer_id_arg
@@ -53,7 +53,7 @@ BEGIN
         RAISE EXCEPTION 'Session has been redeemed!';
     END IF;
 
-    IF (payment_method = 'Redemption') THEN        
+    IF (payment_method = 'Redemption') THEN
         SELECT b.buy_timestamp, b.package_id ,b.buy_num_remaining_redemptions INTO buy_timestamp_arg, package_id_arg, buy_num_remaining_redemptions_arg
         FROM Buys b
         WHERE b.customer_id = customer_id_arg
@@ -87,7 +87,7 @@ BEGIN
     AND r.course_id = course_id_arg
     AND r.session_id = session_id_arg;
 
-    IF (credit_card_number IS NULL) THEN 
+    IF (credit_card_number IS NULL) THEN
         RAISE EXCEPTION 'Credit card is invalid';
     END IF;
 

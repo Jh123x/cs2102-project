@@ -77,7 +77,7 @@ class ZRegisterSessionTest(BaseTest, unittest.TestCase):
 
         after_redemptions = self.execute_query(get_redeem_left_q)[0][0]
         assert before_redemptions == after_redemptions, "The number of redemptions should not change"
-        
+
 
     def test_valid_registration_redeems(self):
         """Test if a valid registration can go through"""
