@@ -11,7 +11,7 @@ DECLARE
 BEGIN
 
     /*Join the tables to obtain the customer for redeems*/
-    IF (TG_TABLE_NAME = 'redeems') THEN
+    IF (TG_TABLE_NAME ILIKE 'Redeems') THEN
         SELECT b.customer_id INTO new_cust_id 
         FROM Redeems r
         JOIN Buys b
