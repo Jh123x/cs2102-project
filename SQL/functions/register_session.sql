@@ -74,7 +74,7 @@ BEGIN
         AND buy_timestamp = buy_timestamp_arg;
 
         INSERT INTO Redeems
-        VALUES(CURRENT_TIMESTAMP, buy_timestamp_arg,session_id_arg,offering_launch_date,course_id_arg);
+        VALUES(statement_timestamp(), buy_timestamp_arg,session_id_arg,offering_launch_date,course_id_arg);
     END IF;
 
     SELECT o.credit_card_number INTO credit_card_number
@@ -97,7 +97,7 @@ BEGIN
 
     IF(payment_method = 'Credit Card') THEN
         INSERT INTO Registers(register_timestamp, customer_id, credit_card_number, session_id, offering_launch_date, course_id)
-        VALUES (CURRENT_TIMESTAMP, customer_id_arg, credit_card_number, session_id_arg, offering_launch_date, course_id_arg);
+        VALUES (statement_timestamp(), customer_id_arg, credit_card_number, session_id_arg, offering_launch_date, course_id_arg);
     END IF;
 
 END;
