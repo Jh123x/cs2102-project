@@ -87,14 +87,14 @@ BEGIN
                 SELECT e2.enrol_date
                 FROM LastSixSessionsRegisteredOrRedeemed e2
                 WHERE e2.customer_id = e.customer_id
-                    AND e2.enrol_date >= (NOW() - interval '6 months')
+                    AND e2.enrol_date >= (NOW() - interval '6 months') /*Filter the date of the transaction*/
                 ORDER BY e2.enrol_date DESC, e2.course_area_name ASC
                 LIMIT 3
             )
         ),
         /*
             A customer is classified as an active customer if the customer has registered for some course offering in the last six months (inclusive of the current month);
-    otherwise, the customer is considered to be inactive customer.
+            otherwise, the customer is considered to be inactive customer.
         */
         InactiveCustomersCourseAreasPairs AS (
             /* select all customers without any course offerings directly */

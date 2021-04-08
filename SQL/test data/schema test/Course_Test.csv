@@ -3,8 +3,8 @@ course_id,course_title,course_description,course_duration,course_area_name
 2,Statistics,cool subject,3,Maths
 3,Computer Security,cool subject,2,Security
 4,Database,cool subject,4,Database
-5,Operatin System,cool subject,7,Computing
-6,Web Security,cool subject,5,Security
-7,Machine Learning,cool subject,6,Computing
-8,Computational Thinking,cool subject,6,Computing
-9,Communication,cool subject,8,English
+5,Operatin System,cool subject,1,Computing
+6,Web Security,cool subject,2,Security
+7,Machine Learning,cool subject,2,Computing
+8,Computational Thinking,cool subject,2,Computing
+9,Communication,cool subject,1,English

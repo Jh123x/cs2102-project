@@ -92,7 +92,7 @@ BEGIN
     END IF;
 
     IF (num_reg_duplicate > 0) THEN
-        RAISE EXCEPTION 'Session has been redeemed!';
+        RAISE EXCEPTION 'Session has been registered!';
     END IF;
 
     IF(payment_method = 'Credit Card') THEN
