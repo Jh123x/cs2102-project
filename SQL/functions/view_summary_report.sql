@@ -64,7 +64,7 @@ BEGIN
 
         SELECT COUNT(*) INTO course_reg_redeemed
         FROM Redeems r
-        WHERE DATE_TRUNC('month', r.redeem_timestamp) = DATE_TRUNC('month', cur_date);
+        WHERE DATE_TRUNC('month', r.redeem_timestamp) = DATE_TRUNC('month', cur_date) AND NOT r.redeem_cancelled;
 
         mm_count := mm_count + 1;
         cur_date := cur_date - INTERVAL '1 month';
