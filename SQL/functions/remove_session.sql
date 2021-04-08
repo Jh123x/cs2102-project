@@ -73,9 +73,9 @@ BEGIN
         AND s.offering_launch_date = offering_launch_date_arg
         AND s.session_id = session_id_arg;
 
-    UPDATE CourseOfferings c
+    UPDATE CourseOfferings co
     SET offering_seating_capacity = (offering_seating_capacity - room_seating_capacity)
-    WHERE c.course_id = course_id_arg
-        AND c.offering_launch_date = offering_launch_date_arg;
+    WHERE co.course_id = course_id_arg
+        AND co.offering_launch_date = offering_launch_date_arg;
 END;
 $$ LANGUAGE plpgsql;

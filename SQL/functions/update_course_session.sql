@@ -8,18 +8,18 @@
 */
 DROP FUNCTION IF EXISTS update_course_session CASCADE;
 CREATE OR REPLACE FUNCTION update_course_session (
-    r_customer_id             INTEGER,
-    r_course_id               INTEGER,
-    r_offering_launch_date    DATE,
+    r_customer_id           INTEGER,
+    r_course_id             INTEGER,
+    r_offering_launch_date  DATE,
     new_session_id          INTEGER
 ) RETURNS VOID
 AS $$
 DECLARE
-    enroll_timestamp         TIMESTAMP;
-    old_session_id      INTEGER;
-    enrolment_table     TEXT;
-    num_seats_available INTEGER;
-    new_session_count INTEGER;
+    enroll_timestamp        TIMESTAMP;
+    old_session_id          INTEGER;
+    enrolment_table         TEXT;
+    num_seats_available     INTEGER;
+    new_session_count       INTEGER;
 BEGIN
     /* Check for NULLs in arguments */
     IF r_customer_id IS NULL
@@ -41,11 +41,12 @@ BEGIN
         RAISE EXCEPTION 'Session not found. Check if the session identifier (course_id, offering_launch_date and session_id) are correct.';
     /* Check if customer identifier supplied exists */
     ELSIF NOT EXISTS(
-        SELECT c.customer_id FROM Customers c
+        SELECT c.customer_id FROM Customers c WHERE c.customer_id = r_customer_id
     ) THEN
         RAISE EXCEPTION 'Customer ID not found.';
     END IF;
 
+    /* Check if customer is enrolled in session specified */
     SELECT e.enroll_timestamp, e.session_id, e.table_name
     INTO enroll_timestamp, old_session_id, enrolment_table
     FROM Enrolment e
