@@ -68,6 +68,5 @@ class ZViewSummaryReportTest(BaseTest, unittest.TestCase):
         """Check if summary report is working correctly"""
         q = self.generate_query("view_summary_report", ('1'))
         res = self.execute_query(q)
-        print(self.execute_query("SELECT * FROM Registers;"))
         expected = [('(4,2021,110.00,200.00,30.00,9.00,2)',)]
         assert res == expected, f'\nOutput:   {res}\nExpected: {expected}'
