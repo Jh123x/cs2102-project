@@ -16,6 +16,7 @@ class ZViewManagerReportTest(BaseTest, unittest.TestCase):
 
         # Add Part time instructor
         self.part_instructor_id = self._add_part_time_instr("ARRAY['OS']", 10)
+        self.part_instructor_id = self._add_part_time_instr("ARRAY['AI']", 10)
 
         # Add courses
         self.course_id1 = self._add_course("Database", 1, "Database")
@@ -66,18 +67,17 @@ class ZViewManagerReportTest(BaseTest, unittest.TestCase):
         """Check if manager report is working correctly"""
         q = self.generate_query("view_manager_report", ())
         res = self.execute_query(q)
-        expected = [('(John,2,3,121.00,{OS})',)]
+        expected = [('(John,3,3,121.00,{OS})',)]
         assert res == expected, f'\nOutput:   {res}\nExpected: {expected}'
 
     def test_view_manager_report_two_highest_courses(self):
         """Check if manager report is working correctly, with 2 highest courses"""
         # Let AI have the same registrations as OS
         # Register sessions
-        self._register_redeems('2021-01-21', self.course_id3, 1, self.customer_id2)
+        self._register_redeems('2021-01-21', self.course_id3, 1, self.customer_id1)
         self._register_redeems('2021-01-21', self.course_id3, 1, self.customer_id3)
 
         q = self.generate_query("view_manager_report", ())
         res = self.execute_query(q)
-        print(res)
-        expected = [('(John,2,3,221.00,{OS,AI})',)]
+        expected = [('(John,3,3,221.00,"{OS,AI}")',)]
         assert res == expected, f'\nOutput:   {res}\nExpected: {expected}'
