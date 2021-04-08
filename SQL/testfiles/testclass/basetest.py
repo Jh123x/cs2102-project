@@ -60,7 +60,11 @@ class BaseTest(object):
             raise AssertionError(msg)
 
     def _add_person(
-        self, role: str, course_areas: str = "ARRAY[]::TEXT[]", salary: int = 10.5
+        self,
+        role: str,
+        course_areas: str = "ARRAY[]::TEXT[]",
+        salary: int = 10.5,
+        join_date: str = "2020-05-03",
     ) -> int:
         """Add a person into the table based on role"""
         args = [
@@ -68,7 +72,7 @@ class BaseTest(object):
             "address",
             "987654321",
             "test@test.com",
-            "2020-05-03",
+            join_date,
             role,
             "full-time",
             str(salary),

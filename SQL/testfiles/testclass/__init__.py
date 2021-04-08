@@ -9,6 +9,7 @@ from .find_instructors_test import FindInstructorsTest
 from .add_course_package_test import GAddCoursePackageTest
 from .add_course_offering_test import HAddCourseOfferingTest
 from .get_available_instructors_test import IGetAvailableInstrutors
+from .pay_salary_test import PaySalaryTest
 from .find_rooms_test import ZFindRoomsTest
 from .get_available_course_packages_test import ZGetAvailableCoursePackages
 from .get_my_course_package_test import ZGetMyCoursePackage
