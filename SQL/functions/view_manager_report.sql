@@ -50,10 +50,14 @@ BEGIN
         ),
 
         /* course offerings */
-        /* Todo: ManagerCourseOfferings and ManagerNumCourseOfferings should be restricted to course offerings that ends in the current year. */
+        CourseOfferingsThisYear AS (
+            SELECT *
+            FROM CourseOfferings
+            WHERE EXTRACT(YEAR FROM offering_end_date) = EXTRACT(YEAR FROM CURRENT_DATE)
+        ),
         ManagerCourseOfferings AS (
             SELECT manager_id, course_id, offering_launch_date
-            FROM CourseOfferings
+            FROM CourseOfferingsThisYear
             NATURAL JOIN Courses
             NATURAL JOIN CourseAreas
         ),
@@ -69,14 +73,14 @@ BEGIN
             SELECT offering_launch_date, course_id, SUM(offering_fees) AS total_registration_fees
             FROM Registers
             NATURAL JOIN Sessions
-            NATURAL RIGHT OUTER JOIN CourseOfferings
+            NATURAL RIGHT OUTER JOIN CourseOfferingsThisYear
             GROUP BY offering_launch_date, course_id
         ),
         CourseOfferingCreditCardRefundFees AS (
             SELECT offering_launch_date, course_id, COALESCE(SUM(cancel_refund_amount), 0.00) AS total_refunded_fees
             FROM Cancels
             NATURAL JOIN Sessions
-            NATURAL RIGHT OUTER JOIN CourseOfferings
+            NATURAL RIGHT OUTER JOIN CourseOfferingsThisYear
             GROUP BY offering_launch_date, course_id
         ),
         RedemptionRegistrationFees AS (
@@ -87,7 +91,10 @@ BEGIN
         ),
         CourseOfferingRedemptionRegistrationFees AS (
             SELECT offering_launch_date, course_id, SUM(redemption_fees) AS total_redemption_fees
-            FROM Redeems NATURAL JOIN RedemptionRegistrationFees NATURAL JOIN Sessions NATURAL RIGHT OUTER JOIN CourseOfferings
+            FROM Redeems
+            NATURAL JOIN RedemptionRegistrationFees
+            NATURAL JOIN Sessions
+            NATURAL RIGHT OUTER JOIN CourseOfferingsThisYear
             WHERE NOT redeem_cancelled
             GROUP BY offering_launch_date, course_id
         ),
@@ -95,7 +102,7 @@ BEGIN
             SELECT offering_launch_date,
                 course_id,
                 (total_registration_fees - total_refunded_fees + total_redemption_fees) AS net_registration_fees
-            FROM CourseOfferings
+            FROM CourseOfferingsThisYear
             NATURAL JOIN CourseOfferingCreditCardRegistrationFees
             NATURAL JOIN CourseOfferingCreditCardRefundFees
             NATURAL JOIN CourseOfferingRedemptionRegistrationFees
@@ -116,7 +123,8 @@ BEGIN
         ),
         ManagerTopCourseOfferingTitles AS (
             SELECT manager_id, ARRAY_AGG(course_title) top_course_offering_titles
-            FROM Managers NATURAL LEFT OUTER JOIN (ManagerCourseOfferingRankedByFees NATURAL JOIN Courses)
+            FROM Managers
+            NATURAL LEFT OUTER JOIN (ManagerCourseOfferingRankedByFees NATURAL JOIN Courses)
             WHERE course_offering_rank = 1
             GROUP BY manager_id
         )

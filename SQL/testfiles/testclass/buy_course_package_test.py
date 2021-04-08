@@ -42,7 +42,7 @@ class ZBuyCoursePackageTest(BaseTest, unittest.TestCase):
 
         # Check if it is in the Buys table
         query = f'SELECT * FROM Buys WHERE package_id = {self.package_id}'
-        today = datetime.datetime.now()
+        today = datetime.datetime.now() + datetime.timedelta(hours=-8)
         res = self.execute_query(query)
         assert len(res) == 1, "Incorrect number of bought packages reported"
         exp = [(today, 10, self.package_id, self.customer_id,'1234123412341234')]
@@ -75,7 +75,7 @@ class ZBuyCoursePackageTest(BaseTest, unittest.TestCase):
 
         # Check if the package is in buys
         query = f'SELECT * FROM Buys WHERE package_id = {package_id}'
-        today = datetime.datetime.now()
+        today = datetime.datetime.now() + datetime.timedelta(hours=-8)
         res = self.execute_query(query)
         assert len(res) == 1, "Incorrect number of bought packages reported"
         expected = [
@@ -136,7 +136,7 @@ class ZBuyCoursePackageTest(BaseTest, unittest.TestCase):
 
         # Check if new package is in the buys table
         query = f'SELECT * FROM Buys WHERE package_id = {self.package_id}'
-        today = datetime.datetime.now()
+        today = datetime.datetime.now() + datetime.timedelta(hours=-8)
         res = self.execute_query(query)
         assert len(
             res) == 1, f"Incorrect number of bought packages reported {res}"

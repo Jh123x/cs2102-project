@@ -46,15 +46,17 @@ FILES_TEST_MAP = [
 
 
 # DB functions
-def connect_db(host: str, port: int, user: str, password: str, dbname: str, options:str = ""):
+def connect_db(
+    host: str, port: int, user: str, password: str, dbname: str, options: str = ""
+):
     """Connect to the database and return the database object"""
     conn = psycopg2.connect(
-        database=dbname, 
-        host=host, 
-        port=port, 
-        user=user, 
-        password=password, 
-        options = options
+        database=dbname,
+        host=host,
+        port=port,
+        user=user,
+        password=password,
+        options=options,
     )
     return conn
 
@@ -408,10 +410,10 @@ if __name__ == "__main__":
 
     # Connect to the database
     with connect_db(
-        HOST, 
-        PORT, 
-        user, 
-        password, 
+        HOST,
+        PORT,
+        user,
+        password,
         DBNAME,
         # options="-c search_path=team80" # Uncomment to load in the team path
     ) as db:
@@ -419,12 +421,15 @@ if __name__ == "__main__":
 
         with db.cursor() as cursor:
 
+            # Set the timezone to the correct timezone
+            cursor.execute("SET TIMEZONE=8;")
+
             # Setup the sql env
-            print('Dropping Triggers')
+            print("Dropping Triggers")
             drop_triggers(cursor, trigger_dir)
-            print('Dropping functions')
+            print("Dropping functions")
             drop_functions(cursor, function_dir)
-            print('Dropping views')
+            print("Dropping views")
             drop_view(cursor, view_dir)
             print("Dropping schema")
             drop_schema(cursor, schema_dir)

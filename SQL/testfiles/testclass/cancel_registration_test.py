@@ -6,7 +6,6 @@ from unittest import expectedFailure
 from psycopg2.errors import RaiseException
 
 
-
 class ZCancelRegistrationTest(BaseTest, unittest.TestCase):
 
     def test_invalid_customer_id(self):
@@ -82,7 +81,7 @@ class ZCancelRegistrationTest(BaseTest, unittest.TestCase):
 
         # Cancel the registration
         args = (str(self.customer_id), str(self.course_id), '2021-01-21')
-        time = datetime.datetime.now()
+        time = datetime.datetime.now() + datetime.timedelta(hours=-8)
         q = self.generate_query('cancel_registration', args)
         self.execute_query(q) #No return
 
@@ -117,7 +116,7 @@ class ZCancelRegistrationTest(BaseTest, unittest.TestCase):
 
         # Cancel the registration
         args = (str(self.customer_id), str(self.course_id), '2021-01-21')
-        time = datetime.datetime.now()
+        time = datetime.datetime.now() + datetime.timedelta(hours=-8)
         q = self.generate_query('cancel_registration', args)
         self.execute_query(q) #No return
 
@@ -128,10 +127,8 @@ class ZCancelRegistrationTest(BaseTest, unittest.TestCase):
         expected = [(time, None, 1, self.course_id, 1, datetime.date(2021, 1, 21), self.customer_id)]
         assert res[0][1:] == expected[0][1:], f"The res is not expected {res}"
         assert self.time_cmp(expected[0][0], res[0][0]), f"The time is not close to one another {res}\n{expected}"
-        
+
         # Check the registration after cancellation
         res = self.execute_query(qr)
         assert len(res) == 1 and len(res[0]) > 1, f"Customer was removed from redeems"
         assert res[0][-1], f"The cancel status should be True {res}"
-
-        
