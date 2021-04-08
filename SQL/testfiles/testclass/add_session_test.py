@@ -1,6 +1,6 @@
 import unittest
 from . import BaseTest
-from datetime import datetime
+from datetime import datetime, date
 from psycopg2.errors import RaiseException, ForeignKeyViolation, CheckViolation
 
 
@@ -27,10 +27,9 @@ class JAddSessionTest(BaseTest, unittest.TestCase):
         )[0]
 
         # Add 2 room
-  
         query = f"INSERT INTO Rooms VALUES('1', 'Room1', '20')"
         self.execute_query(query)
-        
+
         query = f"INSERT INTO Rooms VALUES('2', 'Room2', '20')"
         self.execute_query(query)
 
@@ -121,48 +120,130 @@ class JAddSessionTest(BaseTest, unittest.TestCase):
 
     def test_add_session(self):
         """Adding 2 different session should succeed"""
-        args = (str(self.course_id), '2025-05-21','1', '2025-06-04','10', str(self.instructor_ids[0]),'1')
-        query = self.generate_query("add_session",args)
+        args = (
+            str(self.course_id),
+            "2025-05-21",
+            "1",
+            "2025-06-04",
+            "10",
+            str(self.instructor_ids[0]),
+            "1",
+        )
+        query = self.generate_query("add_session", args)
         res = self.execute_query(query)
-         
+
         assert len(res) == 1, "Session is not added successfully"
 
-        args = (str(self.course_id), '2025-05-21','2', '2025-07-31','10', str(self.instructor_ids[0]), '1')
-        query = self.generate_query("add_session",args)
+        args = (
+            str(self.course_id),
+            "2025-05-21",
+            "2",
+            "2025-07-31",
+            "10",
+            str(self.instructor_ids[0]),
+            "1",
+        )
+        query = self.generate_query("add_session", args)
         res = self.execute_query(query)
 
         assert len(res) == 1, "Session is not added successfully"
-    
+
     def test_add_session_room_occupied_fail(self):
         """Adding a session with room occupied should fail"""
-        args = (str(self.course_id), '2025-05-21','1', '2025-06-04','10', str(self.instructor_ids[0]), '1')
-        query = self.generate_query("add_session",args)
+        args = (
+            str(self.course_id),
+            "2025-05-21",
+            "1",
+            "2025-06-04",
+            "10",
+            str(self.instructor_ids[0]),
+            "1",
+        )
+        query = self.generate_query("add_session", args)
         res = self.execute_query(query)
-        assert len(res) == 1, "Session is not added successfully" 
+        assert len(res) == 1, "Session is not added successfully"
 
-        args = (str(self.course_id1), '2025-05-21','1', '2025-06-04','10', str(self.instructor_ids[1]), '1')
-        query = self.generate_query("add_session",args)
-        res = self.check_fail_test(query,"Session room is occupied", RaiseException)
+        args = (
+            str(self.course_id1),
+            "2025-05-21",
+            "1",
+            "2025-06-04",
+            "10",
+            str(self.instructor_ids[1]),
+            "1",
+        )
+        query = self.generate_query("add_session", args)
+        self.check_fail_test(query, "Session room is occupied", RaiseException)
 
     def test_add_session_instructor_occupied_fail(self):
-
-        args = (str(self.course_id), '2025-05-21','1', '2025-06-04','10', str(self.instructor_ids[0]), '1')
-        query = self.generate_query("add_session",args)
+        """Adding a session with an occupied instructor should fail"""
+        args = (
+            str(self.course_id),
+            "2025-05-21",
+            "1",
+            "2025-06-04",
+            "10",
+            str(self.instructor_ids[0]),
+            "1",
+        )
+        query = self.generate_query("add_session", args)
         res = self.execute_query(query)
-        assert len(res) == 1, "Session is not added successfully" 
+        assert len(res) == 1, "Session is not added successfully"
 
-        args = (str(self.course_id1), '2025-05-21','1', '2025-06-04','10', str(self.instructor_ids[0]), '2')
-        query = self.generate_query("add_session",args)
-        res = self.check_fail_test(query,"Session instructor is unavailable", RaiseException)
+        args = (
+            str(self.course_id1),
+            "2025-05-21",
+            "1",
+            "2025-06-04",
+            "10",
+            str(self.instructor_ids[0]),
+            "2",
+        )
+        query = self.generate_query("add_session", args)
+        self.check_fail_test(query, "Session instructor is unavailable", RaiseException)
 
     def test_add_session_id_duplicate_fail(self):
-
-        args = (str(self.course_id), '2025-05-21','1', '2025-06-04','10', str(self.instructor_ids[0]), '1')
-        query = self.generate_query("add_session",args)
+        """Adding a session with the same id should fail"""
+        args = (
+            str(self.course_id),
+            "2025-05-21",
+            "1",
+            "2025-06-04",
+            "10",
+            str(self.instructor_ids[0]),
+            "1",
+        )
+        query = self.generate_query("add_session", args)
         res = self.execute_query(query)
-        assert len(res) == 1, "Session is not added successfully" 
+        assert len(res) == 1, "Session is not added successfully"
 
-        args = (str(self.course_id), '2025-05-21','1', '2025-07-31','10', str(self.instructor_ids[0]), '2')
-        query = self.generate_query("add_session",args)
-        res = self.check_fail_test(query,"Session ID already exist", RaiseException)
-    
+        args = (
+            str(self.course_id),
+            "2025-05-21",
+            "1",
+            "2025-07-31",
+            "10",
+            str(self.instructor_ids[0]),
+            "2",
+        )
+        query = self.generate_query("add_session", args)
+        self.check_fail_test(query, "Session ID already exist", RaiseException)
+
+    def test_add_session_update_latest_date_success(self):
+        """Adding a session that is later than the lastest date should update the date of the course offering"""
+        args = (
+            str(self.course_id),
+            str(self.db_course_offering[0]),
+            "1",
+            "2025-06-04",
+            "10",
+            str(self.instructor_ids[0]),
+            "1",
+        )
+        q = self.generate_query("add_session", args)
+        self.execute_query(q)
+
+        # Check the date of the course offering table
+        q = f"SELECT offering_end_date, offering_start_date FROM CourseOfferings WHERE course_id = {self.course_id} AND offering_launch_date = '{self.db_course_offering[0]}'"
+        res = self.execute_query(q)
+        assert res == [(date(2025, 6, 4), date(2025, 6, 4))]
