@@ -8,4 +8,4 @@ credit_card_number,credit_card_cvv,credit_card_expiry_date,outcome,reason
 5329566110098690,007,6/8/2026,pass,
 5512067006104390,008,7/8/2026,pass,
 5276695735345690,009,8/8/2026,pass,
-5197566571366670,010,9/8/2026,pass,
+5197566571366670,010,3/2/2021,fail,credit card expiried

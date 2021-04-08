@@ -3,6 +3,11 @@
     grep -RihoPz '(?s)create (constraint )?trigger .+?\n.+?\n' --exclude drop* | awk 'NF>1{printf "DROP TRIGGER IF EXISTS %s ", $NF; if (NF != 0) {getline; printf "ON %s CASCADE;\n", $NF;}}' && grep -RihoP '(function|procedure) .+(?=\()' | awk '{print "DROP", $1, "IF EXISTS", $2, "CASCADE;"}' | uniq
 */
 
+DROP TRIGGER IF EXISTS credit_card_expiry ON Registers CASCADE;
+DROP TRIGGER IF EXISTS credit_card_expiry ON Buys CASCADE;
+DROP TRIGGER IF EXISTS credit_card_expiry ON Owns CASCADE;
+DROP TRIGGER IF EXISTS credit_card_expiry_check ON CreditCards CASCADE;
+DROP TRIGGER IF EXISTS session_duration_check_trigger ON Sessions CASCADE;
 DROP TRIGGER IF EXISTS session_date_check_trigger ON Sessions CASCADE;
 DROP TRIGGER IF EXISTS customer_cancels_trigger ON Cancels CASCADE;
 DROP TRIGGER IF EXISTS customer_redemption_trigger ON Redeems CASCADE;
@@ -39,3 +44,4 @@ DROP FUNCTION IF EXISTS part_full_time_check CASCADE;
 DROP FUNCTION IF EXISTS part_time_hour_check CASCADE;
 DROP FUNCTION IF EXISTS redeems_check CASCADE;
 DROP FUNCTION IF EXISTS session_collision_check CASCADE;
+DROP FUNCTION IF EXISTS get_credit_card_expiry CASCADE;
