@@ -17,6 +17,7 @@ AS $$
 DECLARE
     session_date DATE;
     session_start_hour INTEGER;
+    session_instructor_id INTEGER;
 BEGIN
     /* Check for NULLs in arguments */
     IF offering_launch_date_arg IS NULL
@@ -27,7 +28,8 @@ BEGIN
         RAISE EXCEPTION 'Arguments to update_instructor() cannot contain NULL values.';
     END IF;
 
-    SELECT s.session_date, s.session_start_hour INTO session_date, session_start_hour
+    SELECT s.session_date, s.session_start_hour, s.instructor_id
+    INTO session_date, session_start_hour, session_instructor_id
     FROM Sessions s
     WHERE s.session_id = session_id_arg
         AND s.offering_launch_date = offering_launch_date_arg
@@ -43,23 +45,25 @@ BEGIN
         RAISE EXCEPTION 'Employee ID supplied is invalid (either not an instructor or the employee ID does not exist).';
     END IF;
 
-    IF (session_date = CURRENT_DATE AND session_start_hour <= EXTRACT(HOUR FROM CURRENT_TIME)) OR (session_date < CURRENT_DATE)
+    IF (session_date < CURRENT_DATE)
+        OR (session_date = CURRENT_DATE AND session_start_hour <= EXTRACT(HOUR FROM CURRENT_TIME))
     THEN
         RAISE EXCEPTION 'Session already started! Cannot update instructor!';
     END IF;
 
-    IF instructor_id_arg NOT IN (
-        SELECT employee_id FROM find_instructors(course_id_arg, session_date, session_start_hour)
-    )
+    IF instructor_id_arg = session_instructor_id
+    THEN
+        RAISE NOTICE 'Updating the instructor of the session to the same instructor currently assigned to the session has no effect!';
+    ELSIF instructor_id_arg NOT IN (SELECT employee_id FROM find_instructors(course_id_arg, session_date, session_start_hour))
     THEN
         RAISE EXCEPTION 'This instructor cannot teach this session!';
+    ELSE
+        /* Update the table */
+        UPDATE Sessions s
+        SET instructor_id = instructor_id_arg
+        WHERE s.offering_launch_date = offering_launch_date_arg
+        AND s.course_id = course_id_arg
+        AND s.session_id = session_id_arg;
     END IF;
-
-    /*Update the table*/
-    UPDATE Sessions s
-    SET instructor_id = instructor_id_arg
-    WHERE s.offering_launch_date = offering_launch_date_arg
-    AND s.course_id = course_id_arg
-    AND s.session_id = session_id_arg;
 END;
 $$ LANGUAGE plpgsql;
