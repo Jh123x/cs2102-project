@@ -5,6 +5,7 @@ offering_launch_date,offering_fees,offering_registration_deadline,offering_num_t
 2021-02-05 00:00:00,201,2021-08-21 00:00:00,10,10,4,6,2021-09-02 00:00:00,2021-09-03 00:00:00,pass,
 2021-02-06 00:00:00,202,2021-08-22 00:00:00,30,30,5,7,2021-09-03 00:00:00,2021-09-06 00:00:00,pass,
 2021-02-05 00:00:00,303,2021-08-24 00:00:00,7,7,7,7,2021-09-06 00:00:00,2021-09-06 00:00:00,pass,
+16/2/2021,400,7/4/2021,23,23,6,6,9/9/2021,10/9/2021,pass,
 11/8/2021,400,27/7/2021,23,23,1,6,2021-09-07 00:00:00,2021-09-07 00:00:00,fail ,launch date > registration deadline
 12/2/2021,400,28/9/2021,23,23,2,6,2021-09-08 00:00:00,8/9/2021,fail ,registration deadline > start date
 13/2/2021,400,29/8/2021,23,23,3,7,1/9/2021,1/9/2021,fail ,start date - registration deadline < 10 days
@@ -12,4 +13,3 @@ offering_launch_date,offering_fees,offering_registration_deadline,offering_num_t
 15/2/2021,400,20/8/2021,23,23,5,6,10/9/2021,9/9/2021,fail ,start date > end date
 16/2/2021,400,20/8/2021,23,23,6,1,9/9/2021,10/9/2021,fail ,admin id invalid
 5/2/2021,400,2021-08-24 00:00:00,23,23,7,7,2021-09-07 00:00:00,2021-09-07 00:00:00,fail ,offerings of same course have same launch date
-16/2/2021,400,7/4/2021,23,23,6,6,9/9/2021,10/9/2021,fail ,registration deadline > current date

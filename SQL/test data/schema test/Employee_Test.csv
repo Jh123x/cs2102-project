@@ -1,13 +1,13 @@
 employee_id,employee_name,employee_address,employee_phone,employee_email,employee_join_date,employee_depart_date
-1,John ,Jurong,91234567,john@gmail.com,12/12/2020,
-2,Jane ,Yishun,92345678,jane@gmail.com,13/2/2020,
-3,Alice ,Changi,93456789,alice@gmail.com,15/1/2020,
-4,Bob ,Expo,94567890,bob@gmail.com,17/12/2019,
-5,Tom ,Jurong,95678901,tom@gmail.com,1/1/2018,
-6,Harry,Pasir Ris,96789012,harry@gmail.com,2/2/2018,
-7,Dick ,Bugis,97890123,dick@gmail.com,3/2/2020,
-8,Gary,Pasir Ris,93234123,Gary@gmail.com,15/1/2020,
-9,Zom ,Jurong,93234124,zom@gmail.com,1/1/2018,
-10,Larry,Pasir Ris,93234125,larry@gmail.com,2/2/2018,
-11,Lenny ,Bugis,93234126,lenny@gmail.com,3/2/2020,
-12,Tary,Pasir Ris,93234127,tary@gmail.com,15/1/2020,
+1,John ,Jurong,91234567,john@gmail.com,12/12/2020,NULL
+2,Jane ,Yishun,92345678,jane@gmail.com,13/2/2020,NULL
+3,Alice ,Changi,93456789,alice@gmail.com,15/1/2020,NULL
+4,Bob ,Expo,94567890,bob@gmail.com,17/12/2019,NULL
+5,Tom ,Jurong,95678901,tom@gmail.com,1/1/2018,NULL
+6,Harry,Pasir Ris,96789012,harry@gmail.com,2/2/2018,NULL
+7,Dick ,Bugis,97890123,dick@gmail.com,3/2/2020,NULL
+8,Gary,Pasir Ris,93234123,Gary@gmail.com,15/1/2020,NULL
+9,Zom ,Jurong,93234124,zom@gmail.com,1/1/2018,NULL
+10,Larry,Pasir Ris,93234125,larry@gmail.com,2/2/2018,NULL
+11,Lenny ,Bugis,93234126,lenny@gmail.com,3/2/2020,NULL
+12,Tary,Pasir Ris,93234127,tary@gmail.com,15/1/2020,NULL

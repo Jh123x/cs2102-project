@@ -1,17 +1,17 @@
 employee_id,employee_name,employee_address,employee_phone,employee_email,employee_join_date,employee_depart_date,outcome,reason
-1,John ,Jurong,91234567,john@gmail.com,12/12/2020,,pass,
-2,Jane ,Yishun,92345678,jane@gmail.com,13/2/2020,,pass,
-3,Alice ,Changi,93456789,alice@gmail.com,15/1/2020,,pass,
-4,Bob ,Expo,94567890,bob@gmail.com,17/12/2019,,pass,
-5,Tom ,Jurong,95678901,tom@gmail.com,1/1/2018,,pass,
-6,Harry,Pasir Ris,96789012,harry@gmail.com,2/2/2018,,pass,
-7,Dick ,Bugis,97890123,dick@gmail.com,3/2/2020,,pass,
-8,Gary,Pasir Ris,93234123,Gary@gmail.com,15/1/2020,,pass,
-9,Zom ,Jurong,93234124,zom@gmail.com,1/1/2018,,pass,
-10,Larry,Pasir Ris,93234125,larry@gmail.com,2/2/2018,,pass,
-11,Lenny ,Bugis,93234126,lenny@gmail.com,3/2/2020,,pass,
-12,Tary,Pasir Ris,93234127,tary@gmail.com,15/1/2020,,pass,
-13,Don,Jurong,87890213,Don@gmail.com,15/1/2021,,pass,Suppose to flag this employee for not having a specific role
-14,Ton ,Yishun,84312311,Ton@gmail.com,16/1/2021,,pass,Suppose to flag this for not being a part time/full time
+1,John ,Jurong,91234567,john@gmail.com,12/12/2020,NULL,pass,
+2,Jane ,Yishun,92345678,jane@gmail.com,13/2/2020,NULL,pass,
+3,Alice ,Changi,93456789,alice@gmail.com,15/1/2020,NULL,pass,
+4,Bob ,Expo,94567890,bob@gmail.com,17/12/2019,NULL,pass,
+5,Tom ,Jurong,95678901,tom@gmail.com,1/1/2018,NULL,pass,
+6,Harry,Pasir Ris,96789012,harry@gmail.com,2/2/2018,NULL,pass,
+7,Dick ,Bugis,97890123,dick@gmail.com,3/2/2020,NULL,pass,
+8,Gary,Pasir Ris,93234123,Gary@gmail.com,15/1/2020,NULL,pass,
+9,Zom ,Jurong,93234124,zom@gmail.com,1/1/2018,NULL,pass,
+10,Larry,Pasir Ris,93234125,larry@gmail.com,2/2/2018,NULL,pass,
+11,Lenny ,Bugis,93234126,lenny@gmail.com,3/2/2020,NULL,pass,
+12,Tary,Pasir Ris,93234127,tary@gmail.com,15/1/2020,NULL,pass,
+13,Don,Jurong,87890213,Don@gmail.com,15/1/2021,NULL,pass,Suppose to flag this employee for not having a specific role
+14,Ton ,Yishun,84312311,Ton@gmail.com,16/1/2021,NULL,pass,Suppose to flag this for not being a part time/full time
 15,Potato,Bishan,98901234,potato@gmail.com,3/2/2020,1/2/2019,fail,depart date is before join date
-16,Pitato,Bishan,99012345,pitato~gmail.com,1/1/2018,,fail,email is invalid
+16,Pitato,Bishan,99012345,pitato~gmail.com,1/1/2018,NULL,fail,email is invalid
