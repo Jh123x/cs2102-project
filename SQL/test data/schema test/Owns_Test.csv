@@ -1,4 +1,4 @@
-customer_id,credit_card_number,own_from_timestamp
+customer_id,credit_card_number,own_from_date
 1,2221009800535070,2021-01-31 00:00:00
 2,2720992912410510,2021-02-01 00:00:00
 3,5221346498258540,2021-02-02 00:00:00

@@ -151,7 +151,7 @@ BEGIN
         
     LOOP
         session_end_hour := sessions_arr[counter].session_start_hour + course_duration;
-        PERFORM (SELECT add_session(off_course_id,launch_date,counter,sessions_arr[counter].session_date,sessions_arr[counter].session_start_hour,session_end_hour,instructor_id,sessions_arr[counter].room_id));
+        PERFORM (SELECT add_session(off_course_id,launch_date,counter,sessions_arr[counter].session_date,sessions_arr[counter].session_start_hour,instructor_id,sessions_arr[counter].room_id));
     END LOOP;
 
    

@@ -24,6 +24,7 @@ DECLARE
     new_package RECORD;
     session_end_hour INTEGER;
     session_offering_registration_deadline DATE;
+    session_duration INTEGER;
 BEGIN
     /* Check for NULLs in arguments */
     IF session_course_id IS NULL
@@ -64,8 +65,19 @@ BEGIN
     END IF;
 
     /* Todo: check room availability */
-    /* Todo: check instructor availability */
 
+    SELECT course_duration INTO session_duration FROM Courses WHERE session_course_id = course_id;
+    IF NOT EXISTS (SELECT rid FROM find_rooms(session_date, session_start_hour,session_duration ) WHERE rid = room_id)
+    THEN 
+        RAISE EXCEPTION 'Room % is in use', room_id;
+    END IF;
+
+    /* Todo: check instructor availability */
+    IF NOT EXISTS (SELECT employee_id FROM find_instructors(session_course_id,session_date,session_start_hour) WHERE employee_id = instructor_id)
+    THEN
+        RAISE EXCEPTION 'Instructor is not available';
+    END IF;
+    
     INSERT INTO Sessions
     (session_id, session_date, session_start_hour, session_end_hour, course_id, offering_launch_date, room_id, instructor_id)
     VALUES

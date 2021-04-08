@@ -3,19 +3,18 @@
 CREATE OR REPLACE FUNCTION session_date_check() RETURNS TRIGGER
 AS $$
 DECLARE
-    start_date DATE;
-    end_date DATE;
+    register_date DATE;
 BEGIN
-    SELECT c.offering_start_date, c.offering_end_date INTO start_date, end_date
+    SELECT c.offering_registration_deadline INTO register_date
     FROM CourseOfferings c
     WHERE c.course_id = NEW.course_id
     AND c.offering_launch_date = NEW.offering_launch_date;
 
     /*Data sql violates this check for some reason*/
-    IF (NEW.session_date BETWEEN start_date AND end_date) THEN
+    IF (CURRENT_DATE <= register_date) THEN
         RETURN NEW;
     ELSE
-        RAISE EXCEPTION 'Session cannot be outside offering start date and end date';
+        RAISE EXCEPTION 'Session cannot be added after registration deadline';
     END IF;
 
 END;

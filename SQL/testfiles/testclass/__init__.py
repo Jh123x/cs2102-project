@@ -22,3 +22,4 @@ from .update_instructor_test import ZUpdateInstructorTest
 from .update_room_test import ZUpdateRoomTest
 from .remove_session_test import ZRemoveSessionTest
 from .buy_course_package_test import ZBuyCoursePackageTest
+from .add_session_test import JAddSessionTest

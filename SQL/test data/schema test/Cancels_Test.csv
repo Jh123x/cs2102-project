@@ -1,2 +1,2 @@
-cancel_timestamp,cancel_refund_amount,cancel_package_credit,course_id,session_id,offering_launch_date,customer_id
+cancel_timestamp,cancel_refund_amt,cancel_package_credit,course_id,session_id,offering_launch_date,customer_id
 2021-08-09 00:00:00,180.9,0,4,2,2021-02-05 00:00:00,6
