@@ -54,7 +54,7 @@ BEGIN
     END IF;
 
     /*Store the timestamp*/
-    SELECT CURRENT_TIMESTAMP INTO r_buy_timestamp;
+    SELECT statement_timestamp() INTO r_buy_timestamp;
 
     /* Do buying here with Credit Card number */
     INSERT INTO Buys
