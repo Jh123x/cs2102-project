@@ -7,8 +7,6 @@ CREATE TABLE CourseOfferings (
     offering_seating_capacity INTEGER NOT NULL,
     course_id INTEGER NOT NULL,
     admin_id INTEGER NOT NULL,
-
-    /* Start and end date to be added to view */
     offering_start_date DATE NOT NULL,
     offering_end_date DATE NOT NULL,
 
