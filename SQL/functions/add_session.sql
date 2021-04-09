@@ -16,8 +16,8 @@ CREATE OR REPLACE FUNCTION add_session (
     session_number INTEGER,
     session_date DATE,
     session_start_hour INTEGER,
-    instructor_id INTEGER,
-    room_id INTEGER
+    session_instructor_id INTEGER,
+    session_room_id INTEGER
 )
 RETURNS TABLE (session_id INTEGER) AS $$
 DECLARE
@@ -25,6 +25,7 @@ DECLARE
     session_end_hour INTEGER;
     session_offering_registration_deadline DATE;
     session_duration INTEGER;
+    new_room_seating_capacity INTEGER;
 BEGIN
     /* Check for NULLs in arguments */
     IF session_course_id IS NULL
@@ -32,10 +33,22 @@ BEGIN
         OR session_number IS NULL
         OR session_date IS NULL
         OR session_start_hour IS NULL
-        OR instructor_id IS NULL
-        OR room_id IS NULL
+        OR session_instructor_id IS NULL
+        OR session_room_id IS NULL
     THEN
         RAISE EXCEPTION 'Arguments to add_session() cannot contain NULL values.';
+    ELSIF NOT EXISTS(SELECT instructor_id FROM Instructors i WHERE i.instructor_id = session_instructor_id)
+    THEN
+        RAISE EXCEPTION 'Instructor ID % does not exists.', session_instructor_id;
+    END IF;
+
+    SELECT r.room_seating_capacity INTO new_room_seating_capacity
+    FROM Rooms r
+    WHERE r.room_id = session_room_id;
+
+    IF new_room_seating_capacity IS NULL
+    THEN
+        RAISE EXCEPTION 'Room ID % does not exists.', session_room_id;
     END IF;
 
     session_id := session_number;
@@ -65,12 +78,12 @@ BEGIN
     END IF;
 
     SELECT course_duration INTO session_duration FROM Courses WHERE session_course_id = course_id;
-    IF NOT EXISTS (SELECT rid FROM find_rooms(session_date, session_start_hour,session_duration ) WHERE rid = room_id)
+    IF NOT EXISTS (SELECT rid FROM find_rooms(session_date, session_start_hour,session_duration ) WHERE rid = session_room_id)
     THEN 
-        RAISE EXCEPTION 'Room % is in use', room_id;
+        RAISE EXCEPTION 'Room % is in use', session_room_id;
     END IF;
 
-    IF NOT EXISTS (SELECT employee_id FROM find_instructors(session_course_id,session_date,session_start_hour) WHERE employee_id = instructor_id)
+    IF NOT EXISTS (SELECT employee_id FROM find_instructors(session_course_id,session_date,session_start_hour) WHERE employee_id = session_instructor_id)
     THEN
         RAISE EXCEPTION 'Instructor is not available';
     END IF;
@@ -78,7 +91,12 @@ BEGIN
     INSERT INTO Sessions
     (session_id, session_date, session_start_hour, session_end_hour, course_id, offering_launch_date, room_id, instructor_id)
     VALUES
-    (session_id, session_date, session_start_hour, session_end_hour, session_course_id, session_offering_launch_date, room_id, instructor_id);
+    (session_id, session_date, session_start_hour, session_end_hour, session_course_id, session_offering_launch_date, session_room_id, session_instructor_id);
+
+    UPDATE CourseOfferings co
+    SET offering_seating_capacity = (offering_seating_capacity + new_room_seating_capacity)
+    WHERE co.course_id = session_course_id
+        AND co.offering_launch_date = session_offering_launch_date;
     RETURN NEXT;
 END;
 $$ LANGUAGE plpgsql;
