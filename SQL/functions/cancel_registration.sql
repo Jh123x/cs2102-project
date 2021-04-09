@@ -35,7 +35,7 @@ BEGIN
         SELECT offering_launch_date FROM CourseOfferings co
         WHERE co.course_id = course_id_arg
             AND co.offering_launch_date = offering_launch_date_arg
-    )
+    ) THEN
         RAISE EXCEPTION 'Course offering specified does not exist.';
     END IF;
 
@@ -77,7 +77,7 @@ BEGIN
             package_credit := 1;
 
             /* Refund the redeemed session by incrementing customer's Buys.num_remaining_redemptions */
-            SELECT b.buy_timestamp INTO var_buy_timestamp
+            SELECT b.buy_timestamp INTO buy_timestamp_var
             FROM Redeems r
             NATURAL JOIN Buys b
             WHERE r.redeem_timestamp = enroll_timestamp
@@ -85,7 +85,7 @@ BEGIN
 
             UPDATE Buys
             SET buy_num_remaining_redemptions = (buy_num_remaining_redemptions + 1)
-            WHERE buy_timestamp = var_buy_timestamp;
+            WHERE buy_timestamp = buy_timestamp_var;
         ELSE
             package_credit := 0;
         END IF;

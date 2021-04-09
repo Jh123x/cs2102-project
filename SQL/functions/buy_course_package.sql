@@ -22,7 +22,7 @@ BEGIN
     ELSIF NOT EXISTS(SELECT customer_id FROM Customers c WHERE c.customer_id = customer_id_arg)
     THEN
         RAISE EXCEPTION 'Customer ID % does not exist.', customer_id_arg;
-    ELSIF NOT EXISTS(SELECT package_id FROM CoursePackages cp WHERE cp.package_id = package_id_arg)
+    ELSIF NOT EXISTS(SELECT package_id FROM CoursePackages cp WHERE cp.package_id = package_id_arg) THEN
         RAISE EXCEPTION 'Package ID % does not exist.', package_id_arg;
     END IF;
 

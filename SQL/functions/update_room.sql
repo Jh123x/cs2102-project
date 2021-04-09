@@ -82,7 +82,7 @@ BEGIN
 
     SELECT r.room_seating_capacity INTO new_room_seating_capacity
     FROM Rooms r
-    WHERE room_id_arg = r.room_id
+    WHERE room_id_arg = r.room_id;
 
     IF num_enrolled > new_room_seating_capacity
     THEN
