@@ -131,13 +131,19 @@ BEGIN
         )
 
         /* oh yea everything come together */
-        SELECT m.manager_name, ca.num_course_areas, co.num_course_offerings, f.net_registration_fees, t.top_course_offering_titles
+        SELECT m.manager_name,
+               COALESCE(ca.num_course_areas, 0),
+               COALESCE(co.num_course_offerings, 0),
+               COALESCE(f.net_registration_fees, 0),
+               COALESCE(t.top_course_offering_titles, '{}')
         FROM Managers
             NATURAL JOIN ManagerNames m
-            NATURAL JOIN ManagerNumCourseAreas ca
-            NATURAL JOIN ManagerNumCourseOfferings co
-            NATURAL JOIN ManagerNetRegistrationFees f
-            NATURAL JOIN ManagerTopCourseOfferingTitles t
+            NATURAL LEFT OUTER JOIN(
+                ManagerNumCourseAreas ca
+                NATURAL JOIN ManagerNumCourseOfferings co
+                NATURAL JOIN ManagerNetRegistrationFees f
+                NATURAL JOIN ManagerTopCourseOfferingTitles t
+            )
         ORDER BY m.manager_name ASC
     );
 END;
