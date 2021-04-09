@@ -211,3 +211,14 @@ class BaseTest(object):
     def time_cmp(self, time1: datetime.datetime, time2: datetime.datetime) -> bool:
         """Compare timestamps to see if they are close enough"""
         return time1 - time2 < datetime.timedelta(seconds=0.5)
+
+    def off_triggers(self):
+        """Turn off trigger"""
+        q = 'SET session_replication_role = replica;'
+        self.execute_query(q)
+
+    def on_triggers(self):
+        """Turn on trigger"""
+        q = 'SET session_replication_role = DEFAULT;'
+        self.execute_query(q)
+
