@@ -21,7 +21,6 @@ DECLARE
     refund_amt          DEC(64,2);
     package_credit      INTEGER;
     buy_timestamp_var   TIMESTAMP;
-    var_buy_num_remaining_redemptions INTEGER;
 BEGIN
     /* Check for NULLs in arguments */
     IF customer_id_arg IS NULL
@@ -78,14 +77,14 @@ BEGIN
             package_credit := 1;
 
             /* Refund the redeemed session by incrementing customer's Buys.num_remaining_redemptions */
-            SELECT b.buy_timestamp, b.buy_num_remaining_redemptions INTO var_buy_timestamp, var_buy_num_remaining_redemptions
+            SELECT b.buy_timestamp INTO var_buy_timestamp
             FROM Redeems r
             NATURAL JOIN Buys b
             WHERE r.redeem_timestamp = enroll_timestamp
             LIMIT 1;
 
             UPDATE Buys
-            SET buy_num_remaining_redemptions = (var_buy_num_remaining_redemptions + 1)
+            SET buy_num_remaining_redemptions = (buy_num_remaining_redemptions + 1)
             WHERE buy_timestamp = var_buy_timestamp;
         ELSE
             package_credit := 0;
