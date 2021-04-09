@@ -19,16 +19,14 @@ CREATE OR REPLACE FUNCTION get_offering_num_enrolled (
 DECLARE
     num_enrolled INTEGER;
 BEGIN
-    SELECT SUM(r.room_seating_capacity - get_session_num_remaining_seats(s.session_id, s.offering_launch_date, s.course_id)) INTO num_enrolled
+    SELECT SUM(r.room_seating_capacity - get_session_num_remaining_seats(s.session_id, s.offering_launch_date, s.course_id)) 
+    INTO num_enrolled
     FROM Sessions s
     NATURAL JOIN Rooms r
     WHERE s.offering_launch_date = offering_launch_date_arg
         AND s.course_id = course_id_arg;
 
-    IF num_enrolled IS NULL
-    THEN
-        num_enrolled := 0;
-    END IF;
+    num_enrolled := COALESCE(num_enrolled, 0);
 
     RETURN num_enrolled;
 END;
@@ -76,7 +74,7 @@ BEGIN
             /* All pairs of earlier -> later course offerings this year must have increasing number of registrations */
             AND TRUE = ALL(
                 SELECT (
-                    get_offering_num_enrolled(co.offering_launch_date, co.course_id) >
+                    get_offering_num_enrolled(co.offering_launch_date, co.course_id) <
                     get_offering_num_enrolled(co2.offering_launch_date, co2.course_id)
                 ) AS isIncreasinglyPopular
                 FROM CourseOfferings co, CourseOfferings co2
