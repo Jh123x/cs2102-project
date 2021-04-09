@@ -25,9 +25,9 @@ DECLARE
             WHERE s.room_id = r.room_id
             AND s.session_date = r_session_date
             AND (
-                r_session_start_hour BETWEEN s.session_start_hour AND s.session_end_hour
+                r_session_start_hour BETWEEN s.session_start_hour AND (s.session_end_hour - 1)
                 OR
-                s.session_start_hour BETWEEN r_session_start_hour AND end_hour
+                s.session_start_hour BETWEEN r_session_start_hour AND (end_hour - 1)
             )
         ));
     rec RECORD;

@@ -79,18 +79,11 @@ BEGIN
     /*Checking the conditions of course offering*/
     IF (launch_date > registration_deadline) THEN
         RAISE EXCEPTION 'Offering registration date cannot be earlier than launch date';
-    END IF ;
-    
-    IF (num_target_registration < 0) THEN
+    ELSIF (num_target_registration < 0) THEN
         RAISE EXCEPTION 'Offering target registration should be more than or equal to 0';
-    END IF ;
-
-    IF (off_start_date > off_end_date) THEN
+    ELSIF (off_start_date > off_end_date) THEN
         RAISE EXCEPTION 'Offering end date cannot be earlier than start date';
-
-    END IF;
-
-    IF (off_start_date < registration_deadline + INTEGER '10' ) THEN
+    ELSIF (off_start_date < registration_deadline + INTEGER '10' ) THEN
         RAISE EXCEPTION 'Offering start date should be at least 10 days after the registration deadline ';
     END IF;    
 
@@ -120,37 +113,22 @@ BEGIN
         
     END LOOP;
 
-    IF (missing_instructor = TRUE) THEN
+    IF (missing_instructor) THEN
         RAISE EXCEPTION 'Offering does not have enough instructors for sessions';
-    END IF;
-
-    IF (r_capacity < num_target_registration) THEN
+    ELSIF (r_capacity < num_target_registration) THEN
         RAISE EXCEPTION 'Capacity is less than target number of registration';
     END IF;
 
     /*Inserting into course offering*/
-    INSERT INTO CourseOfferings
-    (offering_launch_date, offering_fees, offering_registration_deadline, offering_num_target_registration, offering_seating_capacity, course_id, admin_id, offering_start_date, offering_end_date)
-    VALUES
+    INSERT INTO CourseOfferings VALUES
     (launch_date, fees, registration_deadline, num_target_registration, r_capacity, off_course_id, off_admin_id, off_start_date, off_end_date)
-    RETURNING * INTO new_course_offering;
-    offering_launch_date := new_course_offering.offering_launch_date;
-    offering_fees := new_course_offering.offering_fees;
-    offering_registration_deadline := new_course_offering.offering_registration_deadline;
-    offering_num_target_registration := new_course_offering.offering_num_target_registration;
-    offering_seating_capacity := new_course_offering.offering_seating_capacity;
-    course_id := new_course_offering.course_id;
-    admin_id := new_course_offering.admin_id;
-    offering_start_date := new_course_offering.offering_start_date;
-    offering_end_date := new_course_offering.offering_end_date;
+    RETURNING * INTO offering_launch_date, offering_fees, offering_registration_deadline, offering_num_target_registration, offering_seating_capacity, course_id, admin_id, offering_start_date, offering_end_date;
 
     RETURN NEXT;
 
     /*Inserting Sessions*/
     FOR counter in 1..num_sessions 
-        
     LOOP
-        session_end_hour := sessions_arr[counter].session_start_hour + course_duration;
         PERFORM (SELECT add_session(off_course_id,launch_date,counter,sessions_arr[counter].session_date,sessions_arr[counter].session_start_hour,instructor_id,sessions_arr[counter].room_id));
     END LOOP;
 
