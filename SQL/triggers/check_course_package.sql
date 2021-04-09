@@ -1,3 +1,4 @@
+DROP FUNCTION IF EXISTS check_course_package CASCADE;
 CREATE OR REPLACE FUNCTION check_course_package() RETURNS TRIGGER AS $$
 DECLARE
     sale_start DATE;
@@ -17,7 +18,7 @@ BEGIN
     RETURN NEW;
 END;
 $$ LANGUAGE PLPGSQL;
-
+DROP TRIGGER IF EXISTS check_course_package_trigger ON Buys CASCADE;
 CREATE TRIGGER check_course_package_trigger
 BEFORE INSERT ON Buys
 FOR EACH ROW EXECUTE FUNCTION check_course_package();
