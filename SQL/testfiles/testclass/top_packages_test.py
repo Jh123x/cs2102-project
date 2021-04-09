@@ -56,7 +56,7 @@ class TopPackagesTest(BaseTest, unittest.TestCase):
         for _ in range(3):
             self.execute_query(q)
             self.execute_query(q2)
-        
+
     def test_top_package_returns_top_package(self):
         """Test if the top package actually returns the package"""
         self.setup_empty_packages()
@@ -81,10 +81,10 @@ class TopPackagesTest(BaseTest, unittest.TestCase):
         assert len(res) == 2, f'The top 2 packages are not found {res}'
         assert res == [
             (f'({self.first_package},0,10.00,2021-04-01,2021-06-02,5)',),
-            (f'({self.second_package},0,10.00,2021-04-04,2021-06-03,4)',)
+            (f'({self.second_package},0,10.00,2021-04-01,2021-06-03,4)',)
         ], f'The top 2 packages are not found {res}'
 
-    def test_top_2_package_returns_top_2_package(self):
+    def test_top_3_package_returns_top_4_package(self):
         """Test if the top 3 package actually returns the packages"""
         self.setup_empty_packages()
         self.setup_filled_packages()

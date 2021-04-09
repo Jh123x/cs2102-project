@@ -17,8 +17,7 @@ BEGIN
         HAVING COUNT(employee_id) > 1
     )
     THEN
-        RAISE EXCEPTION 'Employees cannot have multiple roles.';
-        ROLLBACK;
+        RAISE EXCEPTION 'There are employees with multiple roles after operation.';
     END IF;
 
     RETURN NULL;

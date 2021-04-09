@@ -43,6 +43,8 @@ DECLARE
     session_start_hour INTEGER;
     session_end_hour INTEGER;
     available_hours INTEGER[];
+    old_room_seating_capacity INTEGER;
+    new_room_seating_capacity INTEGER;
 BEGIN
     /* Check for NULLs in arguments */
     IF offering_launch_date_arg IS NULL
@@ -54,9 +56,10 @@ BEGIN
     END IF;
 
     /* Check if arguments yield a valid session */
-    SELECT s.session_date, s.session_start_hour, s.session_end_hour, s.room_id
-    INTO session_date, session_start_hour, session_end_hour, current_room_id
+    SELECT s.session_date, s.session_start_hour, s.session_end_hour, s.room_id, r.room_seating_capacity
+    INTO session_date, session_start_hour, session_end_hour, current_room_id, old_room_seating_capacity
     FROM Sessions s
+    NATURAL JOIN Rooms r
     WHERE s.offering_launch_date = offering_launch_date_arg
         AND s.course_id = course_id_arg
         AND s.session_id = session_id_arg;
@@ -77,7 +80,11 @@ BEGIN
         AND e.offering_launch_date = offering_launch_date_arg
         AND e.course_id = course_id_arg;
 
-    IF num_enrolled > (SELECT r.room_seating_capacity FROM Rooms r WHERE room_id_arg = r.room_id)
+    SELECT r.room_seating_capacity INTO new_room_seating_capacity
+    FROM Rooms r
+    WHERE room_id_arg = r.room_id;
+
+    IF num_enrolled > new_room_seating_capacity
     THEN
         RAISE EXCEPTION 'Cannot accomodate all active registrations in room %.', room_id_arg;
     END IF;
@@ -111,5 +118,10 @@ BEGIN
     WHERE s.session_id = session_id_arg
         AND s.offering_launch_date = offering_launch_date_arg
         AND s.course_id = course_id_arg;
+
+    UPDATE CourseOfferings co
+    SET offering_seating_capacity = (offering_seating_capacity - old_room_seating_capacity + new_room_seating_capacity)
+    WHERE co.course_id = course_id_arg
+        AND co.offering_launch_date = offering_launch_date_arg;
 END;
 $$ LANGUAGE plpgsql;

@@ -36,7 +36,7 @@ class IGetAvailableInstrutors(BaseTest, unittest.TestCase):
 
         query = f"INSERT INTO Rooms VALUES('3', 'Room3', '20')"
         self.execute_query(query)
-        
+
         query = f"INSERT INTO Rooms VALUES('4', 'Room4', '20')"
         self.execute_query(query)
 
@@ -139,7 +139,7 @@ class IGetAvailableInstrutors(BaseTest, unittest.TestCase):
         res = self.execute_query(query)[0][0]
 
         # Check cat for offering
-        if "Network" == res:           
+        if "Network" == res:
             offering = self.net_course_offering
         elif "Database" == res:
             offering = self.db_course_offering
@@ -147,7 +147,7 @@ class IGetAvailableInstrutors(BaseTest, unittest.TestCase):
             raise ValueError(f"Wrong Category {res}")
 
         self.rid += 1
-        
+
         query = f"INSERT INTO Sessions VALUES ('{sess_id}', '{self.session_date}', {sess_time}, {sess_time +1}, '{offering[5]}', '{offering[0]}', {self.rid}, {inst_id})"
         self.execute_query(query)
         return 1
@@ -173,12 +173,13 @@ class IGetAvailableInstrutors(BaseTest, unittest.TestCase):
         starttime = (9,10,14,15,16)
         for index in range(5):
            self.make_not_free(self.instructor_ids[index],index+1,starttime[index])
-        
+
         args = (str(self.course_id),  "2025-06-10", "2025-06-10")
         query = self.generate_query("get_available_instructors", args)
         res = self.execute_query(query)
-        
-        expected = [('(152,Instructor0,1,2025-06-10,"{11,14,15,16,17}")',), ('(153,Instructor1,1,2025-06-10,"{14,15,16,17}")',), ('(155,Instructor3,1,2025-06-10,"{9,10,11,17}")',), ('(156,Instructor4,1,2025-06-10,"{9,10,11,14}")',)]
+
+        expected = [('({},Instructor0,1,2025-06-10,"{{11,14,15,16,17}}")'.format(self.instructor_ids[0]),),
+                    ('({},Instructor1,1,2025-06-10,"{{14,15,16,17}}")'.format(self.instructor_ids[1]),),
+                    ('({},Instructor3,1,2025-06-10,"{{9,10,11,17}}")'.format(self.instructor_ids[3]),),
+                    ('({},Instructor4,1,2025-06-10,"{{9,10,11,14}}")'.format(self.instructor_ids[4]),)]
         assert res == expected, f'\nOutput:   {res}\nExpected: {expected}'
-        
-        

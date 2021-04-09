@@ -37,7 +37,7 @@ class JPopularCoursesTest(BaseTest, unittest.TestCase):
         self.customer_id3 = self._add_customer('Test3', "test", 965432101, 'test3@test.com', '1234123412351234', '123', '2025-05-31')
         self.customer_id4 = self._add_customer('Test4', "test", 954321012, 'test4@test.com', '1234123412341235', '123', '2025-05-31')
         self.customer_id5 = self._add_customer('Test5', "test", 943210123, 'test5@test.com', '1235123412341234', '123', '2025-05-31')
-        
+
         # Add 5 course offering
         self.course_offering1 = self._add_course_offering('2021-01-21', 10, [('2021-06-21', 9, self.room_id)], '2021-05-31', 20, self.course_id1, self.admin_id)
         self.course_offering2 = self._add_course_offering('2021-02-21', 10, [('2021-06-22', 10, self.room_id2)], '2021-05-31', 20, self.course_id2, self.admin_id)
@@ -113,7 +113,7 @@ class JPopularCoursesTest(BaseTest, unittest.TestCase):
         q = self.generate_query("popular_courses", args)
         res = self.execute_query(q)
 
-        expected =[('(68,Networks,Network,2,2)',)]
+        expected =[('({},Networks,Network,2,2)'.format(self.course_id2),)]
         assert res == expected, f'\nOutput:   {res}\nExpected: {expected}'
 
     def setup_empty_courses(self):

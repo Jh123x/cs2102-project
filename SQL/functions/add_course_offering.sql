@@ -91,7 +91,7 @@ BEGIN
     LOOP
 
         SELECT r_employee_id INTO instructor_id FROM get_available_instructors(off_course_id,sessions_arr[counter].session_date,sessions_arr[counter].session_date) LIMIT 1;
-        IF (instructor_id = NULL) THEN
+        IF (instructor_id IS NULL) THEN
             missing_instructor := TRUE;
             EXIT; /* End the loop once there is a missing instructor*/
         END IF;

@@ -1,11 +1,10 @@
 import unittest
-from time import sleep
+import datetime
 from . import BaseTest
-from unittest import expectedFailure
 
 
 class ZViewSummaryReportTest(BaseTest, unittest.TestCase):
-    def setUp(self):
+    def setup_vars(self):
         """Set up the variables for view_summary_report"""
         # Add Full time positions
         self.manager_id = self._add_person("Manager", "ARRAY['Database', 'OS']", 30)
@@ -62,11 +61,34 @@ class ZViewSummaryReportTest(BaseTest, unittest.TestCase):
         qps = self.generate_query("pay_salary", ())
         self.execute_query(qps)
 
-        return super().setUp()
+    def test_view_summary_report_with_nothing(self):
+        """View summary report with nothing inside"""
+
+        # View past 1 report with nothing
+        q = self.generate_query('view_summary_report', ('1',))
+        res = self.execute_query(q)
+        assert len(res) == 1, f'There is suppose to be a summary report with no value {res}'
+        expected = [(f'({datetime.datetime.now().month},{datetime.datetime.now().year},0.00,0.00,0.00,0.00,0)',)]
+        assert res == expected, f"Summary report is suppose to be {expected}\nGot {res} instead"
+
+        # View past 2 reports with nothing
+        q = self.generate_query('view_summary_report', ('2',))
+        res = self.execute_query(q)
+        assert len(res) == 2, f'There is suppose to be a summary report with no value {res}'
+        expected = [
+            (f'({datetime.datetime.now().month},{datetime.datetime.now().year},0.00,0.00,0.00,0.00,0)',),
+            (f'({datetime.datetime.now().month - 1},{datetime.datetime.now().year},0.00,0.00,0.00,0.00,0)',),
+            ]
+        assert res == expected, f"Summary report is suppose to be {expected}\nGot {res} instead"
+
 
     def test_view_summary_report_success(self):
         """Check if summary report is working correctly"""
-        q = self.generate_query("view_summary_report", ('1'))
+
+        # Setup variables
+        self.setup_vars()
+
+        q = self.generate_query("view_summary_report", ('1',))
         res = self.execute_query(q)
-        expected = [('(4,2021,110.00,200.00,30.00,9.00,2)',)]
+        expected = [(f'({datetime.datetime.now().month},{datetime.datetime.now().year},110.00,200.00,30.00,9.00,2)',)]
         assert res == expected, f'\nOutput:   {res}\nExpected: {expected}'
