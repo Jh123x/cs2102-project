@@ -1,35 +1,35 @@
 employee_id,employee_name,employee_address,employee_phone,employee_email,employee_join_date,employee_depart_date
-1,John ,Jurong,91234567,john@gmail.com,12/12/2020,NULL
-2,Jane ,Yishun,92345678,jane@gmail.com,13/2/2020,NULL
-3,Alice ,Changi,93456789,alice@gmail.com,15/1/2020,NULL
-4,Bob ,Expo,94567890,bob@gmail.com,17/12/2019,NULL
-5,Tom ,Jurong,95678901,tom@gmail.com,1/1/2018,NULL
+1,John,Jurong,91234567,john@gmail.com,12/12/2020,NULL
+2,Jane,Yishun,92345678,jane@gmail.com,13/2/2020,NULL
+3,Alice,Changi,93456789,alice@gmail.com,15/1/2020,NULL
+4,Bob,Expo,94567890,bob@gmail.com,17/12/2019,NULL
+5,Tom,Jurong,95678901,tom@gmail.com,1/1/2018,NULL
 6,Harry,Pasir Ris,96789012,harry@gmail.com,2/2/2018,NULL
-7,Dick ,Bugis,97890123,dick@gmail.com,3/2/2020,NULL
+7,Dick,Bugis,97890123,dick@gmail.com,3/2/2020,NULL
 8,Gary,Pasir Ris,93234123,Gary@gmail.com,15/1/2020,NULL
-9,Zom ,Jurong,93234124,zom@gmail.com,1/1/2018,NULL
+9,Zom,Jurong,93234124,zom@gmail.com,1/1/2018,NULL
 10,Larry,Pasir Ris,93234125,larry@gmail.com,2/2/2018,NULL
-11,Lenny ,Bugis,93234126,lenny@gmail.com,3/2/2020,NULL
+11,Lenny,Bugis,93234126,lenny@gmail.com,3/2/2020,NULL
 12,Tary,Pasir Ris,93234127,tary@gmail.com,15/1/2020,NULL
-13,Ardis  ,Orchard,85556007,ardis@gmail.com,16/1/2020,NULL
-14,Reginald  ,Greenridge,85551124,reginald@gmail.com,17/1/2020,NULL
-15,Ling  ,Kallang,85554655,ling@gmail.com,18/1/2020,NULL
-16,Adella  ,Outram,95559571,adella@gmail.com,27/1/2020,NULL
-17,Keith  ,City Hall,95555220,keith@gmail.com,28/5/2020,NULL
-18,Joella  ,Expo,95551279,joella@gmail.com,17/6/2020,NULL
-19,Tatiana  ,Jurong,85550508,tatiana@gmail.com,14/8/2020,NULL
-20,Sammie  ,Pasir Ris,95553775,sammie@gmail.com,19/11/2020,NULL
-21,Elizebeth  ,Bugis,85558638,elizabeth@gmail.com,21/3/2020,NULL
-22,Sanford  ,Pasir Ris,85550835,sanform@gmail.com,1/4/2020,NULL
-23,Valentina  ,Jurong,95555964,valentina@gmail.com,4/4/2020,NULL
-24,Marth  ,Pasir Ris,85559508,marth@gmail.com,22/7/2020,NULL
-25,Nelda  ,Orchard,85552564,nelda@gmail.com,2/8/2020,NULL
-26,Belle  ,Greenridge,95554317,belle@gmail.com,6/8/2020,NULL
-27,Glen  ,Kallang,95552699,glen@gmail.com,27/8/2020,NULL
-28,Wen  ,Outram,85550982,wen@gmail.com,4/9/2020,NULL
-29,Dorthy  ,City Hall,95552307,dorthy@gmail.com,19/9/2020,NULL
-30,Shirleen  ,Jurong,85558575,shirleen@gmail.com,26/12/2020,NULL
-31,Warren  ,Jurong,98551623,warren@gmail.com,12/5/2021,NULL
-32,Houston  ,Pasir Ris,98321332,houston@gmail.com,25/5/2021,NULL
-33,Linda  ,Orchard,96438543,linda@gmail.com,21/6/2021,NULL
-34,Joellen  ,Greenridge,92327331,joellen@gmail.com,27/9/2021,NULL
+13,Ardis,Orchard,85556007,ardis@gmail.com,16/1/2020,NULL
+14,Reginald,Greenridge,85551124,reginald@gmail.com,17/1/2020,NULL
+15,Ling,Kallang,85554655,ling@gmail.com,18/1/2020,NULL
+16,Adella,Outram,95559571,adella@gmail.com,27/1/2020,NULL
+17,Keith,City Hall,95555220,keith@gmail.com,28/5/2020,NULL
+18,Joella,Expo,95551279,joella@gmail.com,17/6/2020,NULL
+19,Tatiana,Jurong,85550508,tatiana@gmail.com,14/8/2020,NULL
+20,Sammie,Pasir Ris,95553775,sammie@gmail.com,19/11/2020,NULL
+21,Elizebeth,Bugis,85558638,elizabeth@gmail.com,21/3/2020,NULL
+22,Sanford,Pasir Ris,85550835,sanform@gmail.com,1/4/2020,NULL
+23,Valentina,Jurong,95555964,valentina@gmail.com,4/4/2020,NULL
+24,Marth,Pasir Ris,85559508,marth@gmail.com,22/7/2020,NULL
+25,Nelda,Orchard,85552564,nelda@gmail.com,2/8/2020,NULL
+26,Belle,Greenridge,95554317,belle@gmail.com,6/8/2020,NULL
+27,Glen,Kallang,95552699,glen@gmail.com,27/8/2020,NULL
+28,Wen,Outram,85550982,wen@gmail.com,4/9/2020,NULL
+29,Dorthy,City Hall,95552307,dorthy@gmail.com,19/9/2020,NULL
+30,Shirleen,Jurong,85558575,shirleen@gmail.com,26/12/2020,NULL
+31,Warren,Jurong,98551623,warren@gmail.com,12/5/2021,NULL
+32,Houston,Pasir Ris,98321332,houston@gmail.com,25/5/2021,NULL
+33,Linda,Orchard,96438543,linda@gmail.com,21/6/2021,NULL
+34,Joellen,Greenridge,92327331,joellen@gmail.com,27/9/2021,NULL
