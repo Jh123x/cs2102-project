@@ -17,7 +17,8 @@ RETURNS TABLE(
 BEGIN
 
     RETURN QUERY (
-        SELECT cp.package_name, cp.package_num_free_registrations, cp.package_sale_end_date, cp.package_price
+        /*Might have duplicates*/
+        SELECT DISTINCT cp.package_name, cp.package_num_free_registrations, cp.package_sale_end_date, cp.package_price
         FROM CoursePackages cp
         WHERE cp.package_sale_end_date >= CURRENT_DATE
     );
