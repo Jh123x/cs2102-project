@@ -40,7 +40,7 @@ class EUpdateCreditCardTest(BaseTest, unittest.TestCase):
         # Check if the owns table is updated correctly
         query = f"SELECT * FROM Owns"
         today = datetime.datetime.combine(
-            datetime.datetime.now().date(), datetime.time(0))
+            (datetime.datetime.now() + datetime.timedelta(hours=-8)).date(), datetime.time(0))
         expected = [
             (id, '1234123412341234', today),
             (id, '1234123412341235', today)
