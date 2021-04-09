@@ -1,19 +1,14 @@
 import unittest
-import datetime
-from time import sleep
 from . import BaseTest
 from unittest import expectedFailure
+from psycopg2.errors import RaiseException
 
 
 class ZGetMyCoursePackage(BaseTest, unittest.TestCase):
     def test_customer_does_not_exists(self):
         """Should return empty if the customer does not exist"""
         q = self.generate_query("get_my_course_package", ("1",))
-        res = self.execute_query(q)
-
-        assert res == [
-            ({},)
-        ], f"The function should return an empty json when the customer is not found {res}"
+        self.check_fail_test(q, 'The function should throw an exception if there is an error', RaiseException)
 
     def setup_vars(self):
         """Set up the variables to test the files"""

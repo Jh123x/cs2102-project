@@ -1,6 +1,7 @@
 import unittest
 from . import BaseTest
 from unittest import expectedFailure
+from psycopg2.errors import RaiseException
 
 
 class ZGetMyRegistrationsTest(BaseTest, unittest.TestCase):
@@ -8,8 +9,7 @@ class ZGetMyRegistrationsTest(BaseTest, unittest.TestCase):
     def test_invalid_customer(self):
         """Invalid customer should return empty table"""
         q = self.generate_query('get_my_registrations', ('1',))
-        res = self.execute_query(q)
-        assert len(res) == 0, f"Invalid customer id is suppose to return nothing {res}"
+        self.check_fail_test(q, 'Invalid customer id is suppose to raise exception', RaiseException)
 
     def test_valid_customer_with_no_registrations(self):
         """Valid customer with no registration should return empty table"""

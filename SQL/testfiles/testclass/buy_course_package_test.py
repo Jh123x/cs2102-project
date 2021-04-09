@@ -85,7 +85,12 @@ class ZBuyCoursePackageTest(BaseTest, unittest.TestCase):
 
         # Buy it again
         query = self.generate_query('buy_course_package', args)
-        self.check_fail_test(query, "Cannot buy 2 packages on the same day", UniqueViolation)
+        self.execute_query(query)
+        
+        query = f'SELECT * FROM Buys WHERE package_id = {package_id}'
+        res = self.execute_query(query)
+        assert len(res) == 2, "Incorrect number of bought packages reported"
+        
 
     def test_buy_different_package_while_1_active(self):
         """Test if the customer can buy a different package when there is currently one active"""
