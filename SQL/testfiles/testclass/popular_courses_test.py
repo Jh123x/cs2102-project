@@ -46,6 +46,7 @@ class JPopularCoursesTest(BaseTest, unittest.TestCase):
         self.course_offering5 = self._add_course_offering('2021-05-21', 10, [('2021-06-23', 16, self.room_id5)], '2021-05-31', 20, self.course_id2, self.admin_id)
 
     def test_no_popular_package(self):
+        """Test for popular courses without registrations"""
         args = ()
         q = self.generate_query("popular_courses", args)
         res = self.execute_query(q)
@@ -53,20 +54,22 @@ class JPopularCoursesTest(BaseTest, unittest.TestCase):
         expected =[]
         assert res == expected, f'\nOutput:   {res}\nExpected: {expected}'
 
-    def test_1_popular_package(self):
+    def test_0_popular_package(self):
+        """Test for popular courses with registrations"""
         # 1 customer register for the first offering
         args = ('2021-01-21',  str(self.course_id1), '1',
                 str(self.customer_id1), 'Credit Card')
         q = self.generate_query('register_session', args)
         self.execute_query(q)
 
-        # 2 customer register for the second offering
-        args = ('2021-01-21', str(self.course_id1), '1',
+        # 1 customer register for the second offering
+        args = ('2021-02-21', str(self.course_id2), '1',
                 str(self.customer_id2), 'Credit Card')
         q = self.generate_query('register_session', args)
         self.execute_query(q)
 
-        args = ('2021-04-21', str(self.course_id1), '1',
+        # 1 customer register for the third offering
+        args = ('2021-03-21', str(self.course_id3), '1',
                 str(self.customer_id3), 'Credit Card')
         q = self.generate_query('register_session', args)
         self.execute_query(q)
@@ -75,10 +78,11 @@ class JPopularCoursesTest(BaseTest, unittest.TestCase):
         q = self.generate_query("popular_courses", args)
         res = self.execute_query(q)
 
-        expected =[('(64,"Database Systems",Database,2,1)',)]
+        expected =[]
         assert res == expected, f'\nOutput:   {res}\nExpected: {expected}'
 
-    def test_2_popular_package(self):
+    def test_1_popular_package(self):
+        """Test for popular courses with registrations"""
         # 2 customer register for the first offering
         args = ('2021-01-21',  str(self.course_id1), '1',
                 str(self.customer_id1), 'Credit Card')
@@ -109,5 +113,23 @@ class JPopularCoursesTest(BaseTest, unittest.TestCase):
         q = self.generate_query("popular_courses", args)
         res = self.execute_query(q)
 
-        expected =[('(68,Networks,Network,2,1)',)]
+        expected =[('(68,Networks,Network,2,2)',)]
         assert res == expected, f'\nOutput:   {res}\nExpected: {expected}'
+
+    def setup_empty_courses(self):
+        """Create empty courses that no one joins"""
+        # Add manager to add the course area
+        self.manager = self._add_person('Manager', 'ARRAY[\'Operation System\']')
+
+        # Add the empty courses
+        self.empty_course1 = self._add_course('Operation System', 1, 'Operation System')
+
+    def test_empty_courses_no_return(self):
+        """Test popular courses with courses that has 0 offerings"""
+        # Create courses with no offerings
+        self.setup_empty_courses()
+
+        # Execute the command
+        q = self.generate_query('popular_courses', ())
+        res = self.execute_query(q)
+        assert len(res) == 0, 'Courses without offerings should not be added'

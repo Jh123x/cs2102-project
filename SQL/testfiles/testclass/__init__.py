@@ -11,6 +11,7 @@ from .add_course_offering_test import HAddCourseOfferingTest
 from .popular_courses_test import JPopularCoursesTest
 from .promote_courses_test import PromoteCoursesTest
 from .pay_salary_test import PaySalaryTest
+from .top_packages_test import TopPackagesTest
 from .find_rooms_test import ZFindRoomsTest
 from .get_available_instructors_test import IGetAvailableInstrutors
 from .get_available_course_packages_test import ZGetAvailableCoursePackages

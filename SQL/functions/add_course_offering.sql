@@ -13,8 +13,6 @@
     If a valid instructor assignment exists, the routine will perform the necessary updates to add the course offering;
         otherwise, the routine will abort the course offering addition.
     Note that the seating capacity of the course offering must be at least equal to the course offering's target number of registrations.
-
-    Todo: need to also accept information for each session (session date, session start hour, and room identifier)
 */
 
 DROP TYPE IF EXISTS session_information;

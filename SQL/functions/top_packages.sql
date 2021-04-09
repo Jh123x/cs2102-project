@@ -25,22 +25,24 @@ RETURNS TABLE (
     package_price DEC(64, 2),
     package_sale_start_date DATE,
     package_sale_end_date DATE,
-    packages_num_sold INTEGER)
+    packages_num_sold INTEGER
+)
     AS $$
 BEGIN
     /* Check for NULLs in arguments */
     IF N IS NULL OR N <= 0
     THEN
-        RAISE EXCEPTION 'Number of top packages to find must be an integer more than 0.';
+        RAISE EXCEPTION 'Number of top packages to find must be a positive integer.';
     END IF;
 
-    WITH
+    RETURN QUERY (
+        WITH
         /* excluded packages that are not sold */
         PackagesSold AS
         (
-            SELECT package_id, COUNT(*) AS packages_num_sold
+            SELECT c.package_id, COUNT(*) AS packages_num_sold
             FROM CoursePackages c NATURAL JOIN Buys b
-            GROUP BY package_id
+            GROUP BY c.package_id
         ),
         /* use rank because according to requirements:
             "In the event that there are multiple packages that tie for the top Nth position,
@@ -48,15 +50,17 @@ BEGIN
         */
         PackagesWithRank AS
         (
-            SELECT package_id, package_num_free_registrations, package_price, package_sale_start_date,
-                   package_sale_end_date, packages_num_sold,
-                   RANK() OVER (ORDER BY packages_num_sold DESC) AS package_rank
-            FROM CoursePackages NATURAL JOIN PackagesSold
+            SELECT c.package_id, c.package_num_free_registrations, c.package_price, c.package_sale_start_date,
+                   c.package_sale_end_date, p.packages_num_sold,
+                   RANK() OVER (ORDER BY p.packages_num_sold DESC) AS package_rank
+            FROM CoursePackages c NATURAL JOIN PackagesSold p
         )
-    SELECT package_id, package_num_free_registrations, package_price, package_sale_start_date,
-           package_sale_end_date, packages_num_sold
-    FROM PackagesWithRank
-    WHERE package_rank <= N
-    ORDER BY packages_num_sold DESC, package_price DESC;
+        /*Required cast to integer to return as integer. Otherwise returns as BIGINT*/
+        SELECT p.package_id, p.package_num_free_registrations, p.package_price, p.package_sale_start_date,
+           p.package_sale_end_date, p.packages_num_sold::INTEGER
+        FROM PackagesWithRank p
+        WHERE p.package_rank <= N
+        ORDER BY p.packages_num_sold DESC, p.package_price DESC
+    );
 END;
 $$ LANGUAGE plpgsql;
