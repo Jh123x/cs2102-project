@@ -2,7 +2,7 @@
     Update this file using this command:
     grep -RihoPz '(?s)create (constraint )?trigger .+?\n.+?\n' --exclude drop* | awk 'NF>1{printf "DROP TRIGGER IF EXISTS %s ", $NF; if (NF != 0) {getline; printf "ON %s CASCADE;\n", $NF;}}' && grep -RihoP '(function|procedure) .+(?=\()' | awk '{print "DROP", $1, "IF EXISTS", $2, "CASCADE;"}' | uniq
 */
-
+DROP TRIGGER IF EXISTS check_course_package_trigger ON Buys CASCADE;
 DROP TRIGGER IF EXISTS credit_card_expiry ON Registers CASCADE;
 DROP TRIGGER IF EXISTS credit_card_expiry ON Buys CASCADE;
 DROP TRIGGER IF EXISTS credit_card_expiry ON Owns CASCADE;
@@ -45,3 +45,4 @@ DROP FUNCTION IF EXISTS part_time_hour_check CASCADE;
 DROP FUNCTION IF EXISTS redeems_check CASCADE;
 DROP FUNCTION IF EXISTS session_collision_check CASCADE;
 DROP FUNCTION IF EXISTS get_credit_card_expiry CASCADE;
+DROP FUNCTION IF EXISTS check_course_package CASCADE;
