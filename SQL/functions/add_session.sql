@@ -64,15 +64,12 @@ BEGIN
         RAISE EXCEPTION 'Course registration deadline already passed.';
     END IF;
 
-    /* Todo: check room availability */
-
     SELECT course_duration INTO session_duration FROM Courses WHERE session_course_id = course_id;
     IF NOT EXISTS (SELECT rid FROM find_rooms(session_date, session_start_hour,session_duration ) WHERE rid = room_id)
     THEN 
         RAISE EXCEPTION 'Room % is in use', room_id;
     END IF;
 
-    /* Todo: check instructor availability */
     IF NOT EXISTS (SELECT employee_id FROM find_instructors(session_course_id,session_date,session_start_hour) WHERE employee_id = instructor_id)
     THEN
         RAISE EXCEPTION 'Instructor is not available';
