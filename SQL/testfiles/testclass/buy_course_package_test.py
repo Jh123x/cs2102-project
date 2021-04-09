@@ -100,7 +100,7 @@ class ZBuyCoursePackageTest(BaseTest, unittest.TestCase):
         package_id2 = self.execute_query(query)[0][0]
 
         # Buys 1 package of a different date
-        query = f"INSERT INTO Buys Values('2020-04-04', 10, {self.package_id}, {self.customer_id}, 1234123412341234)"
+        query = f"INSERT INTO Buys Values('2020-04-20', 10, {self.package_id}, {self.customer_id}, 1234123412341234)"
         self.execute_query(query)
 
         # Buy another package
