@@ -205,13 +205,23 @@ class HAddCourseOfferingTest(BaseTest, unittest.TestCase):
     def test_add_course_offering_num_target_registration_negative_fail(self):
         # Add the course offering 1 time
         arr = self.make_session_array([('2021-05-06', '14', self.rid), ('2021-06-03', '14', self.rid)])
-        args = ('2021-04-22','100.00', arr, '2021-04-20', '-12', str(self.course_id2), str(self.admin_id))
+        args = ('2021-04-06','100.00', arr, '2021-04-20', '-12', str(self.course_id2), str(self.admin_id))
         query = self.generate_query("add_course_offering", args)
         res = self.check_fail_test(query, "Adding the offering with launch date after registration deadline should fail", RaiseException)
 
-    def test_add_course_offering_start_date_before_registration_fail(self):
-        # Add the course offering 1 time
-        arr = self.make_session_array([('2021-05-06', '14', self.rid), ('2021-06-03', '14', self.rid)])
-        args = ('2021-04-06','100.00', arr, '2021-04-27', '40', str(self.course_id1), str(self.admin_id))
+    # whats this ah
+    # def test_add_course_offering_start_date_before_registration_fail(self):
+    #     # Add the course offering 1 time
+    #     arr = self.make_session_array([('2021-05-06', '14', self.rid), ('2021-06-03', '14', self.rid)])
+    #     args = ('2021-04-06','100.00', arr, '2021-04-27', '40', str(self.course_id1), str(self.admin_id))
+    #     query = self.generate_query("add_course_offering", args)
+    #     res = self.check_fail_test(query, "Adding the offering with launch date after registration deadline should fail", RaiseException)
+
+    def test_add_course_offering_without_specialized_instructor_success(self):
+        self._add_manager("Manager", ("AI",))
+        self.course_id_ai = self._add_course("AI", "AI")
+        sessions = self.make_session_array([('2021-05-07', '14', self.rid), ('2021-06-03', '14', self.rid)])
+        args = ('2021-04-22','100.00', sessions, '2021-04-23', '40', str(self.course_id_ai), str(self.admin_id))
         query = self.generate_query("add_course_offering", args)
-        res = self.check_fail_test(query, "Adding the offering with launch date after registration deadline should fail", RaiseException)
+        res = self.execute_query(query)
+        assert len(res) > 0, "Course Offering 1 not added successfully"
