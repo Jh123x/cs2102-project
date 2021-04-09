@@ -1,11 +1,10 @@
 import unittest
-from time import sleep
 from . import BaseTest
 from unittest import expectedFailure
 
 
 class ZViewManagerReportTest(BaseTest, unittest.TestCase):
-    def setUp(self):
+    def setup_vars(self):
         """Set up the variables for view_manager_report"""
         # Add Full time positions
         self.manager_id = self._add_person("Manager", "ARRAY['Database', 'OS', 'AI']", 30)
@@ -61,10 +60,28 @@ class ZViewManagerReportTest(BaseTest, unittest.TestCase):
         self._cancel_registration(self.customer_id1, self.course_id1)
         self._cancel_registration(self.customer_id2, self.course_id2)
 
-        return super().setUp()
+    def test_no_one_in_db(self):
+        """Test view manager report when there is no one in the db"""
+        q = self.generate_query('view_manager_report', ())
+        res = self.execute_query(q)
+        expected = []
+        assert len(res) == 0, f'There is suppose to be an empty summary {res}'
+        assert res == expected, f'The result is suppose to be empty {res}'
+
+    def test_managers_who_does_nothing(self):
+        """Test managers who did nothing"""
+        # Add 2 managers who do nothing
+        self.manager_id = self._add_person("Manager", "ARRAY['Database']", 30)
+        self.manager_id1 = self._add_person("Manager", "ARRAY['AI']", 30)
+
+        # Run the query
+        q = self.generate_query('view_manager_report', ())
+        res = self.execute_query(q)
+        assert len(res) == 2, f'There is suppose to be 2 entries {res}'
 
     def test_view_manager_report_only_one_highest_course(self):
         """Check if manager report is working correctly"""
+        self.setup_vars()
         q = self.generate_query("view_manager_report", ())
         res = self.execute_query(q)
         expected = [('(John,3,3,121.00,{OS})',)]
@@ -72,6 +89,7 @@ class ZViewManagerReportTest(BaseTest, unittest.TestCase):
 
     def test_view_manager_report_two_highest_courses(self):
         """Check if manager report is working correctly, with 2 highest courses"""
+        self.setup_vars()
         # Let AI have the same registrations as OS
         # Register sessions
         self._register_redeems('2021-01-21', self.course_id3, 1, self.customer_id1)
