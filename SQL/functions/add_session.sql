@@ -53,7 +53,7 @@ BEGIN
 
     session_id := session_number;
 
-    /*Get the end hour from the courses*/
+    /* Get the end hour from the courses */
     SELECT session_start_hour + course_duration INTO session_end_hour FROM Courses
     WHERE course_id = session_course_id;
 
@@ -91,12 +91,13 @@ BEGIN
     INSERT INTO Sessions
     (session_id, session_date, session_start_hour, session_end_hour, course_id, offering_launch_date, room_id, instructor_id)
     VALUES
-    (session_id, session_date, session_start_hour, session_end_hour, session_course_id, session_offering_launch_date, session_room_id, session_instructor_id);
+    (session_number, session_date, session_start_hour, session_end_hour, session_course_id, session_offering_launch_date, session_room_id, session_instructor_id);
 
     UPDATE CourseOfferings co
     SET offering_seating_capacity = (offering_seating_capacity + new_room_seating_capacity)
     WHERE co.course_id = session_course_id
         AND co.offering_launch_date = session_offering_launch_date;
+
     RETURN NEXT;
 END;
 $$ LANGUAGE plpgsql;

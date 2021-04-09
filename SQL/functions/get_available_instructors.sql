@@ -24,7 +24,7 @@ CREATE OR REPLACE FUNCTION get_available_instructors (
     end_date_arg DATE
 )
 RETURNS TABLE (
-    r_employee_id INTEGER,
+    employee_id INTEGER,
     name TEXT,
     total_teaching_hours INTEGER,
     day DATE,
@@ -67,7 +67,7 @@ BEGIN
             EXIT WHEN cur_date > end_date_arg;
 
             day := cur_date;
-            r_employee_id := r.employee_id;
+            employee_id := r.employee_id;
             name := r.employee_name;
             available_hours := '{}';
 
@@ -79,7 +79,7 @@ BEGIN
                     AND EXTRACT(MONTH FROM s.session_date) = EXTRACT(MONTH FROM cur_date);
 
             FOREACH hour IN ARRAY work_hours LOOP
-                IF r_employee_id IN
+                IF employee_id IN
                     (SELECT employee_id FROM find_instructors(course_id_arg, cur_date, hour)) THEN
                     available_hours := array_append(available_hours, hour);
                 END IF;
