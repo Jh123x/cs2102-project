@@ -14,10 +14,10 @@ CREATE OR REPLACE FUNCTION register_session (
     session_id_arg INTEGER,
     customer_id_arg INTEGER,
     payment_method TEXT
-) RETURNS BOOLEAN
+) RETURNS VOID
 AS $$
 DECLARE
-    credit_card_number CHAR(16);
+    credit_card_number_var CHAR(16);
     buy_timestamp_arg TIMESTAMP;
     package_id_arg INTEGER;
     buy_num_remaining_redemptions_arg INTEGER;
@@ -35,7 +35,7 @@ BEGIN
     /* Check if session to be registered/redeemed exists */
     IF NOT EXISTS(
         SELECT session_id FROM Sessions s
-        WHERE s.offering_launch_date = offering_launch_date_arg;
+        WHERE s.offering_launch_date = offering_launch_date_arg
             AND s.course_id = course_id_arg
             AND s.session_id = session_id_arg
     ) THEN
@@ -53,12 +53,12 @@ BEGIN
         RAISE EXCEPTION 'Invalid payment type';
     END IF;
 
-    /* Check if customer has an active registration/redemtpion of course session */
+    /* Check if customer has an active registration/redemption of course session */
     IF EXISTS(
         SELECT e.enroll_timestamp
         FROM Enrolment e
         WHERE e.customer_id = customer_id_arg
-            AND e.offering_launch_date = offering_launch_date_arg;
+            AND e.offering_launch_date = offering_launch_date_arg
             AND e.course_id = course_id_arg
             AND e.session_id = session_id_arg
     ) THEN
@@ -78,32 +78,36 @@ BEGIN
         IF package_id_arg IS NULL
         THEN
             RAISE EXCEPTION 'No active packages!';
+        END IF;
 
         UPDATE Buys
-        SET buy_num_remaining_redemptions =  (buy_num_remaining_redemptions_arg - 1)
+        SET buy_num_remaining_redemptions = (buy_num_remaining_redemptions_arg - 1)
         WHERE customer_id = customer_id_arg
             AND package_id = package_id_arg
             AND buy_timestamp = buy_timestamp_arg;
 
         INSERT INTO Redeems
-        (redeem_timestamp, buy_timestamp, session_id, offering_launch_date, course_id, redeem_cancelled)
+        (redeem_timestamp, buy_timestamp, session_id, offering_launch_date, course_id)
         VALUES
         (statement_timestamp(), buy_timestamp_arg, session_id_arg, offering_launch_date_arg, course_id_arg);
-    ELSE
-        SELECT o.credit_card_number INTO credit_card_number
+
+    ELSIF payment_method = 'Credit Card' THEN
+        SELECT o.credit_card_number INTO credit_card_number_var
         FROM Owns o
         WHERE o.customer_id = customer_id_arg;
 
-        IF credit_card_number IS NULL THEN
+        IF credit_card_number_var IS NULL THEN
             RAISE EXCEPTION 'Credit card is invalid';
         END IF;
 
+        /*Check for the expiry of the credit card in the trigger for registers*/
         INSERT INTO Registers
         (register_timestamp, customer_id, credit_card_number, session_id, offering_launch_date, course_id)
         VALUES
-        (statement_timestamp(), customer_id_arg, credit_card_number, session_id_arg, offering_launch_date_arg, course_id_arg);
+        (statement_timestamp(), customer_id_arg, credit_card_number_var, session_id_arg, offering_launch_date_arg, course_id_arg);
+    ELSE
+        /*Just to be extra safe*/
+        RAISE EXCEPTION 'Invalid Payment Method';
     END IF;
-
-    RETURN TRUE;
 END;
 $$ LANGUAGE plpgsql;
