@@ -9,21 +9,25 @@ CREATE OR REPLACE FUNCTION buy_course_package (
     package_id_arg          INTEGER
 ) RETURNS TABLE (r_buy_timestamp TIMESTAMP) AS $$
 DECLARE
-    r_buy_timestamp                 TIMESTAMP;
     package_sale_start_date         DATE;
     package_sale_end_date           DATE;
     package_num_free_registrations  INTEGER;
-    credit_card_number              CHAR(16);
+    own_credit_card_number          CHAR(16);
 BEGIN
     /* Check for NULLs in arguments */
     IF customer_id_arg IS NULL
         OR package_id_arg IS NULL
     THEN
         RAISE EXCEPTION 'Arguments to buy_course_package() cannot contain NULL values.';
+    ELSIF NOT EXISTS(SELECT customer_id FROM Customers c WHERE c.customer_id = customer_id_arg)
+    THEN
+        RAISE EXCEPTION 'Customer ID % does not exist.', customer_id_arg;
+    ELSIF NOT EXISTS(SELECT package_id FROM CoursePackages cp WHERE cp.package_id = package_id_arg)
+        RAISE EXCEPTION 'Package ID % does not exist.', package_id_arg;
     END IF;
 
     /* Select last owned credit card of customer */
-    SELECT o.credit_card_number INTO credit_card_number
+    SELECT o.credit_card_number INTO own_credit_card_number
     FROM Owns o
     NATURAL JOIN CreditCards cc
     WHERE o.customer_id = customer_id_arg
@@ -31,7 +35,7 @@ BEGIN
     ORDER BY o.own_from_timestamp DESC
     LIMIT 1;
 
-    IF credit_card_number IS NULL THEN
+    IF own_credit_card_number IS NULL THEN
         RAISE EXCEPTION 'No valid credit card found for customer. Check if credit card for customer_id supplied (%) is valid (e.g. it has not expired).', customer_id_arg;
     END IF;
 
@@ -53,15 +57,12 @@ BEGIN
         RAISE EXCEPTION 'This package is no longer for sale.';
     END IF;
 
-    /*Store the timestamp*/
-    SELECT statement_timestamp() INTO r_buy_timestamp;
-
     /* Do buying here with Credit Card number */
     INSERT INTO Buys
     (buy_timestamp, buy_num_remaining_redemptions, package_id, customer_id, credit_card_number)
     VALUES
-    (r_buy_timestamp, package_num_free_registrations, package_id_arg, customer_id_arg, credit_card_number);
+    (statement_timestamp(), package_num_free_registrations, package_id_arg, customer_id_arg, own_credit_card_number);
 
-    return NEXT;
+    RETURN NEXT;
 END;
 $$ LANGUAGE plpgsql;

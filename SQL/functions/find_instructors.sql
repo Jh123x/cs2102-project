@@ -15,7 +15,7 @@ CREATE OR REPLACE FUNCTION find_instructors (
     session_start_hour_arg INTEGER
 )
 RETURNS TABLE (employee_id INTEGER, employee_name TEXT) AS $$
-DECLARE 
+DECLARE
     session_end_hour_var INTEGER;
 BEGIN
     /* Check for NULLs in arguments */
@@ -55,7 +55,7 @@ BEGIN
         JOIN Instructors i
         ON i.instructor_id = e.employee_id
         NATURAL JOIN Specializes sp
-        WHERE e.employee_join_date <= session_date_arg /*Check for the hire date of the instructors*/
+        WHERE e.employee_join_date <= session_date_arg /* Check for the hire date of the instructors */
             AND NOT EXISTS (
                 SELECT 1
                 FROM Sessions s
@@ -63,7 +63,7 @@ BEGIN
                         s.session_date = session_date_arg
                         AND s.instructor_id = e.employee_id
                     )
-                    AND 
+                    AND
                     (
                         /* Check for overlap instead of just checking if start lands within */
                         (s.session_start_hour <= session_start_hour_arg AND session_start_hour_arg <= s.session_end_hour)
