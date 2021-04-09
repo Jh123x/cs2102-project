@@ -101,7 +101,7 @@ BEGIN
             INSERT INTO Specializes (instructor_id, course_area_name) VALUES (employee_id, course_area_name);
         END LOOP;
     ELSE
-        RAISE EXCEPTION 'Employee category must be either Manager/Administrator/Instructor.';
+        RAISE EXCEPTION 'Employee category must be either Manager/Admin/Instructor.';
     END IF;
 
     RETURN NEXT;
