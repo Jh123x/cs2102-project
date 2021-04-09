@@ -223,5 +223,4 @@ class HAddCourseOfferingTest(BaseTest, unittest.TestCase):
         sessions = self.make_session_array([('2021-05-07', '14', self.rid), ('2021-06-03', '14', self.rid)])
         args = ('2021-04-22','100.00', sessions, '2021-04-23', '40', str(self.course_id_ai), str(self.admin_id))
         query = self.generate_query("add_course_offering", args)
-        res = self.execute_query(query)
-        assert len(res) > 0, "Course Offering 1 not added successfully"
+        self.check_fail_test(query, "Offering does not have enough instructors for sessions", RaiseException)
