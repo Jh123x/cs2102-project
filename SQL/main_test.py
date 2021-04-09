@@ -112,7 +112,6 @@ def order_correctly(header, data) -> str:
 def generate_query(table_name: str, header: tuple, data: dict) -> str:
     """Generate the query based on header and data"""
     header, values = order_correctly(header, data)
-    # return f"INSERT INTO {table_name}({', '.join(header)}) VALUES {values};"
     return f"INSERT INTO {table_name}({', '.join(header)}) VALUES {values};".replace("'NULL'", 'NULL')
 
 
@@ -149,7 +148,6 @@ def execute_query(cursor, query_paths: list) -> None:
             continue
         try:
             cursor.execute(query)
-            # print(query)
         except Exception as e:
             raise ValueError(f"Query: at {path} has error: {e}")
 
@@ -203,7 +201,6 @@ def setup_triggers(cursor, trigger_dir: str) -> None:
     """Set up the triggers"""
     logger.debug("Setting up triggers")
     trigger_files = get_files(trigger_dir)
-    print(trigger_files)
     execute_query(cursor, map_with_dir(trigger_dir, trigger_files))
     logger.debug("Triggers Added")
 
