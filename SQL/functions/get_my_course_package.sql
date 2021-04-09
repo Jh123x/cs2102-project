@@ -110,9 +110,9 @@ BEGIN
         RAISE EXCEPTION 'Arguments to get_my_course_package() cannot contain NULL values.';
     END IF;
 
-    IF NOT EXISTS(SELECT customer_id FROM Customers c WHERE c.customer_id = r_customer_id)
+    IF NOT EXISTS(SELECT customer_id FROM Customers c WHERE c.customer_id = customer_id_arg)
     THEN
-        RAISE EXCEPTION 'Customer ID % does not exist.', r_customer_id;
+        RAISE EXCEPTION 'Customer ID % does not exist.', customer_id_arg;
     END IF;
 
     IF customer_has_course_packages(customer_id_arg) IS NOT TRUE
