@@ -8,3 +8,4 @@ course_id,course_title,course_description,course_duration,course_area_name
 7,Machine Learning,cool subject,2,Computing
 8,Computational Thinking,cool subject,2,Computing
 9,Communication,cool subject,1,English
+10,PSQL,cool subject,1,Database
