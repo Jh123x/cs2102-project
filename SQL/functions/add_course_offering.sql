@@ -128,14 +128,14 @@ BEGIN
         ) THEN
             RAISE EXCEPTION 'Room % in use.', sessions_arr[counter].room_id;
         END IF;
-        
+
         IF counter <> (SELECT add_session(course_id_arg, offering_launch_date_arg, counter, sessions_arr[counter].session_date, sessions_arr[counter].session_start_hour, instructor_id, sessions_arr[counter].room_id))
         THEN
             RAISE EXCEPTION 'Failed to add session successfully.';
         END IF;
     END LOOP;
 
-    SELECT offering_seating_capacity INTO final_offering_seating_capacity
+    SELECT co.offering_seating_capacity INTO final_offering_seating_capacity
     FROM CourseOfferings co
     WHERE co.offering_launch_date = offering_launch_date_arg
         AND co.course_id = course_id_arg;
@@ -145,10 +145,10 @@ BEGIN
     END IF;
 
     /* Finally, update course offering to have the right offering_num_target_registration value after all sessions are added */
-    UPDATE CourseOfferings
+    UPDATE CourseOfferings co
     SET offering_num_target_registration = offering_num_target_registration_arg
-    WHERE offering_launch_date = offering_launch_date_arg
-        AND course_id = course_id_arg;
+    WHERE co.offering_launch_date = offering_launch_date_arg
+        AND co.course_id = course_id_arg;
 
     SELECT * INTO new_course_offering
     FROM CourseOfferings co

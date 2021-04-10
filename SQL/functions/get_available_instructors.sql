@@ -80,7 +80,7 @@ BEGIN
 
             FOREACH hour IN ARRAY work_hours LOOP
                 IF employee_id IN
-                    (SELECT employee_id FROM find_instructors(course_id_arg, cur_date, hour)) THEN
+                    (SELECT i.employee_id FROM find_instructors(course_id_arg, cur_date, hour) i) THEN
                     available_hours := array_append(available_hours, hour);
                 END IF;
             END LOOP;
