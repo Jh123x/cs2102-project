@@ -18,5 +18,5 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER not_more_than_30_trigger
-BEFORE INSERT OR UPDATE ON Sessions
+AFTER INSERT OR UPDATE ON Sessions
 FOR EACH ROW EXECUTE FUNCTION part_time_hour_check();
