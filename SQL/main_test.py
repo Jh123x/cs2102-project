@@ -506,7 +506,6 @@ if __name__ == "__main__":
             setup_functions(cursor, function_dir)
             setup_triggers(cursor, trigger_dir)
 
-            # Uncomment this to run the everything.sql file instead
             # Save schema, functions, triggers and views files to 1 sql
             # save_all_files_to_sql('everything.sql', schema_dir, function_dir, view_dir, trigger_dir)
             # save_csv_file_queries('data2.sql', './test data/schema test')
