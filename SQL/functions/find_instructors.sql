@@ -8,6 +8,20 @@
         employee identifier and
         name.
 */
+DROP FUNCTION IF EXISTS is_full_time_instructor CASCADE;
+CREATE OR REPLACE FUNCTION is_full_time_instructor (instructor_id_arg INTEGER)
+RETURNS BOOLEAN AS $$
+    RETURN EXISTS(SELECT * FROM FullTimeInstructors i WHERE i.instructor_id = instructor_id_arg);
+END;
+$$ LANGUAGE PLPGSQL;
+
+DROP FUNCTION IF EXISTS is_part_time_instructor CASCADE;
+CREATE OR REPLACE FUNCTION is_part_time_instructor (instructor_id_arg INTEGER)
+RETURNS BOOLEAN AS $$
+    RETURN EXISTS(SELECT * FROM PartTimeInstructors i WHERE i.instructor_id = instructor_id_arg);
+END;
+$$ LANGUAGE PLPGSQL;
+
 DROP FUNCTION IF EXISTS find_instructors CASCADE;
 CREATE OR REPLACE FUNCTION find_instructors (
     course_id_arg INTEGER,
@@ -74,11 +88,17 @@ BEGIN
                     )
             )
             AND (
-                SELECT COALESCE(SUM(session_end_hour - session_start_hour), 0)
-                FROM Sessions s
-                WHERE s.instructor_id = e.employee_id
-                    AND EXTRACT(MONTH FROM session_date_arg) = EXTRACT(MONTH FROM CURRENT_DATE)
-            ) < 30
+                is_full_time_instructor(e.employee_id)
+                OR (
+                    is_full_time_instructor(e.employee_id)
+                    AND (course_duration + (
+                        SELECT COALESCE(SUM(session_end_hour - session_start_hour), 0)
+                        FROM Sessions s
+                        WHERE s.instructor_id = e.employee_id
+                            AND EXTRACT(MONTH FROM session_date_arg) = EXTRACT(MONTH FROM CURRENT_DATE)
+                    )) <= 30
+                )
+            )
             AND sp.course_area_name = (
                 SELECT course_area_name
                 FROM Courses
