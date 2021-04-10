@@ -11,6 +11,7 @@
 DROP FUNCTION IF EXISTS is_full_time_instructor CASCADE;
 CREATE OR REPLACE FUNCTION is_full_time_instructor (instructor_id_arg INTEGER)
 RETURNS BOOLEAN AS $$
+BEGIN
     RETURN EXISTS(SELECT * FROM FullTimeInstructors i WHERE i.instructor_id = instructor_id_arg);
 END;
 $$ LANGUAGE PLPGSQL;
@@ -18,6 +19,7 @@ $$ LANGUAGE PLPGSQL;
 DROP FUNCTION IF EXISTS is_part_time_instructor CASCADE;
 CREATE OR REPLACE FUNCTION is_part_time_instructor (instructor_id_arg INTEGER)
 RETURNS BOOLEAN AS $$
+BEGIN
     RETURN EXISTS(SELECT * FROM PartTimeInstructors i WHERE i.instructor_id = instructor_id_arg);
 END;
 $$ LANGUAGE PLPGSQL;
