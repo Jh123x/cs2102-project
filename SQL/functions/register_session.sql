@@ -53,16 +53,15 @@ BEGIN
         RAISE EXCEPTION 'Invalid payment type';
     END IF;
 
-    /* Check if customer has an active registration/redemption of course session */
+    /* Check if customer has an active registration/redemption of course offering */
     IF EXISTS(
         SELECT e.enroll_timestamp
         FROM Enrolment e
         WHERE e.customer_id = customer_id_arg
             AND e.offering_launch_date = offering_launch_date_arg
             AND e.course_id = course_id_arg
-            AND e.session_id = session_id_arg
     ) THEN
-        RAISE EXCEPTION 'Customer has already enrolled (either registered or redeemed) this session!';
+        RAISE EXCEPTION 'Customer has already enrolled (either registered or redeemed) for a session in the Course Offering!';
     END IF;
 
     IF payment_method = 'Redemption'
