@@ -397,6 +397,7 @@ def save_csv_file_queries(filename: str, test_path: str):
     )
 
     with open(filename, 'w') as file:
+        file.write('SET TIMEZONE = 8; \nBEGIN TRANSACTION;\n')
         # Load the data in order
         for path, table in file_paths:
 
@@ -410,9 +411,10 @@ def save_csv_file_queries(filename: str, test_path: str):
                     continue
                 q = generate_query(table, header, item)
                 file.write(q + '\n')
+        file.write('END;\n')
 
 
-def save_all_files_to_sql(filename: str, schema_dir: str, function_dir: str, view_dir: str, trigger_dir: str):
+def save_all_files_to_sql(schema_filename: str, function_filename:str, schema_dir: str, function_dir: str, view_dir: str, trigger_dir: str):
     """Save function, schema, triggers and views to a file"""
     filenames = [
         "Employees",
@@ -441,8 +443,13 @@ def save_all_files_to_sql(filename: str, schema_dir: str, function_dir: str, vie
     view_files = get_files(view_dir)
     view_query_path = map_with_dir(view_dir, view_files)
 
-    with open(filename, 'w') as file:
-        for path in schema_query_paths + tigger_query_paths + function_query_path + view_query_path:
+    with open(schema_filename, 'w') as file:
+        for path in schema_query_paths:
+            query = get_query(path)
+            file.write(query + '\n')
+
+    with open(function_filename, 'w') as file:
+        for path in tigger_query_paths + function_query_path + view_query_path:
             query = get_query(path)
             file.write(query + '\n')
 
@@ -488,7 +495,7 @@ if __name__ == "__main__":
             db.autocommit = True
 
             # Set the timezone to the correct timezone
-            cursor.execute("SET TIMEZONE=8;")
+            cursor.execute("SET TIMEZONE = 8;")
 
             # Setup the sql env
             print("Dropping Triggers")
@@ -507,13 +514,21 @@ if __name__ == "__main__":
             setup_triggers(cursor, trigger_dir)
 
             # Save schema, functions, triggers and views files to 1 sql
-            # save_all_files_to_sql('everything.sql', schema_dir, function_dir, view_dir, trigger_dir)
-            # save_csv_file_queries('data2.sql', './test data/schema test')
+            # save_all_files_to_sql('schema.sql', 'proc.sql', schema_dir, function_dir, view_dir, trigger_dir)
+            # save_csv_file_queries('data.sql', './test data/schema test')
 
             # Uncomment this to run from everything.sql instead of directly from the file
-            # with open('everything.sql') as file:
-            #     everything = file.read()
-            # cursor.execute(everything)
+            # with open('schema.sql') as file:
+            #     schema_files = file.read()
+            # with open('proc.sql') as file:
+            #     process_files = file.read()
+            # with open('data.sql') as file:
+            #     data = file.read()
+            
+            # cursor.execute(schema_files)
+            # cursor.execute(process_files)
+            # cursor.execute(data)
+            # exit(0)
 
             # Uncomment this to insert data.sql into the table
             # with open('data.sql') as file:
