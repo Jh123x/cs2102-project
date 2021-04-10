@@ -1,6 +1,6 @@
 import unittest
 from . import BaseTest
-from psycopg2.errors import RaiseException
+from psycopg2.errors import RaiseException, CheckViolation, UniqueViolation
 
 class HAddCourseOfferingTest(BaseTest, unittest.TestCase):
     
@@ -140,14 +140,14 @@ class HAddCourseOfferingTest(BaseTest, unittest.TestCase):
         expected =[(f"(2021-04-05,100.00,2021-04-20,40,40,{self.course_id},{self.admin_id},2021-05-04,2021-06-04)",)]
         assert res == expected, f'Output: {res}\nExpected: {expected}'
 
-        res = self.check_fail_test(query, "Adding the same offering should fail", RaiseException)
+        res = self.check_fail_test(query, "Adding the same offering should fail", UniqueViolation)
 
     def test_add_course_offering_session_on_weekends_fail(self):
         # Add the course offering 1 time
         arr = self.make_session_array([('2021-05-09', '14', self.rid1), ('2021-06-12', '14', self.rid1)])
         args = ('2021-04-07','100.00', arr,'2021-04-20', '40', str(self.course_id), str(self.admin_id))
         query = self.generate_query("add_course_offering", args)
-        res = self.check_fail_test(query, "Adding the offering with session on weekend should fail", RaiseException)
+        res = self.check_fail_test(query, "Adding the offering with session on weekend should fail", CheckViolation)
     
     def test_add_course_offering_session_between_lunch_fail(self):
         # Add the course offering 1 time
