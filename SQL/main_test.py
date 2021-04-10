@@ -8,6 +8,7 @@ import psycopg2
 import unittest
 import configparser
 from getpass import getpass
+from testfiles.generate_config import generate_config
 from testfiles.testclass import *
 
 
@@ -447,6 +448,10 @@ def save_all_files_to_sql(filename: str, schema_dir:str, function_dir:str, view_
 if __name__ == "__main__":
     # Main code for the test cases
     print("Loading Test")
+
+    # Check if the config file exists
+    if not os.path.exists(SETTINGS_DIRECTORY):
+        generate_config(SETTINGS_DIRECTORY)
 
     # Parse the config file
     parser = configparser.ConfigParser()

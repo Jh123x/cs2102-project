@@ -2,7 +2,7 @@ import configparser
 
 parser = configparser.ConfigParser()
 parser["CONSTANTS"] = {
-    "HOST": "postgres01-1",
+    "HOST": "postgres01-1.comp.nus.edu",
     "PORT": 5432,
     "DBNAME": "cs2102",
 }
@@ -15,9 +15,9 @@ parser["DIRECTORIES"] = {
     "schemas": "./schema",
     "functions": "./functions",
     "triggers": "./triggers",
-    "views": "./view",
+    "views": "./views",
 }
 
-
-with open("settings.cfg", "w") as file:
-    parser.write(file)
+def generate_config(file_path: str):
+    with open(file_path, "w") as file:
+        parser.write(file)
