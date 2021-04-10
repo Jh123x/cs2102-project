@@ -8,8 +8,8 @@ import psycopg2
 import unittest
 import configparser
 from getpass import getpass
-from testfiles.generate_config import generate_config
 from testfiles.testclass import *
+from testfiles.generate_config import generate_config
 
 
 # Define constants
@@ -108,6 +108,7 @@ def order_correctly(header, data) -> str:
         acc.append(d)
         head2.append(head)
     return head2, f"""({', '.join(acc)})"""
+
 
 def generate_query(table_name: str, header: tuple, data: dict) -> str:
     """Generate the query based on header and data"""
@@ -209,7 +210,8 @@ def setup_triggers(cursor, trigger_dir: str) -> None:
 def drop_functions(cursor, function_dir: str) -> None:
     """Remove the functions"""
     logger.debug("Dropping functions")
-    execute_query(cursor, map_with_dir(function_dir, ["drop_all_functions.sql"]))
+    execute_query(cursor, map_with_dir(
+        function_dir, ["drop_all_functions.sql"]))
     logger.debug("Functions dropped")
 
 
@@ -408,9 +410,9 @@ def save_csv_file_queries(filename: str, test_path: str):
                     continue
                 q = generate_query(table, header, item)
                 file.write(q + '\n')
-            
 
-def save_all_files_to_sql(filename: str, schema_dir:str, function_dir:str, view_dir:str, trigger_dir:str):
+
+def save_all_files_to_sql(filename: str, schema_dir: str, function_dir: str, view_dir: str, trigger_dir: str):
     """Save function, schema, triggers and views to a file"""
     filenames = [
         "Employees",
@@ -427,7 +429,8 @@ def save_all_files_to_sql(filename: str, schema_dir:str, function_dir:str, view_
     ]
 
     # Run the query
-    schema_query_paths = map_with_dir(schema_dir, map(lambda x: f"{x}.sql", filenames))
+    schema_query_paths = map_with_dir(
+        schema_dir, map(lambda x: f"{x}.sql", filenames))
 
     trigger_files = get_files(trigger_dir)
     tigger_query_paths = map_with_dir(trigger_dir, trigger_files)
@@ -444,7 +447,6 @@ def save_all_files_to_sql(filename: str, schema_dir:str, function_dir:str, view_
             file.write(query + '\n')
 
 
-
 if __name__ == "__main__":
     # Main code for the test cases
     print("Loading Test")
@@ -459,7 +461,8 @@ if __name__ == "__main__":
     const = parser["CONSTANTS"]
     HOST, PORT, DBNAME = parse_constants(**parser["CONSTANTS"])
     user, password = parse_credentials(**parser["CREDENTIALS"])
-    schema_dir, function_dir, trigger_dir, view_dir = parse_dir(**parser["DIRECTORIES"])
+    schema_dir, function_dir, trigger_dir, view_dir = parse_dir(
+        **parser["DIRECTORIES"])
 
     # Check if username exists
     if not user:
@@ -470,11 +473,6 @@ if __name__ == "__main__":
     elif not password:
         password = getpass()
 
-    #Save schema, functions, triggers and views files to 1 sql
-    # save_all_files_to_sql('everything.sql', schema_dir, function_dir, view_dir, trigger_dir)
-    # save_csv_file_queries('data2.sql', './test data/schema test')
-    # exit(0)
-
     # Connect to the database
     with connect_db(
         HOST,
@@ -484,9 +482,10 @@ if __name__ == "__main__":
         DBNAME,
         # options="-c search_path=team80" # Uncomment to load in the team path
     ) as db:
-        db.autocommit = True
-
         with db.cursor() as cursor:
+
+            # Set it to auto commit
+            db.autocommit = True
 
             # Set the timezone to the correct timezone
             cursor.execute("SET TIMEZONE=8;")
@@ -500,17 +499,29 @@ if __name__ == "__main__":
             drop_view(cursor, view_dir)
             print("Dropping schema")
             drop_schema(cursor, schema_dir)
+
+            # Run through normal setup
             setup_schema(cursor, schema_dir)
             setup_view(cursor, view_dir)
             setup_functions(cursor, function_dir)
             setup_triggers(cursor, trigger_dir)
-            db.autocommit = False
 
-            # Insert data.sql
+            # Save schema, functions, triggers and views files to 1 sql
+            # save_all_files_to_sql('everything.sql', schema_dir, function_dir, view_dir, trigger_dir)
+            # save_csv_file_queries('data2.sql', './test data/schema test')
+
+            # Uncomment this to run from everything.sql instead of directly from the file
+            # with open('everything.sql') as file:
+            #     everything = file.read()
+            # cursor.execute(everything)
+
+            # Uncomment this to insert data.sql into the table
             # with open('data.sql') as file:
             #     res = file.read()
             #     cursor.execute(res)
-            
+            # exit(0) # Exit is here as the additional data will interfere with the test cases
+
+            db.autocommit = False
 
     with connect_db(HOST, PORT, user, password, DBNAME) as db:
         with db.cursor() as cursor:
@@ -519,12 +530,12 @@ if __name__ == "__main__":
             db.rollback()
 
             # Run the negative test cases for schema Data
-            # load_fail_data('./test data/schema fail', cursor, db)
-            # db.rollback()
+            load_fail_data('./test data/schema fail', cursor, db)
+            db.rollback()
 
             # Load Custom Test cases
-            # load_custom_testcases("./test data/custom test cases", cursor)
-            # db.rollback()
+            load_custom_testcases("./test data/custom test cases", cursor)
+            db.rollback()
 
             # Commit
             db.commit()
@@ -533,6 +544,3 @@ if __name__ == "__main__":
             BaseTest.DB = db
             BaseTest.CURSOR = cursor
             unittest.main()
-
-
-    
