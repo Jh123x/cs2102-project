@@ -209,13 +209,13 @@ class HAddCourseOfferingTest(BaseTest, unittest.TestCase):
         query = self.generate_query("add_course_offering", args)
         res = self.check_fail_test(query, "Adding the offering with launch date after registration deadline should fail", RaiseException)
 
-    # whats this ah
-    # def test_add_course_offering_start_date_before_registration_fail(self):
-    #     # Add the course offering 1 time
-    #     arr = self.make_session_array([('2021-05-06', '14', self.rid), ('2021-06-03', '14', self.rid)])
-    #     args = ('2021-04-06','100.00', arr, '2021-04-27', '40', str(self.course_id1), str(self.admin_id))
-    #     query = self.generate_query("add_course_offering", args)
-    #     res = self.check_fail_test(query, "Adding the offering with launch date after registration deadline should fail", RaiseException)
+    
+    def test_add_course_offering_registration_less_than_10_days_before_start_date_fail(self):
+        # Add the course offering 1 time
+        arr = self.make_session_array([('2021-04-30', '14', self.rid), ('2021-06-03', '14', self.rid)])
+        args = ('2021-04-06','100.00', arr, '2021-04-27', '40', str(self.course_id1), str(self.admin_id))
+        query = self.generate_query("add_course_offering", args)
+        res = self.check_fail_test(query, "Adding the offering with launch date after registration deadline should fail", RaiseException)
 
     def test_add_course_offering_without_specialized_instructor_success(self):
         self._add_manager("Manager", ("AI",))

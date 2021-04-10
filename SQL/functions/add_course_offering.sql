@@ -95,6 +95,8 @@ BEGIN
         RAISE EXCEPTION 'Offering target registration should be more than or equal to 0';
     ELSIF (off_start_date > off_end_date) THEN
         RAISE EXCEPTION 'Offering end date cannot be earlier than start date';
+    ELSIF (off_start_date < offering_registration_deadline_arg + INTEGER '10') THEN
+        RAISE EXCEPTION 'Offering start date should be after at least 10 days registration deadline';
     END IF;
 
     /* Inserting into course offering */
