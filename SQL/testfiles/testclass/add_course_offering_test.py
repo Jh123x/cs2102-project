@@ -3,7 +3,7 @@ from . import BaseTest
 from psycopg2.errors import RaiseException, CheckViolation, UniqueViolation
 
 class HAddCourseOfferingTest(BaseTest, unittest.TestCase):
-    
+
     def _add_manager(self, name: str, areas: tuple):
         """Add a manager to the table with an area"""
         args = (
@@ -112,7 +112,7 @@ class HAddCourseOfferingTest(BaseTest, unittest.TestCase):
         args = ('2021-04-05','100.00', arr, '2021-04-20', '40', str(self.course_id), str(self.admin_id))
         query = self.generate_query("add_course_offering", args)
         res = self.execute_query(query)
-      
+
         assert len(res) > 0, "Course Offering 1 not added successfully"
 
         expected =[(f"(2021-04-05,100.00,2021-04-20,40,40,{self.course_id},{self.admin_id},2021-05-04,2021-06-04)",)]
@@ -134,7 +134,7 @@ class HAddCourseOfferingTest(BaseTest, unittest.TestCase):
         args = ('2021-04-05','100.00', arr,'2021-04-20', '40', str(self.course_id), str(self.admin_id))
         query = self.generate_query("add_course_offering", args)
         res = self.execute_query(query)
-      
+
         assert len(res) > 0, "Course Offering 1 not added successfully"
 
         expected =[(f"(2021-04-05,100.00,2021-04-20,40,40,{self.course_id},{self.admin_id},2021-05-04,2021-06-04)",)]
@@ -148,14 +148,14 @@ class HAddCourseOfferingTest(BaseTest, unittest.TestCase):
         args = ('2021-04-07','100.00', arr,'2021-04-20', '40', str(self.course_id), str(self.admin_id))
         query = self.generate_query("add_course_offering", args)
         res = self.check_fail_test(query, "Adding the offering with session on weekend should fail", CheckViolation)
-    
+
     def test_add_course_offering_session_between_lunch_fail(self):
         # Add the course offering 1 time
         arr = self.make_session_array([('2021-05-09', '10', self.rid1), ('2021-06-12', '10', self.rid1)])
         args = ('2021-04-07','100.00', arr,'2021-04-20', '40', str(self.course_id), str(self.admin_id))
         query = self.generate_query("add_course_offering", args)
         res = self.check_fail_test(query, "Session time is out of range", RaiseException)
-    
+
     def test_add_course_offering_session_room_in_use_fail(self):
         arr = self.make_session_array([('2021-05-06', '14', self.rid), ('2021-06-03', '14', self.rid)])
         args = ('2021-04-06','100.00', arr, '2021-04-20', '40', str(self.course_id1), str(self.admin_id))
@@ -188,7 +188,7 @@ class HAddCourseOfferingTest(BaseTest, unittest.TestCase):
 
         expected =[(f"(2021-04-06,100.00,2021-04-20,40,40,{self.course_id},{self.admin_id},2021-05-06,2021-06-03)",)]
         assert res == expected, f'\nOutput:   {res}\nExpected: {expected}'
-        
+
         # Add the course offering 1 time
         arr = self.make_session_array([('2021-05-06', '14', self.rid), ('2021-06-03', '14', self.rid)])
         args = ('2021-04-05','100.00', arr, '2021-04-20', '40', str(self.course_id2), str(self.admin_id))
