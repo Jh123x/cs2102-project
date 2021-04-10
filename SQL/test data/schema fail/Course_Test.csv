@@ -2,10 +2,11 @@ course_id,course_title,course_description,course_duration,course_area_name ,outc
 1,Linear Algebra,,2,Maths,pass,
 2,Statistics,,3,Maths,pass,
 3,Computer Security,,2,Security,pass,
-4,Database,,4,Database ,pass,
+4,Database,,4,Database,pass,
 5,Operatin System,,1,Computing,pass,
 6,Web Security,,2,Security,pass,
 7,Machine Learning,,2,Computing,pass,
 8,Computational Thinking,,2,Computing,pass,
 9,Communication,,1,English,pass,
-10,Communication,,4,English,fail,not unique course title
+10,PSQL,,1,Database,pass,
+11,Communication,,4,English,fail,not unique course title
