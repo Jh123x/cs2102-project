@@ -54,8 +54,8 @@ BEGIN
     /*Maybe do not need to enforce that because they didnt mention?*/
 
     /*Get the duration of the course*/
-    SELECT course_duration, session_start_hour_arg + new_session_duration
-    INTO session_duration, session_end_hour_var
+    SELECT course_duration, session_start_hour_arg + course_duration
+    INTO new_session_duration, session_end_hour_var
     FROM Courses
     WHERE Courses.course_id = course_id_arg;
 
