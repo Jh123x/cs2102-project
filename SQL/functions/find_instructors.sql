@@ -99,7 +99,7 @@ BEGIN
                         SELECT COALESCE(SUM(session_end_hour - session_start_hour), 0)
                         FROM Sessions s
                         WHERE s.instructor_id = e.employee_id
-                            AND EXTRACT(MONTH FROM session_date_arg) = EXTRACT(MONTH FROM CURRENT_DATE)
+                            AND DATE_TRUNC('month', session_date_arg) = DATE_TRUNC('month', CURRENT_DATE)
                     )) <= 30
                 )
             )

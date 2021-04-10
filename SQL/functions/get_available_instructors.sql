@@ -76,7 +76,7 @@ BEGIN
             SELECT COALESCE(SUM(s.session_end_hour - s.session_start_hour), 0) INTO total_teaching_hours
             FROM Sessions s
                 WHERE s.instructor_id = r.employee_id
-                    AND EXTRACT(MONTH FROM s.session_date) = EXTRACT(MONTH FROM cur_date);
+                    AND DATE_TRUNC('month', s.session_date) = DATE_TRUNC('month', cur_date);
 
             FOREACH hour IN ARRAY work_hours LOOP
                 IF employee_id IN
