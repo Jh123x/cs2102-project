@@ -741,8 +741,6 @@ BEGIN
     SELECT COALESCE(SUM(session_end_hour - session_start_hour), 0) INTO hours
     FROM Sessions
     WHERE instructor_id = NEW.instructor_id AND DATE_TRUNC('month', session_date) = DATE_TRUNC('month', NEW.session_date);
-    /* btw what's with the month check ^? */
-    /* because limited to 30 hours in the same month? instead of entire career? */
 
     IF (hours > 30) THEN
         RAISE EXCEPTION 'Part time Employee working too much';
@@ -753,7 +751,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER not_more_than_30_trigger
-BEFORE INSERT OR UPDATE ON Sessions
+AFTER INSERT OR UPDATE ON Sessions
 FOR EACH ROW EXECUTE FUNCTION part_time_hour_check();
 
 /* Check if the customer purchased the package when */
@@ -1015,6 +1013,8 @@ BEGIN
         RAISE EXCEPTION 'Offering target registration should be more than or equal to 0';
     ELSIF (off_start_date > off_end_date) THEN
         RAISE EXCEPTION 'Offering end date cannot be earlier than start date';
+    ELSIF (off_start_date < offering_registration_deadline_arg + INTEGER '10') THEN
+        RAISE EXCEPTION 'Offering start date should be after at least 10 days registration deadline';
     END IF;
 
     /* Inserting into course offering */
