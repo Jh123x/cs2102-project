@@ -11,6 +11,7 @@
 DROP FUNCTION IF EXISTS is_full_time_instructor CASCADE;
 CREATE OR REPLACE FUNCTION is_full_time_instructor (instructor_id_arg INTEGER)
 RETURNS BOOLEAN AS $$
+BEGIN
     RETURN EXISTS(SELECT * FROM FullTimeInstructors i WHERE i.instructor_id = instructor_id_arg);
 END;
 $$ LANGUAGE PLPGSQL;
@@ -18,6 +19,7 @@ $$ LANGUAGE PLPGSQL;
 DROP FUNCTION IF EXISTS is_part_time_instructor CASCADE;
 CREATE OR REPLACE FUNCTION is_part_time_instructor (instructor_id_arg INTEGER)
 RETURNS BOOLEAN AS $$
+BEGIN
     RETURN EXISTS(SELECT * FROM PartTimeInstructors i WHERE i.instructor_id = instructor_id_arg);
 END;
 $$ LANGUAGE PLPGSQL;
@@ -31,6 +33,7 @@ CREATE OR REPLACE FUNCTION find_instructors (
 RETURNS TABLE (employee_id INTEGER, employee_name TEXT) AS $$
 DECLARE
     session_end_hour_var INTEGER;
+    session_duration INTEGER;
 BEGIN
     /* Check for NULLs in arguments */
     IF course_id_arg IS NULL
@@ -51,7 +54,8 @@ BEGIN
     /*Maybe do not need to enforce that because they didnt mention?*/
 
     /*Get the duration of the course*/
-    SELECT session_start_hour_arg + course_duration INTO session_end_hour_var
+    SELECT course_duration, session_start_hour_arg + course_duration
+    INTO session_duration, session_end_hour_var
     FROM Courses
     WHERE Courses.course_id = course_id_arg;
 
@@ -91,7 +95,7 @@ BEGIN
                 is_full_time_instructor(e.employee_id)
                 OR (
                     is_full_time_instructor(e.employee_id)
-                    AND (course_duration + (
+                    AND (session_duration + (
                         SELECT COALESCE(SUM(session_end_hour - session_start_hour), 0)
                         FROM Sessions s
                         WHERE s.instructor_id = e.employee_id
