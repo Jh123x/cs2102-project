@@ -33,7 +33,7 @@ CREATE OR REPLACE FUNCTION find_instructors (
 RETURNS TABLE (employee_id INTEGER, employee_name TEXT) AS $$
 DECLARE
     session_end_hour_var INTEGER;
-    session_duration INTEGER;
+    new_session_duration INTEGER;
 BEGIN
     /* Check for NULLs in arguments */
     IF course_id_arg IS NULL
@@ -54,7 +54,7 @@ BEGIN
     /*Maybe do not need to enforce that because they didnt mention?*/
 
     /*Get the duration of the course*/
-    SELECT course_duration, session_start_hour_arg + course_duration
+    SELECT course_duration, session_start_hour_arg + new_session_duration
     INTO session_duration, session_end_hour_var
     FROM Courses
     WHERE Courses.course_id = course_id_arg;
@@ -94,8 +94,8 @@ BEGIN
             AND (
                 is_full_time_instructor(e.employee_id)
                 OR (
-                    is_full_time_instructor(e.employee_id)
-                    AND (session_duration + (
+                    is_part_time_instructor(e.employee_id)
+                    AND (new_session_duration + (
                         SELECT COALESCE(SUM(session_end_hour - session_start_hour), 0)
                         FROM Sessions s
                         WHERE s.instructor_id = e.employee_id
