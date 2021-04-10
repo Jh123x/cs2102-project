@@ -76,7 +76,7 @@ class ZRegisterSessionTest(BaseTest, unittest.TestCase):
 
         # Add a course offering
         self.course_offering = self._add_course_offering(
-            '2021-01-21', 10, [('2021-06-21', 9, 1)], '2021-05-31', 20, self.course_id, self.admin_id)
+            '2021-01-21', 10, [('2021-06-21', 9, 1), ('2021-06-21', 14, 1)], '2021-05-31', 20, self.course_id, self.admin_id)
 
         # Add a package
         self.package_id = self._add_course_package(
@@ -145,3 +145,20 @@ class ZRegisterSessionTest(BaseTest, unittest.TestCase):
         after_redemptions = self.execute_query(get_redeem_left_q)[0][0]
         assert before_redemptions - \
             1 == after_redemptions, "The number of redemptions should have decremented by 1"
+
+    def test_register_same_offering_twice_fails(self):
+        """Test if the customer can enroll for 2 sessions for the same course offering"""
+        # Set up the course offering
+        self.setup_course_offering()
+
+        # Register for the first session
+        args = ('2021-01-21', str(self.course_id), '1',
+                str(self.customer_id), 'Credit Card')
+        q = self.generate_query('register_session', args)
+        self.execute_query(q)
+
+        # Register for the second session
+        args = ('2021-01-21', str(self.course_id), '2',
+                str(self.customer_id), 'Credit Card')
+        q = self.generate_query('register_session', args)
+        self.check_fail_test(q, 'The customer should not be able to register for the sessions for the course offering twice', RaiseException)
