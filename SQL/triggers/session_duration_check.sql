@@ -16,7 +16,6 @@ BEGIN
     FROM Courses c
     WHERE c.course_id = NEW.course_id;
 
-    /*Data sql violates this check for some reason*/
     IF (NEW.session_end_hour - NEW.session_start_hour = session_duration) THEN
         RETURN NEW;
     ELSE

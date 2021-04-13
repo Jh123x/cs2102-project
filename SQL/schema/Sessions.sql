@@ -9,7 +9,7 @@ CREATE TABLE Sessions (
     room_id INTEGER REFERENCES Rooms,
     instructor_id INTEGER REFERENCES Instructors (instructor_id),
 
-    UNIQUE(course_id, session_date, session_start_hour),
+    UNIQUE(course_id, session_date, session_start_hour, offering_launch_date),
     PRIMARY KEY(session_id, course_id, offering_launch_date),
     FOREIGN KEY(course_id, offering_launch_date) REFERENCES CourseOfferings(course_id, offering_launch_date) ON DELETE CASCADE,
 

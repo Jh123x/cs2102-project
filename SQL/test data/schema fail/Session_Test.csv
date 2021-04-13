@@ -18,6 +18,7 @@ session_id,session_date,session_start_hour,session_end_hour,course_id,offering_l
 7,2021-10-21 00:00:00,14,18,4,2021-02-10 00:00:00,1,12,pass,
 1,2021-10-22 00:00:00,14,15,10,2021-02-11 00:00:00,1,12,pass,
 2,2021-10-25 00:00:00,14,15,10,2021-02-11 00:00:00,1,12,pass,
+1,6/9/2021,14,16,7,7/2/2021,1,9,pass,
 3,2021-10-26 00:00:00,14,15,10,2021-02-11 00:00:00,1,12,fail,part time exceed 30 hours
 2,30/8/2021,14,16,1,2/2/2021,3,11,fail ,"session collision: same course offering, same date for session"
 2,30/8/2021,12,14,1,2/2/2021,1,11,fail ,session is from 12-2pm

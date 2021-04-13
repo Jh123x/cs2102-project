@@ -22,7 +22,7 @@ BEGIN
             OR s.session_start_hour BETWEEN NEW.session_start_hour AND NEW.session_end_hour
         )
         AND (
-            NEW.course_id = s.course_id
+            (NEW.course_id = s.course_id AND NEW.offering_launch_date = s.offering_launch_date)
             OR NEW.room_id = s.room_id
         ); /* Check if it is the same course at the same time or if it is in the same room */
 
